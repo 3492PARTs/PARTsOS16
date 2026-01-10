@@ -52,7 +52,7 @@ public class Candle extends PARTsCandle {
     private void setState() {
 
         // This picks the order of states to display
-        if (candleStates.contains(CandleState.ELEVATOR_ERROR))
+        /*if (candleStates.contains(CandleState.ELEVATOR_ERROR))
             candleState = CandleState.ELEVATOR_ERROR;
         else if (candleStates.contains(CandleState.CORAL_LASER_EXIT_ERROR))
             candleState = CandleState.CORAL_LASER_EXIT_ERROR;
@@ -71,7 +71,7 @@ public class Candle extends PARTsCandle {
         else if (candleStates.contains(CandleState.IDLE))
             candleState = CandleState.IDLE;
         else if (candleStates.contains(CandleState.DISABLED))
-            candleState = CandleState.DISABLED;
+            candleState = CandleState.DISABLED; */
 
         setStateAnimation();
     }

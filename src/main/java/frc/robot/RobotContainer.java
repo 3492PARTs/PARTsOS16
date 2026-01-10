@@ -79,6 +79,8 @@ public class RobotContainer {
         // partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
     }
 
+    /* Configs */
+
     private void configureDrivetrainBindings() {
 
         // Drivetrain will execute this command periodically
@@ -140,6 +142,8 @@ public class RobotContainer {
         //autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
+
+    /* End Configs */
 
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
