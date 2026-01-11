@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
     }
 
     /* log and replay timestamp and joystick data */
+    //TODO: What is this and is it needed?
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
             .withTimestampReplay()
             .withJoystickReplay();
