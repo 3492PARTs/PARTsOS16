@@ -6,66 +6,138 @@ package frc.robot;
 
 import com.ctre.phoenix6.HootAutoReplay;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RuntimeType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.constants.RobotConstants;
+import frc.robot.subsystems.LimelightVision.MegaTagMode;
+import frc.robot.util.PARTs.Classes.PARTsDashboard;
+import frc.robot.util.PARTs.Classes.PARTsDashboard.DashboardTab;
+import frc.robot.util.PARTs.Classes.PARTsLogger;
+import frc.robot.util.PARTs.Classes.PARTsNT;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
 
+    PARTsNT partsNT;
+    PARTsLogger partsLogger;
+
     private final RobotContainer m_robotContainer;
 
+    private static Alliance alliance;
+
+    public static boolean isBlue() {
+        return alliance == Alliance.Blue;
+    }
+
+    public static boolean isReal() {
+        RuntimeType runtimeType = getRuntimeType();
+        return runtimeType == RuntimeType.kRoboRIO || runtimeType == RuntimeType.kRoboRIO2;
+    }
+
+    private void getAlliance() {
+        if (DriverStation.getAlliance().isPresent()) {
+            alliance = DriverStation.getAlliance().get();
+        }
+    }
+
     /* log and replay timestamp and joystick data */
+    //TODO: What is this and is it needed?
     private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
-        .withTimestampReplay()
-        .withJoystickReplay();
+            .withTimestampReplay()
+            .withJoystickReplay();
 
     public Robot() {
         m_robotContainer = new RobotContainer();
+        partsNT = new PARTsNT(this);
+        partsLogger = new PARTsLogger();
+        m_robotContainer.constructDashboard();
+
+        partsLogger.logCommandScheduler();
+        //partsLogger.logPathPlanner();
+
+        CameraServer.startAutomaticCapture();
+
+        // m_robotContainer.resetStartPose();
+        m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
+
+        DriverStation.silenceJoystickConnectionWarning(!isReal());
+
+        getAlliance();
     }
 
     @Override
     public void robotPeriodic() {
-        m_timeAndJoystickReplay.update();
-        CommandScheduler.getInstance().run(); 
+        CommandScheduler.getInstance().run();
+
+        partsNT.putDouble("Match Time", DriverStation.getMatchTime());
+        m_robotContainer.outputTelemetry();
+        m_robotContainer.log();
+
+        getAlliance();
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
+        m_robotContainer.stop();
+        m_robotContainer.setCandleDisabledState();
+    }
 
     @Override
-    public void disabledPeriodic() {}
+    public void disabledPeriodic() {
+    }
 
     @Override
-    public void disabledExit() {}
+    public void disabledExit() {
+    }
 
     @Override
     public void autonomousInit() {
+        m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG2);
+        if (!RobotConstants.DEBUGGING) {
+            PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
+        }
+        m_robotContainer.setIdleCandleState();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         if (m_autonomousCommand != null) {
-            CommandScheduler.getInstance().schedule(m_autonomousCommand);
+            m_autonomousCommand.schedule();
         }
     }
 
     @Override
-    public void autonomousPeriodic() {}
+    public void autonomousPeriodic() {
+    }
 
     @Override
-    public void autonomousExit() {}
+    public void autonomousExit() {
+    }
 
     @Override
     public void teleopInit() {
+        m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG2);
+        if (!RobotConstants.DEBUGGING) {
+            PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
+        }
+
+        m_robotContainer.setIdleCandleState();
         if (m_autonomousCommand != null) {
-            CommandScheduler.getInstance().cancel(m_autonomousCommand);
+            m_autonomousCommand.cancel();
         }
     }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+    }
 
     @Override
-    public void teleopExit() {}
+    public void teleopExit() {
+    }
 
     @Override
     public void testInit() {
@@ -73,11 +145,14 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+    }
 
     @Override
-    public void testExit() {}
+    public void testExit() {
+    }
 
     @Override
-    public void simulationPeriodic() {}
+    public void simulationPeriodic() {
+    }
 }
