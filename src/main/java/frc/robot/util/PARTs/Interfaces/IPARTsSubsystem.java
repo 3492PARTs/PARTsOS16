@@ -5,11 +5,11 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public interface IPARTsSubsystem extends Subsystem, Sendable {
 
-    public void outputTelemetry();
+  public void outputTelemetry();
 
-    public void stop();
+  public void stop();
 
-    public void reset();
+  public void reset();
 
-    public void log();
+  public void log();
 }

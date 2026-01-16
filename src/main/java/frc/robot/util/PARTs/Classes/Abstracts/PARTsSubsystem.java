@@ -18,6 +18,7 @@ public abstract class PARTsSubsystem extends SubsystemBase implements IPARTsSubs
 
   /**
    * Creates a new PARTsSubsystem.
+   *
    * <p>Comes with a PARTsNT generic instance.
    */
   public PARTsSubsystem() {
@@ -28,6 +29,7 @@ public abstract class PARTsSubsystem extends SubsystemBase implements IPARTsSubs
 
   /**
    * Creates a new PARTsSubsystem.
+   *
    * <p>Comes with a PARTsNT instance based on the given class.
    */
   public PARTsSubsystem(Object o) {
@@ -38,6 +40,7 @@ public abstract class PARTsSubsystem extends SubsystemBase implements IPARTsSubs
 
   /**
    * Creates a new PARTsSubsystem.
+   *
    * <p>Comes with a PARTsNT instance based on the given class name.
    */
   public PARTsSubsystem(String className) {

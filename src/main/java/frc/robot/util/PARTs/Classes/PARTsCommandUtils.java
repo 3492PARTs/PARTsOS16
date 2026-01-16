@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 /** Add your docs here. */
 public class PARTsCommandUtils {
 
-    public static Command setCommandName(String name, Command c) {
-        c.setName(name);
-        return c;
-    }
+  public static Command setCommandName(String name, Command c) {
+    c.setName(name);
+    return c;
+  }
 }
