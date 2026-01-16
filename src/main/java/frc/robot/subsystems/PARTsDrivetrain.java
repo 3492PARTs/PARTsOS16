@@ -73,10 +73,10 @@ public class PARTsDrivetrain extends Drive implements IPARTsSubsystem {
         private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
         // refs to swerve modules, used in swerve module dashboard widget
-        private SwerveModule<TalonFX, TalonFX, CANcoder> frontRightModule;
-        private SwerveModule<TalonFX, TalonFX, CANcoder> frontLeftModule;
-        private SwerveModule<TalonFX, TalonFX, CANcoder> backRightModule;
-        private SwerveModule<TalonFX, TalonFX, CANcoder> backLeftModule;
+        //private SwerveModule<TalonFX, TalonFX, CANcoder> frontRightModule;
+        //private SwerveModule<TalonFX, TalonFX, CANcoder> frontLeftModule;
+        //private SwerveModule<TalonFX, TalonFX, CANcoder> backRightModule;
+        //private SwerveModule<TalonFX, TalonFX, CANcoder> backLeftModule;
 
         // show robot pose on field dashboard display
         private FieldObject2d fieldObject2d;
@@ -107,13 +107,9 @@ public class PARTsDrivetrain extends Drive implements IPARTsSubsystem {
         }
 
         private void instantiate() {
-                frontLeftModule = getModule(0);
-                frontRightModule = getModule(1);
-                backLeftModule = getModule(2);
-                backRightModule = getModule(3);
                 initializeClasses();
                 initializeControllers();
-                sendToDashboard();
+                //sendToDashboard();
                 //configureAutoBuilder();
                 fieldObject2d = Field.FIELD2D.getObject("Robot");
                 targetObject2d = Field.FIELD2D.getObject("target pose");
@@ -547,6 +543,7 @@ public class PARTsDrivetrain extends Drive implements IPARTsSubsystem {
                 partsNT.putDouble("align/goalPoseError", Math.abs(diff.getTranslation().getNorm()));
         }
 
+        /*
         private void sendToDashboard() {
                 SendableRegistry.addLW(this, getName());
 
@@ -584,6 +581,7 @@ public class PARTsDrivetrain extends Drive implements IPARTsSubsystem {
                         }
                 });
         }
+        */
 
         private void initializeControllers() {
 
