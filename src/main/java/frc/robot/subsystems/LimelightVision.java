@@ -11,6 +11,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.constants.CameraConstants;
 import frc.robot.constants.CameraConstants.Camera;
 import frc.robot.constants.VisionConstants;
@@ -146,20 +147,20 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public PoseEstimate getMegaTag1PoseEstimate(String limelightName) {
-        return Robot.isBlue()
+        return RobotContainer.isBlue()
                 ? LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName)
                 : LimelightHelpers.getBotPoseEstimate_wpiRed(limelightName);
     }
 
     private PoseEstimate getMegaTag2PoseEstimate(String limelightName) {
-        return Robot.isBlue()
+        return RobotContainer.isBlue()
                 ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName)
                 : LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(limelightName);
     }
 
     private boolean robotIsOnBlueSide() {
         Pose2d pose = poseSupplier.get();
-        return pose.getX() < Field.LENGTH / 2 == Robot.isBlue();
+        return pose.getX() < Field.LENGTH / 2 == RobotContainer.isBlue();
     }
 
     private void updateWhitelistMode() {
@@ -193,7 +194,7 @@ public class LimelightVision extends PARTsSubsystem {
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
-                    (poseSupplier.get().getRotation().getDegrees() + (Robot.isBlue() ? 0 : 180)) % 360,
+                    (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360,
                     0,
                     0,
                     0,
@@ -249,7 +250,7 @@ public class LimelightVision extends PARTsSubsystem {
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
-                    (poseSupplier.get().getRotation().getDegrees() + (Robot.isBlue() ? 0 : 180)) % 360,
+                    (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360,
                     0,
                     0,
                     0,

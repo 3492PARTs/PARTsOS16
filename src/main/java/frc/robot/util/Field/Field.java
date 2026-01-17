@@ -11,6 +11,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,19 +25,19 @@ public interface Field {
         double LENGTH = Units.inchesToMeters(690.876);
 
         public static Pose3d conditionallyTransformToOppositeAlliance(Pose3d pose) {
-                return Robot.isBlue() ? pose : transformToOppositeAlliance(pose);
+                return RobotContainer.isBlue() ? pose : transformToOppositeAlliance(pose);
         }
 
         public static Pose2d conditionallyTransformToOppositeAlliance(Pose2d pose) {
-                return Robot.isBlue() ? pose : transformToOppositeAlliance(pose);
+                return RobotContainer.isBlue() ? pose : transformToOppositeAlliance(pose);
         }
 
         public static Translation2d conditionallyTransformToOppositeAlliance(Translation2d translation) {
-                return Robot.isBlue() ? translation : transformToOppositeAlliance(translation);
+                return RobotContainer.isBlue() ? translation : transformToOppositeAlliance(translation);
         }
 
         public static List<Pose2d> conditionallyTransformToOppositeAlliance(List<Pose2d> poses) {
-                return Robot.isBlue() ? poses : transformToOppositeAlliance(poses);
+                return RobotContainer.isBlue() ? poses : transformToOppositeAlliance(poses);
         }
 
         public static Pose3d transformToOppositeAlliance(Pose3d pose) {
@@ -99,7 +100,7 @@ public interface Field {
                 }
 
                 public Pose3d getLocation() {
-                        return Robot.isBlue()
+                        return RobotContainer.isBlue()
                                         ? tag.getLocation()
                                         : transformToOppositeAlliance(tag.getLocation());
                 }
@@ -312,14 +313,14 @@ public interface Field {
                 }
 
                 private Translation2d getLineStart() {
-                        return Robot.isBlue()
+                        return RobotContainer.isBlue()
                                         ? blueOriginLineStart
                                         : transformToOppositeAlliance(new Pose2d(blueOriginLineStart, Rotation2d.kZero))
                                                         .getTranslation();
                 }
 
                 private Translation2d getLineEnd() {
-                        return Robot.isBlue()
+                        return RobotContainer.isBlue()
                                         ? blueOriginLineEnd
                                         : transformToOppositeAlliance(new Pose2d(blueOriginLineEnd, Rotation2d.kZero))
                                                         .getTranslation();
@@ -408,7 +409,7 @@ public interface Field {
                  * }
                  * 
                  * public static CoralStation getClosestCoralStation() {
-                 * if (Robot.isBlue()) {
+                 * if (RobotContainer.isBlue()) {
                  * return BLUE_CD_CORAL_STATION.getDistanceToStation() <
                  * BLUE_KL_CORAL_STATION.getDistanceToStation()
                  * ? BLUE_CD_CORAL_STATION
@@ -429,10 +430,10 @@ public interface Field {
 
                 public static CoralStation getCoralStation(boolean isCD) {
                         if (isCD) {
-                                return Robot.isBlue() ? CoralStation.BLUE_CD_CORAL_STATION
+                                return RobotContainer.isBlue() ? CoralStation.BLUE_CD_CORAL_STATION
                                                 : CoralStation.RED_CD_CORAL_STATION;
                         } else {
-                                return Robot.isBlue() ? CoralStation.BLUE_KL_CORAL_STATION
+                                return RobotContainer.isBlue() ? CoralStation.BLUE_KL_CORAL_STATION
                                                 : CoralStation.RED_KL_CORAL_STATION;
                         }
                 }
