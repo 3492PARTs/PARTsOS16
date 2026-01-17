@@ -15,7 +15,10 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.RuntimeType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -54,6 +57,8 @@ public class RobotContainer {
     private PARTsNT partsNT = new PARTsNT("RobotContainer");
 
     private SendableChooser<Command> autoChooser;
+
+     private static Alliance alliance;
 
     /* Subsystems */
 
@@ -150,6 +155,8 @@ public class RobotContainer {
         return autoChooser.getSelected();
     }
 
+    /* Custom Public Functions */
+
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());
         partsNT.putBoolean("Vision Mode", visionAlignActive);
@@ -185,5 +192,20 @@ public class RobotContainer {
 
     public void setMegaTagMode(MegaTagMode mode) {
         vision.setMegaTagMode(mode);
+    }
+
+    public static boolean isBlue() {
+        return alliance == Alliance.Blue;
+    }
+
+    public static boolean isReal() {
+        RuntimeType runtimeType = Robot.getRuntimeType();
+        return runtimeType == RuntimeType.kRoboRIO || runtimeType == RuntimeType.kRoboRIO2;
+    }
+
+    public void getAlliance() {
+        if (DriverStation.getAlliance().isPresent()) {
+            alliance = DriverStation.getAlliance().get();
+        }
     }
 }
