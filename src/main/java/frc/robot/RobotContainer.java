@@ -142,7 +142,7 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
-        driveController.a().onTrue(Commands.runOnce(() -> shooter.setSpeed(0.5)));
+        driveController.a().onTrue(Commands.runOnce(() -> shooter.setSpeed(0.25)));
         driveController.b().onTrue(Commands.runOnce(() -> shooter.setSpeed(0)));
     }
 

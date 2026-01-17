@@ -19,7 +19,7 @@ public class ShooterPhys extends Shooter {
         super();
 
         SparkMaxConfig shooterConfig = new SparkMaxConfig();
-        shooterConfig.idleMode(IdleMode.kBrake);
+        shooterConfig.idleMode(IdleMode.kCoast);
 
         leftMotor = new SparkMax(0, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
         leftEncoder = leftMotor.getEncoder();
