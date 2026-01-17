@@ -4,12 +4,10 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.HootAutoReplay;
-
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.RuntimeType;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -28,46 +26,29 @@ public class Robot extends TimedRobot {
 
     private final RobotContainer m_robotContainer;
 
-    private static Alliance alliance;
-
-    public static boolean isBlue() {
-        return alliance == Alliance.Blue;
-    }
-
-    public static boolean isReal() {
-        RuntimeType runtimeType = getRuntimeType();
-        return runtimeType == RuntimeType.kRoboRIO || runtimeType == RuntimeType.kRoboRIO2;
-    }
-
-    private void getAlliance() {
-        if (DriverStation.getAlliance().isPresent()) {
-            alliance = DriverStation.getAlliance().get();
-        }
-    }
-
-    /* log and replay timestamp and joystick data */
-    //TODO: What is this and is it needed?
-    private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
-            .withTimestampReplay()
-            .withJoystickReplay();
-
     public Robot() {
+        // This is needed for lasercan, without it causes robot to lag on boot
+        // CanBridge.runTCP();
+
+        // Make elastic dashboard file available
+        WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+
         m_robotContainer = new RobotContainer();
         partsNT = new PARTsNT(this);
         partsLogger = new PARTsLogger();
         m_robotContainer.constructDashboard();
 
         partsLogger.logCommandScheduler();
-        //partsLogger.logPathPlanner();
+        // partsLogger.logPathPlanner();
 
         CameraServer.startAutomaticCapture();
 
-        // m_robotContainer.resetStartPose();
+        m_robotContainer.resetStartPose();
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
 
         DriverStation.silenceJoystickConnectionWarning(!isReal());
 
-        getAlliance();
+        m_robotContainer.getAlliance();
     }
 
     @Override
@@ -78,7 +59,7 @@ public class Robot extends TimedRobot {
         m_robotContainer.outputTelemetry();
         m_robotContainer.log();
 
-        getAlliance();
+        m_robotContainer.getAlliance();
     }
 
     @Override
