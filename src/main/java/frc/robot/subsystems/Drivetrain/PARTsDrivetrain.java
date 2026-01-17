@@ -145,7 +145,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         /*-------------------------------- Generic Subsystem Functions --------------------------------*/
         @Override
         public void outputTelemetry() {
-
+                partsNT.putBoolean("Fine Grain Drive", fineGrainDrive);
         }
 
         @Override
@@ -192,6 +192,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         public void toggleFineGrainDrive() {
                 fineGrainDrive = !fineGrainDrive;
+                outputTelemetry();
         }
 
         public Command commandJoystickDrive(PARTsCommandController controller) {
@@ -199,7 +200,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 // and Y is defined as to the left according to WPILib convention.
                 return PARTsCommandUtils.setCommandName("commandJoystickDrive", applyRequest(() -> {
                         double limit = MaxSpeed;
-                        if (fineGrainDrive || true)
+                        if (fineGrainDrive)
                                 limit *= 0.25;
                         return getFieldCentricDriveRequest().withVelocityX(-controller.getLeftY() * limit) // Drive forward with negative Y
                                         // (forward)
