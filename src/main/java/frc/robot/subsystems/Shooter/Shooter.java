@@ -14,6 +14,7 @@ public abstract class Shooter extends PARTsSubsystem{
         }
     }
 
+    //region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
     }
@@ -29,6 +30,7 @@ public abstract class Shooter extends PARTsSubsystem{
     @Override
     public void log() {
     }
+    //endregion
 
     @Override
     public void periodic() {
@@ -57,7 +59,9 @@ public abstract class Shooter extends PARTsSubsystem{
         }
     }
 
+    //region Custom Public Functions
     public abstract void setSpeed(double speed);
 
-    public ShooterState getState() {return shooterState; }
+    public ShooterState getState() { return shooterState; }
+    //endregion
 }
