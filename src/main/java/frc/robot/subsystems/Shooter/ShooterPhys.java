@@ -54,4 +54,13 @@ public class ShooterPhys extends Shooter {
     public void periodic() {
         super.periodic();
     }
+
+    @Override
+    public void log() {
+        partsLogger.logDouble("Current/Left", leftMotor.getOutputCurrent());
+        partsLogger.logDouble("Current/Right", rightMotor.getOutputCurrent());
+
+        partsLogger.logDouble("Output/Left", leftMotor.getAppliedOutput());
+        partsLogger.logDouble("Output/Right", rightMotor.getAppliedOutput());
+    }
 }
