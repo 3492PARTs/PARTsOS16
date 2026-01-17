@@ -4,8 +4,7 @@ public class ShooterSim extends Shooter {
 
     @Override
     public void setSpeed(double speed) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setSpeed'");
+        partsNT.putDouble("Our Shooter Speed", speed);
     }
     
 }
