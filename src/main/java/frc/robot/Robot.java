@@ -103,11 +103,13 @@ public class Robot extends TimedRobot {
             PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
         }
         m_robotContainer.setIdleCandleState();
+        /*
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
         }
+        */
     }
 
     @Override
