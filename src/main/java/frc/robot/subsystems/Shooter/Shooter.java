@@ -1,6 +1,9 @@
 package frc.robot.subsystems.Shooter;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
+import frc.robot.states.ShooterState;
+import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
 import frc.robot.states.ShooterState;
 import frc.robot.util.PARTs.Classes.Abstracts.PARTsSubsystem;
 
@@ -60,8 +63,23 @@ public abstract class Shooter extends PARTsSubsystem{
     }
 
     //region Custom Public Functions
-    public abstract void setSpeed(double speed);
+    /** Sets the speed of the Shooter.
+     * @param speed The speed between <code>-1.0</code> and <code>1.0</code>.
+    */
+    protected abstract void setSpeed(double speed);
 
     public ShooterState getState() { return shooterState; }
+
+    public Command shoot() {
+        return PARTsCommandUtils.setCommandName("Command Shoot", this.runOnce(() -> {
+            shooterState = ShooterState.SHOOTING;
+        }));
+    }
+
+    public Command idle() {
+        return PARTsCommandUtils.setCommandName("Command Idle", this.runOnce(() -> {
+            shooterState = ShooterState.IDLE;
+        }));
+    }
     //endregion
 }
