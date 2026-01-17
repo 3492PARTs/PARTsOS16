@@ -40,4 +40,9 @@ public class ShooterPhys extends Shooter {
     public void setSpeed(double speed) {
         leftMotor.set(speed);
     }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+    }
 }
