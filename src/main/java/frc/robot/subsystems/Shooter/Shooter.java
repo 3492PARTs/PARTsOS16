@@ -12,22 +12,26 @@ public abstract class Shooter extends PARTsSubsystem{
 
     public Shooter() {
         super("Shooter");
-        if (RobotConstants.DEBUGGING) {
-            partsNT.putDouble("Shooter Speed", 0);
-        }
     }
 
     //region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
+        if (RobotConstants.DEBUGGING) {
+            partsNT.putDouble("Shooter Speed", 0);
+        }
+
+        partsNT.putString("Shooter State", shooterState.toString());
     }
 
     @Override
     public void stop() {
+        shooterState = ShooterState.DISABLED;
     }
 
     @Override
     public void reset() {
+        shooterState = ShooterState.IDLE;
     }
 
     @Override
