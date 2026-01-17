@@ -35,7 +35,9 @@ public class ShooterPhys extends Shooter {
     // Make this an abstract function in the main class and define one in each phys and sim.
     // the reason we do this is to create the contract that all shoooters much have a set speed
     // but we leave it up to phys or sim to decide how that should work. 
-    protected void setSpeed(double speed) {
+
+    @Override
+    public void setSpeed(double speed) {
         leftMotor.set(speed);
     }
 }

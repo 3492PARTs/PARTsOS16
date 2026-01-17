@@ -2,7 +2,7 @@ package frc.robot.subsystems.Shooter;
 
 import frc.robot.util.PARTs.Classes.Abstracts.PARTsSubsystem;
 
-public class Shooter extends PARTsSubsystem{
+public abstract class Shooter extends PARTsSubsystem{
 
     @Override
     public void outputTelemetry() {
@@ -27,5 +27,6 @@ public class Shooter extends PARTsSubsystem{
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'log'");
     }
-    
+
+    public abstract void setSpeed(double speed);
 }
