@@ -12,6 +12,7 @@ import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotController;
@@ -52,7 +53,7 @@ public class RobotContainer {
 
     private PARTsNT partsNT = new PARTsNT("RobotContainer");
 
-     private SendableChooser<Command> autoChooser;
+    private SendableChooser<Command> autoChooser;
 
     /* Subsystems */
 
@@ -67,8 +68,8 @@ public class RobotContainer {
 
     public final Candle candle = new Candle();
 
-     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
-                        Arrays.asList(candle, drivetrain, vision));
+    private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
+            Arrays.asList(candle, drivetrain, vision));
 
     /* End Subsystems */
 
@@ -139,7 +140,7 @@ public class RobotContainer {
     }
 
     public void configureAutonomousCommands() {
-        //autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
@@ -148,8 +149,6 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
-
-
 
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());
