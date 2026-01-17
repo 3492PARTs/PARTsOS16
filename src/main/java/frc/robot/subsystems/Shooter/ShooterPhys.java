@@ -31,6 +31,10 @@ public class ShooterPhys extends Shooter {
         rightMotor.configure(shooterConfig.follow(leftMotor, true), com.revrobotics.ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
     }
+
+    // Make this an abstract function in the main class and define one in each phys and sim.
+    // the reason we do this is to create the contract that all shoooters much have a set speed
+    // but we leave it up to phys or sim to decide how that should work. 
     protected void setSpeed(double speed) {
         leftMotor.set(speed);
     }
