@@ -34,6 +34,9 @@ import frc.robot.subsystems.LimelightVision;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
+import frc.robot.subsystems.Shooter.Shooter;
+import frc.robot.subsystems.Shooter.ShooterPhys;
+import frc.robot.subsystems.Shooter.ShooterSim;
 import frc.robot.util.PARTs.Classes.PARTsButtonBoxController;
 import frc.robot.util.PARTs.Classes.PARTsCommandController;
 import frc.robot.util.PARTs.Classes.PARTsController.ControllerType;
@@ -73,14 +76,18 @@ public class RobotContainer {
 
     public final Candle candle = new Candle();
 
-    private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
-            Arrays.asList(candle, drivetrain, vision));
+    private final Shooter shooter = Robot.isReal() ? new ShooterPhys() : new ShooterSim();
+
+     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
+                        Arrays.asList(candle, drivetrain, vision, shooter));
+
 
     /* End Subsystems */
 
     public RobotContainer() {
         configureDrivetrainBindings();
         configureCandleBindings();
+        configureShooterBindings();
 
         // partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
     }
@@ -103,10 +110,10 @@ public class RobotContainer {
         // candle.removeState(CandleState.FINE_GRAIN_DRIVE)));
 
         // brakes swerve, puts modules into x configuration
-        driveController.a().whileTrue(drivetrain.commandBrake());
+        //driveController.a().whileTrue(drivetrain.commandBrake());
 
         // manual module direction control
-        driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
+        //driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
 
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
@@ -138,6 +145,11 @@ public class RobotContainer {
          * sysIdQuasistatic(Direction.kReverse));
          */
 
+    }
+
+    private void configureShooterBindings() {
+        driveController.a().onTrue(shooter.shoot());
+        driveController.b().onTrue(shooter.idle());
     }
 
     private void configureCandleBindings() {
