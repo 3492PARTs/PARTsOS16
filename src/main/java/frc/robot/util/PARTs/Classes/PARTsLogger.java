@@ -1,5 +1,7 @@
 package frc.robot.util.PARTs.Classes;
 
+import com.pathplanner.lib.util.PathPlannerLogging;
+
 //import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.util.datalog.BooleanLogEntry;
@@ -83,7 +85,7 @@ public class PARTsLogger {
                         });
     }
 
-    /* public void logPathPlanner() {
+     public void logPathPlanner() {
         // Logging callback for target robot pose
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
             // Do whatever you want with the pose here
@@ -95,5 +97,5 @@ public class PARTsLogger {
             // Do whatever you want with the poses here
             Field.FIELD2D.getObject("path").setPoses(Field.conditionallyTransformToOppositeAlliance(poses));
         });
-    } */
+    } 
 }

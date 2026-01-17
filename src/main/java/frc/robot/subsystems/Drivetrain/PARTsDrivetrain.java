@@ -8,14 +8,14 @@ import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-/* import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.FileVersionException; */
+import com.pathplanner.lib.util.FileVersionException; 
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -28,7 +28,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-//import org.json.simple.parser.ParseException;
+import org.json.simple.parser.ParseException;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Vector;
@@ -135,7 +135,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 initializeClasses();
                 initializeControllers();
                 sendToDashboard();
-                //configureAutoBuilder();
+                configureAutoBuilder();
                 fieldObject2d = Field.FIELD2D.getObject("Robot");
                 targetObject2d = Field.FIELD2D.getObject("target pose");
                 telemetryLogger = new Telemetry(MaxSpeed);
@@ -367,7 +367,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 return new PARTsUnit(super.getState().Speeds.vyMetersPerSecond, PARTsUnitType.MetersPerSecond);
         }
 
-        /* public Command commandPathFindToPath(String pathname) {
+        public Command commandPathFindToPath(String pathname) {
                 try {
                         // Load the path we want to pathfind to and follow
                         PathPlannerPath path = PathPlannerPath.fromPathFile(pathname);
@@ -456,7 +456,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 }, new HashSet<>(Arrays.asList(this))));
 
         }
-        */
+        
 
         public Consumer<Vector<N3>> consumerSetVisionMeasurementStdDevs() {
                 return this::setVisionMeasurementStdDevs;
@@ -659,7 +659,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         /*---------------------------------- AutoBuilder Functions ----------------------------------*/
 
-        /* private void configureAutoBuilder() {
+        private void configureAutoBuilder() {
                 try {
                         var config = RobotConfig.fromGUISettings();
                         AutoBuilder.configure(
@@ -688,5 +688,5 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder",
                                         ex.getStackTrace());
                 } 
-        }*/
+        }
 }
