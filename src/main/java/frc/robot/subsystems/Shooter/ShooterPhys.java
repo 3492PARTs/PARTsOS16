@@ -38,6 +38,9 @@ public class ShooterPhys extends Shooter {
     // the reason we do this is to create the contract that all shoooters much have a set speed
     // but we leave it up to phys or sim to decide how that should work. 
 
+    /** Sets the speed of the Shooter.
+     * @param speed The speed between <code>-1.0</code> and <code>1.0</code>.
+    */
     @Override
     public void setSpeed(double speed) {
         leftMotor.set(speed);
