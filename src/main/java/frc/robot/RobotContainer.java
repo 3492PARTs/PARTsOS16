@@ -104,10 +104,10 @@ public class RobotContainer {
         // candle.removeState(CandleState.FINE_GRAIN_DRIVE)));
 
         // brakes swerve, puts modules into x configuration
-        driveController.a().whileTrue(drivetrain.commandBrake());
+        //driveController.a().whileTrue(drivetrain.commandBrake());
 
         // manual module direction control
-        driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
+        //driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
 
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
@@ -142,7 +142,7 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
-        driveController.a().onTrue(Commands.runOnce(() -> shooter.setSpeed(0.25)));
+        driveController.a().onTrue(Commands.runOnce(() -> shooter.setSpeed(0.1)));
         driveController.b().onTrue(Commands.runOnce(() -> shooter.setSpeed(0)));
     }
 

@@ -8,6 +8,8 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import frc.robot.constants.ShooterConstants;
+
 public class ShooterPhys extends Shooter {
     protected final SparkMax rightMotor;
     protected final SparkMax leftMotor;
@@ -21,12 +23,12 @@ public class ShooterPhys extends Shooter {
         SparkMaxConfig shooterConfig = new SparkMaxConfig();
         shooterConfig.idleMode(IdleMode.kCoast);
 
-        leftMotor = new SparkMax(0, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+        leftMotor = new SparkMax(ShooterConstants.LEFT_MOTOR_ID, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
         leftEncoder = leftMotor.getEncoder();
         leftMotor.configure(shooterConfig, com.revrobotics.ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
                 
-        rightMotor = new SparkMax(0, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+        rightMotor = new SparkMax(ShooterConstants.RIGHT_MOTOR_ID, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
         rightEncoder = rightMotor.getEncoder();
         rightMotor.configure(shooterConfig.follow(leftMotor, true), com.revrobotics.ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
