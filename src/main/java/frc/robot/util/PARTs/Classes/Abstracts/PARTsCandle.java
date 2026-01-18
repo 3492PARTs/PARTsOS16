@@ -8,31 +8,37 @@
 
 package frc.robot.util.PARTs.Classes.Abstracts;
 
- import com.ctre.phoenix.led.Animation;
-import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.FireAnimation;
-import com.ctre.phoenix.led.LarsonAnimation;
-import com.ctre.phoenix.led.RainbowAnimation;
-import com.ctre.phoenix.led.SingleFadeAnimation;
-import com.ctre.phoenix.led.StrobeAnimation;
-import com.ctre.phoenix.led.TwinkleAnimation;
-import com.ctre.phoenix.led.CANdle.LEDStripType;
-import com.ctre.phoenix.led.CANdle.VBatOutputMode;
-import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
-import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
-import com.ctre.phoenix.led.CANdleConfiguration;
-import com.ctre.phoenix.led.ColorFlowAnimation; 
-
 import frc.robot.Robot;
 import frc.robot.constants.CandleConstants;
 import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
+
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CANdleConfiguration;
+import com.ctre.phoenix6.controls.ColorFlowAnimation;
+import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.FireAnimation;
+import com.ctre.phoenix6.controls.LarsonAnimation;
+import com.ctre.phoenix6.controls.RainbowAnimation;
+import com.ctre.phoenix6.controls.RgbFadeAnimation;
+import com.ctre.phoenix6.controls.SingleFadeAnimation;
+import com.ctre.phoenix6.controls.SolidColor;
+import com.ctre.phoenix6.controls.StrobeAnimation;
+import com.ctre.phoenix6.controls.TwinkleAnimation;
+import com.ctre.phoenix6.controls.TwinkleOffAnimation;
+import com.ctre.phoenix6.hardware.CANdle;
+import com.ctre.phoenix6.signals.AnimationDirectionValue;
+import com.ctre.phoenix6.signals.LossOfSignalBehaviorValue;
+import com.ctre.phoenix6.signals.RGBWColor;
+import com.ctre.phoenix6.signals.StatusLedWhenActiveValue;
+import com.ctre.phoenix6.signals.StripTypeValue;
+import com.ctre.phoenix6.signals.VBatOutputModeValue;
+
 import edu.wpi.first.wpilibj2.command.Command;
 
 public abstract class PARTsCandle extends PARTsSubsystem {
     // https://github.com/CrossTheRoadElec/Phoenix5-Examples/blob/master/Java%20General/CANdle%20MultiAnimation/src/main/java/frc/robot/subsystems/CANdleSystem.java
     private static CANdle candle;
     private final int LED_LENGTH = CandleConstants.LED_LENGTH;
-    private Animation animation = null;
 
     public enum Color {
 
@@ -142,24 +148,26 @@ public abstract class PARTsCandle extends PARTsSubsystem {
     /** Creates a new light. */
     public PARTsCandle(String className) {
         super(className);
-        candle = new CANdle(CandleConstants.CAN_ID, "rio");
+        CANBus canbus = new CANBus("rio");
+        candle = new CANdle(CandleConstants.CAN_ID, canbus);
 
-        CANdleConfiguration configAll = new CANdleConfiguration();
-        configAll.statusLedOffWhenActive = true;
-        configAll.disableWhenLOS = false;
-        configAll.stripType = LEDStripType.GRB;
-        configAll.brightnessScalar = 0.5;
-        configAll.vBatOutputMode = VBatOutputMode.Modulated; // does this do anything?
-        candle.configAllSettings(configAll, 100);
-
-        setNoColor();
+    
+      CANdleConfiguration configAll = new CANdleConfiguration();
+      configAll.CANdleFeatures.StatusLedWhenActive = StatusLedWhenActiveValue.Disabled;
+      configAll.LED.LossOfSignalBehavior = LossOfSignalBehaviorValue.DisableLEDs;
+      configAll.LED.StripType = StripTypeValue.GRB;
+      configAll.LED.BrightnessScalar = 0.5;
+      configAll.CANdleFeatures.VBatOutputMode = VBatOutputModeValue.Modulated; // does this do anything?
+      candle.getConfigurator().apply(configAll);
+      
+      setNoColor();
     }
-
+      
+     
     /*---------------------------------- Custom Private Functions ---------------------------------*/
     protected void setColor(Color color) {
-        animation = null;
-        candle.animate(animation);
-        candle.setLEDs(color.r, color.g, color.b);
+        candle.setControl(
+                new SolidColor(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b)));
     }
 
     protected void setNoColor() {
@@ -175,138 +183,177 @@ public abstract class PARTsCandle extends PARTsSubsystem {
     }
 
     private FireAnimation getBurnyBurnAnimation() {
-        return new FireAnimation(1, .5, LED_LENGTH, .5, .5);
+        return new FireAnimation(0, CandleConstants.LED_LENGTH).withSparking(0.5).withCooling(0.5);
     }
 
     private RainbowAnimation getRainbowAnimation() {
-        return new RainbowAnimation();
+        return new RainbowAnimation(0, CandleConstants.LED_LENGTH);
     }
 
     private StrobeAnimation getStrobeAnimation(Color color) {
-        return new StrobeAnimation(color.r, color.g, color.b);
+        return new StrobeAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b));
     }
 
     private StrobeAnimation getStrobeAnimation(Color color, double speed) {
-        return new StrobeAnimation(color.r, color.g, color.b, 0, speed, LED_LENGTH);
+        return new StrobeAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b))
+                .withFrameRate(speed);
     }
 
     private SingleFadeAnimation getFadeAnimation(Color color) {
-        return new SingleFadeAnimation(color.r, color.g, color.b, 0, 0.5, LED_LENGTH);
+        return new SingleFadeAnimation(0, CandleConstants.LED_LENGTH)
+                .withColor(new RGBWColor(color.r, color.g, color.b));
     }
 
     private SingleFadeAnimation getFadeAnimation(Color color, double speed) {
-        return new SingleFadeAnimation(color.r, color.g, color.b, 0, speed, LED_LENGTH);
+        return new SingleFadeAnimation(0, CandleConstants.LED_LENGTH)
+                .withColor(new RGBWColor(color.r, color.g, color.b)).withFrameRate(speed);
     }
 
     protected void runBurnyBurnAnimation() {
-        setAnimation(getBurnyBurnAnimation());
+        setControl(getBurnyBurnAnimation());
     }
 
     protected void runRainbowAnimation() {
-        setAnimation(getRainbowAnimation());
+        setControl(getRainbowAnimation());
     }
 
     protected void runStrobeAnimation(Color color) {
-        setAnimation(getStrobeAnimation(color));
+        setControl(getStrobeAnimation(color));
     }
 
     protected void runStrobeAnimation(Color color, double speed) {
-        setAnimation(getStrobeAnimation(color, speed));
+        setControl(getStrobeAnimation(color, speed));
     }
 
     protected void runLarsonAnimation(Color color) {
-        setAnimation(getLarsonAnimation(color));
+        setControl(getLarsonAnimation(color));
     }
 
-    protected void runLarsonAnimation(Color color, double speed, LarsonAnimation.BounceMode bounceMode, int size) {
-        setAnimation(getLarsonAnimation(color, speed, bounceMode, size));
+    protected void runLarsonAnimation(Color color, double speed, int size) {
+        setControl(getLarsonAnimation(color, speed, size));
     }
 
     protected void runTwinkleAnimation(Color color) {
-        setAnimation(getTwinkleAnimation(color));
+        setControl(getTwinkleAnimation(color));
     }
 
     protected void runColorFlowAnimation(Color color) {
-        setAnimation(getColorFlowAnimation(color));
+        setControl(getColorFlowAnimation(color));
     }
 
-    protected void runColorFlowAnimation(Color color, double speed, Direction direction, int offset) {
-        setAnimation(getColorFlowAnimation(color, speed, direction, offset));
+    protected void runColorFlowAnimation(Color color, double speed, AnimationDirectionValue direction) {
+        setControl(getColorFlowAnimation(color, speed, direction));
     }
 
     protected void runFireAnimation() {
-        setAnimation(getFireAnimation());
+        setControl(getFireAnimation());
     }
 
     protected void runFireAnimation(double brightness, double speed, double sparking, double cooling) {
-        setAnimation(getFireAnimation(brightness, speed, sparking, cooling));
+        setControl(getFireAnimation(brightness, speed, sparking, cooling));
     }
 
-    protected void runTwinkleAnimation(Color color, double speed, TwinklePercent twinklePercent, int offset) {
-        setAnimation(getTwinkleAnimation(color, speed, twinklePercent, offset));
+    protected void runTwinkleAnimation(Color color, double speed) {
+        setControl(getTwinkleAnimation(color, speed));
     }
 
     protected void runFadeAnimation(Color color, double speed) {
-        setAnimation(getFadeAnimation(color, speed));
+        setControl(getFadeAnimation(color, speed));
     }
 
     private LarsonAnimation getLarsonAnimation(Color color) {
-        return new LarsonAnimation(color.r, color.g, color.b);
+        return new LarsonAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b));
     }
 
-    private LarsonAnimation getLarsonAnimation(Color color, double speed, LarsonAnimation.BounceMode bounceMode,
+    private LarsonAnimation getLarsonAnimation(Color color, double speed,
             int size) {
         // Size max is 7
-        return new LarsonAnimation(color.r, color.g, color.b, 0, speed, LED_LENGTH, bounceMode, size);
+        return new LarsonAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b));
     }
 
     private TwinkleAnimation getTwinkleAnimation(Color color) {
-        return new TwinkleAnimation(color.r, color.g, color.b);
+        return new TwinkleAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b));
     }
 
-    private TwinkleAnimation getTwinkleAnimation(Color color, double speed, TwinklePercent twinklePercent, int offset) {
-        return new TwinkleAnimation(color.r, color.g, color.b, 0, speed, LED_LENGTH, twinklePercent, offset);
+    private TwinkleAnimation getTwinkleAnimation(Color color, double speed) {
+        return new TwinkleAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b)).withFrameRate(speed);
     }
 
     private ColorFlowAnimation getColorFlowAnimation(Color color) {
-        return new ColorFlowAnimation(color.r, color.g, color.b);
+        return new ColorFlowAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b));
     }
 
-    private ColorFlowAnimation getColorFlowAnimation(Color color, double speed, Direction direction, int offset) {
-        return new ColorFlowAnimation(color.r, color.g, color.b, 0, speed, LED_LENGTH, direction, offset);
+    private ColorFlowAnimation getColorFlowAnimation(Color color, double speed, AnimationDirectionValue direction) {
+        return new ColorFlowAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b)).withFrameRate(speed).withDirection(direction);
     }
 
     private FireAnimation getFireAnimation() {
-        return new FireAnimation();
+        return new FireAnimation(0,LED_LENGTH);
     }
 
     private FireAnimation getFireAnimation(double brightness, double speed, double sparking, double cooling) {
-        return new FireAnimation(brightness, speed, LED_LENGTH, sparking, cooling);
+        return new FireAnimation(0, CandleConstants.LED_LENGTH).withBrightness(brightness).withFrameRate(speed).withSparking(sparking).withCooling(cooling);
     }
 
-    private void setAnimation(Animation a) {
-        animation = a;
+    private void setControl(ColorFlowAnimation a) {
+        candle.setControl(a);
+    }
+
+    private void setControl(FireAnimation a) {
+        candle.setControl(a);
+    }
+
+    private void setControl(LarsonAnimation a) {
+        candle.setControl(a);
+    }
+
+    private void setControl(RainbowAnimation a) {
+        candle.setControl(a);
+    }
+
+    private void setControl(RgbFadeAnimation a) {
+        candle.setControl(a);
+    }
+
+    private void setControl(SingleFadeAnimation a) {
+        candle.setControl(a);
+    }
+
+    private void setControl(StrobeAnimation a) {
+        candle.setControl(a);
+    }
+
+    private void setControl(TwinkleAnimation a) {
+        candle.setControl(a);
+    }
+
+    private void setControl(TwinkleOffAnimation a) {
+        candle.setControl(a);
+    }
+
+    private void setControl(ControlRequest a) {
+        candle.setControl(a);
     }
 
     /*---------------------------------- Custom Public Functions ----------------------------------*/
 
     /* Wrappers so we can access the CANdle from the subsystem */
     public double getVbat() {
-        return candle.getBusVoltage();
+        return candle.getVBatModulation(true).getValueAsDouble();
     }
 
     public double get5V() {
-        return candle.get5VRailVoltage();
+        return candle.getFiveVRailVoltage(true).getValueAsDouble();
     }
 
     public double getCurrent() {
-        return candle.getCurrent();
+        return candle.getOutputCurrent(true).getValueAsDouble();
     }
 
     public double getTemperature() {
-        return candle.getTemperature();
+        return candle.getDeviceTemp(true).getValueAsDouble();
     }
-
+/* 
     public void configBrightness(double percent) {
         candle.configBrightnessScalar(percent, 0);
     }
@@ -322,21 +369,17 @@ public abstract class PARTsCandle extends PARTsSubsystem {
     public void configStatusLedBehavior(boolean offWhenActive) {
         candle.configStatusLedState(offWhenActive, 0);
     }
-
+*/
     /*-------------------------------- Generic Subsystem Functions --------------------------------*/
+    
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        if (Robot.isReal() && animation != null) {
-            candle.animate(animation);
-        }
     }
 
     @Override
     public void outputTelemetry() {
-        if (animation != null)
-            super.partsNT.putString("Animation",
-                    animation.toString().replace("com.ctre.phoenix.led.", "").replaceAll("@(\\d|\\w)*", ""));
+    //        super.partsNT.putString("Animation");
     }
 
     @Override
