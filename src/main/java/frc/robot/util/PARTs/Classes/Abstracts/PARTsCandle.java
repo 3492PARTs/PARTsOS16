@@ -38,7 +38,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public abstract class PARTsCandle extends PARTsSubsystem {
     // https://github.com/CrossTheRoadElec/Phoenix5-Examples/blob/master/Java%20General/CANdle%20MultiAnimation/src/main/java/frc/robot/subsystems/CANdleSystem.java
     private static CANdle candle;
-    private final int LED_LENGTH = CandleConstants.LED_LENGTH;
+    CANdleConfiguration config = new CANdleConfiguration();
 
     public enum Color {
 
@@ -151,19 +151,17 @@ public abstract class PARTsCandle extends PARTsSubsystem {
         CANBus canbus = new CANBus("rio");
         candle = new CANdle(CandleConstants.CAN_ID, canbus);
 
-    
-      CANdleConfiguration configAll = new CANdleConfiguration();
-      configAll.CANdleFeatures.StatusLedWhenActive = StatusLedWhenActiveValue.Disabled;
-      configAll.LED.LossOfSignalBehavior = LossOfSignalBehaviorValue.DisableLEDs;
-      configAll.LED.StripType = StripTypeValue.GRB;
-      configAll.LED.BrightnessScalar = 0.5;
-      configAll.CANdleFeatures.VBatOutputMode = VBatOutputModeValue.Modulated; // does this do anything?
-      candle.getConfigurator().apply(configAll);
-      
-      setNoColor();
+        config.CANdleFeatures.StatusLedWhenActive = StatusLedWhenActiveValue.Disabled;
+        config.LED.LossOfSignalBehavior = LossOfSignalBehaviorValue.DisableLEDs;
+        config.LED.StripType = StripTypeValue.GRB;
+        config.LED.BrightnessScalar = 0.5;
+        config.CANdleFeatures.VBatOutputMode = VBatOutputModeValue.Modulated; // does this do anything?
+
+        applyConfig();
+
+        setNoColor();
     }
-      
-     
+
     /*---------------------------------- Custom Private Functions ---------------------------------*/
     protected void setColor(Color color) {
         candle.setControl(
@@ -276,23 +274,27 @@ public abstract class PARTsCandle extends PARTsSubsystem {
     }
 
     private TwinkleAnimation getTwinkleAnimation(Color color, double speed) {
-        return new TwinkleAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b)).withFrameRate(speed);
+        return new TwinkleAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b))
+                .withFrameRate(speed);
     }
 
     private ColorFlowAnimation getColorFlowAnimation(Color color) {
-        return new ColorFlowAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b));
+        return new ColorFlowAnimation(0, CandleConstants.LED_LENGTH)
+                .withColor(new RGBWColor(color.r, color.g, color.b));
     }
 
     private ColorFlowAnimation getColorFlowAnimation(Color color, double speed, AnimationDirectionValue direction) {
-        return new ColorFlowAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b)).withFrameRate(speed).withDirection(direction);
+        return new ColorFlowAnimation(0, CandleConstants.LED_LENGTH).withColor(new RGBWColor(color.r, color.g, color.b))
+                .withFrameRate(speed).withDirection(direction);
     }
 
     private FireAnimation getFireAnimation() {
-        return new FireAnimation(0,LED_LENGTH);
+        return new FireAnimation(0, CandleConstants.LED_LENGTH);
     }
 
     private FireAnimation getFireAnimation(double brightness, double speed, double sparking, double cooling) {
-        return new FireAnimation(0, CandleConstants.LED_LENGTH).withBrightness(brightness).withFrameRate(speed).withSparking(sparking).withCooling(cooling);
+        return new FireAnimation(0, CandleConstants.LED_LENGTH).withBrightness(brightness).withFrameRate(speed)
+                .withSparking(sparking).withCooling(cooling);
     }
 
     private void setControl(ColorFlowAnimation a) {
@@ -335,6 +337,10 @@ public abstract class PARTsCandle extends PARTsSubsystem {
         candle.setControl(a);
     }
 
+    private void applyConfig() {
+        candle.getConfigurator().apply(config);
+    }
+
     /*---------------------------------- Custom Public Functions ----------------------------------*/
 
     /* Wrappers so we can access the CANdle from the subsystem */
@@ -353,25 +359,29 @@ public abstract class PARTsCandle extends PARTsSubsystem {
     public double getTemperature() {
         return candle.getDeviceTemp(true).getValueAsDouble();
     }
-/* 
+
     public void configBrightness(double percent) {
-        candle.configBrightnessScalar(percent, 0);
+        config.LED.BrightnessScalar = percent;
+        applyConfig();
     }
 
-    public void configLos(boolean disableWhenLos) {
-        candle.configLOSBehavior(disableWhenLos, 0);
+    public void configLos(LossOfSignalBehaviorValue disableWhenLos) {
+        config.LED.LossOfSignalBehavior = disableWhenLos;
+        applyConfig();
     }
 
-    public void configLedType(LEDStripType type) {
-        candle.configLEDType(type, 0);
+    public void configLedType(StripTypeValue type) {
+        config.LED.StripType = type;
+        applyConfig();
     }
 
-    public void configStatusLedBehavior(boolean offWhenActive) {
-        candle.configStatusLedState(offWhenActive, 0);
+    public void configStatusLedBehavior(StatusLedWhenActiveValue offWhenActive) {
+        config.CANdleFeatures.StatusLedWhenActive = offWhenActive;
+        applyConfig();
     }
-*/
+
     /*-------------------------------- Generic Subsystem Functions --------------------------------*/
-    
+
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
@@ -379,7 +389,7 @@ public abstract class PARTsCandle extends PARTsSubsystem {
 
     @Override
     public void outputTelemetry() {
-    //        super.partsNT.putString("Animation");
+        super.partsNT.putString("Animation", candle.getAppliedControl().getName());
     }
 
     @Override
@@ -397,6 +407,6 @@ public abstract class PARTsCandle extends PARTsSubsystem {
     @Override
     public void log() {
         // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'log'");
+        super.partsLogger.logString("Animation", candle.getAppliedControl().getName());
     }
 }
