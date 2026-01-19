@@ -8,15 +8,15 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-repositories {
-    maven { url 'https://jitpack.io' }
-}
+//repositories {
+//    maven { url 'https://jitpack.io' }
+//}
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
 // Change this so the preferred version of PARTsLib.
 // You can view all the versions available at https://jitpack.io/#3492PARTs/PARTsLib
-def PARTSLIB_VERSION = "v2026.1.0"
+//def PARTSLIB_VERSION = "v2026.1.0"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
