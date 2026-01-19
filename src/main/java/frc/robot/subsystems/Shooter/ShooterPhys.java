@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterPhys extends Shooter {
@@ -38,6 +39,7 @@ public class ShooterPhys extends Shooter {
 
     @Override
     public void outputTelemetry() {
+        super.outputTelemetry();
         partsNT.putDouble("Current/Left", leftMotor.getOutputCurrent());
         partsNT.putDouble("Current/Right", rightMotor.getOutputCurrent());
 
@@ -51,12 +53,28 @@ public class ShooterPhys extends Shooter {
     }
 
     @Override
+    protected double getRPM() {
+        return leftEncoder.getVelocity();
+    }
+
+    @Override
+    protected void setVoltage(double voltage) {
+        leftMotor.setVoltage(voltage);
+    }
+
+    @Override
+    protected double getVoltage() {
+        return leftMotor.getBusVoltage();
+    }
+
+    @Override
     public void periodic() {
         super.periodic();
     }
 
     @Override
     public void log() {
+        super.log();
         partsLogger.logDouble("Current/Left", leftMotor.getOutputCurrent());
         partsLogger.logDouble("Current/Right", rightMotor.getOutputCurrent());
 
