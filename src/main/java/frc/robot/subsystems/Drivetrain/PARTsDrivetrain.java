@@ -632,7 +632,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         private void initializeClasses() {
                 partsNT = new PARTsNT(this);
-                partsLogger = new PARTsLogger(this);
+                partsLogger = new PARTsLogger(this, RobotConstants.LOGGING);
         }
 
         /*---------------------------------- Override Functions ----------------------------------*/

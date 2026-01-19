@@ -11,7 +11,7 @@ public abstract class Shooter extends PARTsSubsystem{
     private ShooterState shooterState = ShooterState.IDLE;
 
     public Shooter() {
-        super("Shooter");
+        super("Shooter", RobotConstants.LOGGING);
         if (RobotConstants.DEBUGGING) {
             partsNT.putDouble("Shooter Speed", 0);
         }
