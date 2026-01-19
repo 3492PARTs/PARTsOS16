@@ -1,10 +1,10 @@
 package frc.robot.subsystems.Shooter;
 
-import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
@@ -23,14 +23,14 @@ public class ShooterPhys extends Shooter {
         SparkMaxConfig shooterConfig = new SparkMaxConfig();
         shooterConfig.idleMode(IdleMode.kCoast);
 
-        leftMotor = new SparkMax(ShooterConstants.LEFT_MOTOR_ID, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+        leftMotor = new SparkMax(ShooterConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
         leftEncoder = leftMotor.getEncoder();
-        leftMotor.configure(shooterConfig, com.revrobotics.ResetMode.kResetSafeParameters,
+        leftMotor.configure(shooterConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
                 
-        rightMotor = new SparkMax(ShooterConstants.RIGHT_MOTOR_ID, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
+        rightMotor = new SparkMax(ShooterConstants.RIGHT_MOTOR_ID, MotorType.kBrushless);
         rightEncoder = rightMotor.getEncoder();
-        rightMotor.configure(shooterConfig.follow(leftMotor, true), com.revrobotics.ResetMode.kResetSafeParameters,
+        rightMotor.configure(shooterConfig.follow(leftMotor, true), ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
     }
 

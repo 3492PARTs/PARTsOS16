@@ -14,11 +14,11 @@ public enum ShooterState {
     SHOOTING(ShooterConstants.SHOOTER_SPEED);
 
     private final double speed;
+
     ShooterState(double speed) {
         this.speed = speed;
     }
     
-
     public double getSpeed() {
         return speed;
     }

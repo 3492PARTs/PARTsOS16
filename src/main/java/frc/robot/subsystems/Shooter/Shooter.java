@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
 import frc.robot.states.ShooterState;
 import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
-import frc.robot.states.ShooterState;
 import frc.robot.util.PARTs.Classes.Abstracts.PARTsSubsystem;
 
 public abstract class Shooter extends PARTsSubsystem{
@@ -33,7 +32,6 @@ public abstract class Shooter extends PARTsSubsystem{
     @Override
     public void log() {
     }
-    //endregion
 
     @Override
     public void periodic() {
@@ -61,6 +59,7 @@ public abstract class Shooter extends PARTsSubsystem{
             }
         }
     }
+    //endregion
 
     //region Custom Public Functions
     /** Sets the speed of the Shooter.
@@ -77,7 +76,7 @@ public abstract class Shooter extends PARTsSubsystem{
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Command Idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Command Shooter Idle", this.runOnce(() -> {
             shooterState = ShooterState.IDLE;
         }));
     }
