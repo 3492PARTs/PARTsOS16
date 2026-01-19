@@ -8,7 +8,15 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
+
+// Change this so the preferred version of PARTsLib.
+// You can view all the versions available at https://jitpack.io/#3492PARTs/PARTsLib
+def PARTSLIB_VERSION = "v2026.1.0-alpha"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
@@ -73,6 +81,11 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // We use NTCore but for some reason theres a dependency lockup
+    implementation("com.github.3492PARTs:PARTsLib:${PARTSLIB_VERSION}") {
+        exclude group: 'edu.wpi.first.ntcore', module: 'ntcore-jni'
+    }
 }
 
 test {
