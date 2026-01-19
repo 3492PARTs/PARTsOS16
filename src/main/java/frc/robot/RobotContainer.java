@@ -63,7 +63,7 @@ public class RobotContainer {
 
      private static Alliance alliance;
 
-    /* Subsystems */
+    //region Subsystems
 
     public final PARTsDrivetrain drivetrain = new PARTsDrivetrain(
             TunerConstants.DrivetrainConstants,
@@ -82,7 +82,7 @@ public class RobotContainer {
                         Arrays.asList(candle, drivetrain, vision, shooter));
 
 
-    /* End Subsystems */
+    //endregion End Subsystems
 
     public RobotContainer() {
         configureDrivetrainBindings();
@@ -92,7 +92,7 @@ public class RobotContainer {
         // partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
     }
 
-    /* Configs */
+    //region Configs
 
     private void configureDrivetrainBindings() {
 
@@ -160,13 +160,13 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
-    /* End Configs */
+    //endregion End Configs
 
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
 
-    /* Custom Public Functions */
+    //region Custom Public Functions
 
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());
@@ -219,4 +219,5 @@ public class RobotContainer {
             alliance = DriverStation.getAlliance().get();
         }
     }
+    //endregion
 }

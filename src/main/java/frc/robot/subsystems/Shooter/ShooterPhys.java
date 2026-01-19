@@ -1,10 +1,8 @@
 package frc.robot.subsystems.Shooter;
 
-import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 

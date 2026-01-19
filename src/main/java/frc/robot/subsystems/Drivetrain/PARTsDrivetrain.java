@@ -142,7 +142,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 registerTelemetry(telemetryLogger::telemeterize);
         }
 
-        /*-------------------------------- Generic Subsystem Functions --------------------------------*/
+        //region Generic Subsystem Functions 
         @Override
         public void outputTelemetry() {
                 partsNT.putBoolean("Fine Grain Drive", fineGrainDrive);
@@ -173,7 +173,9 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 fieldObject2d.setPose(getFieldCentricPose());
         }
 
-        /*---------------------------------- Custom Public Functions ----------------------------------*/
+        //endregion
+
+        //region Custom Public Functions
 
         public SwerveRequest.FieldCentric getFieldCentricDriveRequest() {
                 /* Setting up bindings for necessary control of the swerve drive platform */
@@ -474,8 +476,9 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         public Supplier<Pose2d> supplierGetPose() {
                 return this::getPose;
         }
+        //endregion
 
-        /*---------------------------------- Custom Private Functions ---------------------------------*/
+        //region Custom Private Functions
         private void alignCommandInitTelemetry(Pose2d holdDist) {
                 partsNT.putDouble("align/holdDistX", new PARTsUnit(holdDist.getX(), PARTsUnitType.Meter)
                                 .to(PARTsUnitType.Inch));
@@ -634,14 +637,16 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 partsNT = new PARTsNT(this);
                 partsLogger = new PARTsLogger(this);
         }
+        //endregion
 
-        /*---------------------------------- Override Functions ----------------------------------*/
+        //region Override Functions
         @Override
         public void addVisionMeasurement(Pose2d measurement, double timestamp) {
                 super.addVisionMeasurement(measurement, Utils.fpgaToCurrentTime(timestamp));
         }
+        //endregion
 
-        /*---------------------------------- Interface Functions ----------------------------------*/
+        //region Interface Functions
         @Override
         public void initSendable(SendableBuilder builder) {
                 builder.setSmartDashboardType("Subsystem");
@@ -657,8 +662,9 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                 () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "none",
                                 null);
         }
+        //endregion
 
-        /*---------------------------------- AutoBuilder Functions ----------------------------------*/
+        //region AutoBuilder Functions
 
         private void configureAutoBuilder() {
                 try {
@@ -690,4 +696,5 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                         ex.getStackTrace());
                 } 
         }
+        //endregion
 }
