@@ -15,18 +15,22 @@ public abstract class Hopper extends PARTsSubsystem {
     //region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
+        partsNT.putString("Hopper State", hopperstate.toString());
     }
 
     @Override
     public void stop() {
+        hopperstate = HopperState.DISABLED;
     }
 
     @Override
     public void reset() {
+        hopperstate = HopperState.IDLE;
     }
 
     @Override
     public void log() {
+        partsLogger.logString("Hopper State", hopperstate.toString());
     }
 
     @Override
