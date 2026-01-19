@@ -53,8 +53,8 @@ public class RobotContainer {
     private boolean visionAlignActive = true;
     private BooleanSupplier visionAlignActiveBooleanSupplier = () -> visionAlignActive;
 
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
-    private final PARTsCommandController operatorController = new PARTsCommandController(1, ControllerType.XBOX);
+    private final PARTsCommandController driveController = new PARTsCommandController(0, RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
+    private final PARTsCommandController operatorController = new PARTsCommandController(1, RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
 
     private PARTsNT partsNT = new PARTsNT("RobotContainer");
