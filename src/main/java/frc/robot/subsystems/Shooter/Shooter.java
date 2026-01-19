@@ -3,9 +3,9 @@ package frc.robot.subsystems.Shooter;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
 import frc.robot.states.ShooterState;
-import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
+import org.parts3492.partslib.command.PARTsCommandUtils;
 import frc.robot.states.ShooterState;
-import frc.robot.util.PARTs.Classes.Abstracts.PARTsSubsystem;
+import org.parts3492.partslib.command.PARTsSubsystem;
 
 public abstract class Shooter extends PARTsSubsystem{
     private ShooterState shooterState = ShooterState.IDLE;

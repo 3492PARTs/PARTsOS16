@@ -55,14 +55,14 @@ import frc.robot.Telemetry;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.generated.TunerConstants;
-import frc.robot.util.Field.Field;
-import frc.robot.util.PARTs.Classes.PARTsCommandController;
-import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
-import frc.robot.util.PARTs.Classes.PARTsLogger;
-import frc.robot.util.PARTs.Classes.PARTsNT;
-import frc.robot.util.PARTs.Classes.PARTsUnit;
-import frc.robot.util.PARTs.Classes.PARTsUnit.PARTsUnitType;
-import frc.robot.util.PARTs.Interfaces.IPARTsSubsystem;
+import org.parts3492.partslib.Field;
+import org.parts3492.partslib.input.PARTsCommandController;
+import org.parts3492.partslib.command.PARTsCommandUtils;
+import org.parts3492.partslib.PARTsLogger;
+import org.parts3492.partslib.network.PARTsNT;
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+import org.parts3492.partslib.command.IPARTsSubsystem;
 
 public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSubsystem {
         /*-------------------------------- Private instance variables ---------------------------------*/
