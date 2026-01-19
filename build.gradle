@@ -84,9 +84,11 @@ dependencies {
 
     // We use NTCore but for some reason theres a dependency lockup
     //TODO: Look into the dependency lockup. I'd prefer to handle it in the library rather than here.
-    implementation("com.github.3492PARTs:PARTsLib:${PARTSLIB_VERSION}") {
-        exclude group: 'edu.wpi.first.ntcore', module: 'ntcore-jni'
-    }
+    //implementation("com.github.3492PARTs:PARTsLib:${PARTSLIB_VERSION}") {
+    //    exclude group: 'edu.wpi.first.ntcore', module: 'ntcore-jni'
+    //}
+
+    implementation(project(':PARTsLib'))
 }
 
 test {
