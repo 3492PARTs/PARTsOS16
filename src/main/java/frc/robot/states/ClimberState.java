@@ -2,7 +2,7 @@ package frc.robot.states;
 
 import frc.robot.constants.ClimberConstants;
 
-/*States the Climber can be in */
+/* States the Climber can be in */
 public enum ClimberState {
     IDLE(0),
     DISABLED(0),

@@ -1,46 +1,49 @@
-package frc.robot.subsystems.Shooter;
+package frc.robot.subsystems.Climber;
 
-import com.ctre.phoenix6.sim.TalonFXSimState.MotorType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.ClimberConstants;
 
-public class ShooterPhys extends Shooter {
-    protected final SparkMax rightMotor;
-    protected final SparkMax leftMotor;
+public class ClimberPhys extends Climber {
+    protected final SparkMax climberMotor;
+    protected final RelativeEncoder climberEncoder;
 
-    protected final RelativeEncoder leftEncoder;
-    protected final RelativeEncoder rightEncoder;
-
-    public ShooterPhys() {
+    public ClimberPhys() {
         super();
 
-        SparkMaxConfig shooterConfig = new SparkMaxConfig();
-        shooterConfig.idleMode(IdleMode.kCoast);
-
-        leftMotor = new SparkMax(ShooterConstants.LEFT_MOTOR_ID, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-        leftEncoder = leftMotor.getEncoder();
-        leftMotor.configure(shooterConfig, com.revrobotics.ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        SparkMaxConfig climberConfig = new SparkMaxConfig();
+        climberConfig.idleMode(IdleMode.kBrake);
                 
-        rightMotor = new SparkMax(ShooterConstants.RIGHT_MOTOR_ID, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-        rightEncoder = rightMotor.getEncoder();
-        rightMotor.configure(shooterConfig.follow(leftMotor, true), com.revrobotics.ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        climberMotor = new SparkMax(ClimberConstants.CLIMBER_MOTOR_ID, MotorType.kBrushless);
+        climberEncoder = climberMotor.getEncoder();
+        climberMotor.configure(climberConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
     protected void setSpeed(double speed) {
-        leftMotor.set(speed);
+        climberMotor.set(speed);
     }
 
     @Override
     public void periodic() {
         super.periodic();
+    }
+
+    @Override
+    public void outputTelemetry() {
+        partsNT.putDouble("Output", climberMotor.getOutputCurrent());
+        partsNT.putDouble("Current", climberMotor.getAppliedOutput());
+    }
+
+    @Override
+    public void log() {
+        partsLogger.logDouble("Output", climberMotor.getOutputCurrent());
+        partsLogger.logDouble("Current", climberMotor.getAppliedOutput());
     }
 }

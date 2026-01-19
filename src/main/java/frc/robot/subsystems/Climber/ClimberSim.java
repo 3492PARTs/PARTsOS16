@@ -1,10 +1,8 @@
-package frc.robot.subsystems.Shooter;
+package frc.robot.subsystems.Climber;
 
-public class ShooterSim extends Shooter {
-
+public class ClimberSim extends Climber {
     @Override
     protected void setSpeed(double speed) {
-        partsNT.putDouble("Our Shooter Speed", speed);
+        partsNT.putDouble("Our Climber Speed", speed);
     }
-    
 }
