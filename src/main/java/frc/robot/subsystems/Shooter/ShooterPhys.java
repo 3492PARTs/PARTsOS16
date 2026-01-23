@@ -21,6 +21,7 @@ public class ShooterPhys extends Shooter {
 
         SparkMaxConfig shooterConfig = new SparkMaxConfig();
         shooterConfig.idleMode(IdleMode.kCoast);
+        shooterConfig.inverted(true);
 
         // This is the left motor.
         // It is the leader in the leader-follower configuration.

@@ -35,6 +35,9 @@ public abstract class Shooter extends PARTsSubsystem{
         partsNT.putString("Shooter State", shooterState.toString());
         partsNT.putDouble("RPM", getRPM());
         partsNT.putDouble("Voltage", getVoltage());
+        partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint());
+        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint());
+        partsNT.putDouble("Current Error", shooterPIDController.getError());
     }
 
     @Override
@@ -64,10 +67,10 @@ public abstract class Shooter extends PARTsSubsystem{
             double voltage = 0;
             shooterPIDController.setSetpoint(shooterState.getRPM());
 
-            double pidCalc = shooterPIDController.atSetpoint() ? 0 : shooterPIDController.calculate(getRPM(), shooterState.getRPM());
-            //double ffCalc = shooterPIDController.calculate(shooterPIDController.getSetpoint());
+            double pidCalc = shooterPIDController.calculate(getRPM(), shooterState.getRPM());
+            double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Inch) * 2) / (60 * 40));
 
-            voltage = pidCalc; // + ffCalc;
+            voltage = (pidCalc * 0) + ffCalc;
 
             setVoltage(voltage);
         }
