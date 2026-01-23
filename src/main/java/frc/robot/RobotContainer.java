@@ -103,8 +103,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(drivetrain.commandJoystickDrive(driveController));
 
         // fine grain controls
-        // driveController.rightBumper().onTrue(Commands.runOnce(() -> fineGrainDrive =
-        // !fineGrainDrive));
+        driveController.rightBumper().onTrue(Commands.runOnce(() -> drivetrain.toggleFineGrainDrive()));
 
         // new Trigger(() -> fineGrainDrive)
         // .onTrue(Commands.runOnce(() ->

@@ -7,9 +7,6 @@ package frc.robot.subsystems;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
-import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.states.CandleState;
