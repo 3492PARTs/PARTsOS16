@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.generated.TunerConstants;
@@ -37,6 +38,7 @@ import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
+import frc.robot.subsystems.Shooter.ShooterSysid;
 import frc.robot.util.PARTs.Classes.PARTsButtonBoxController;
 import frc.robot.util.PARTs.Classes.PARTsCommandController;
 import frc.robot.util.PARTs.Classes.PARTsController.ControllerType;
@@ -61,7 +63,7 @@ public class RobotContainer {
 
     private SendableChooser<Command> autoChooser;
 
-     private static Alliance alliance;
+    private static Alliance alliance;
 
     /* Subsystems */
 
@@ -78,9 +80,10 @@ public class RobotContainer {
 
     private final Shooter shooter = Robot.isReal() ? new ShooterPhys() : new ShooterSim();
 
-     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
-                        Arrays.asList(candle, drivetrain, vision, shooter));
+    // private final ShooterSysid shooter = new ShooterSysid(); //for sysid 
 
+    private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
+            Arrays.asList(candle, drivetrain, vision, shooter));
 
     /* End Subsystems */
 
@@ -109,10 +112,10 @@ public class RobotContainer {
         // candle.removeState(CandleState.FINE_GRAIN_DRIVE)));
 
         // brakes swerve, puts modules into x configuration
-        //driveController.a().whileTrue(drivetrain.commandBrake());
+        // driveController.a().whileTrue(drivetrain.commandBrake());
 
         // manual module direction control
-        //driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
+        // driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
 
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
@@ -149,6 +152,15 @@ public class RobotContainer {
     private void configureShooterBindings() {
         driveController.a().onTrue(shooter.shoot());
         driveController.b().onTrue(shooter.idle());
+
+        /*operatorController.a().and(operatorController.rightBumper())
+                .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        operatorController.b().and(operatorController.rightBumper())
+                .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        operatorController.x().and(operatorController.rightBumper())
+                .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        operatorController.y().and(operatorController.rightBumper())
+                .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
     }
 
     private void configureCandleBindings() {

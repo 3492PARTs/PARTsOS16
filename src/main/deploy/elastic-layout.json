@@ -1,6 +1,6 @@
 {
   "version": 1.0,
-  "grid_size": 100,
+  "grid_size": 128,
   "tabs": [
     {
       "name": "Debug Drivetrain",
@@ -173,6 +173,119 @@
               "topic": "/PARTs/Candle/State",
               "period": 0.06,
               "data_type": "string",
+              "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Debug Shooter",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "At Setpoint",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/PARTs/Shooter/At Setpoint",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Current Error",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Shooter/Current Error",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Get Setpoint",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Shooter/Get Setpoint",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "RPM",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Shooter/RPM",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Shooter State",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Shooter/Shooter State",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "RPM",
+            "x": 384.0,
+            "y": 128.0,
+            "width": 768.0,
+            "height": 384.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/PARTs/Shooter/RPM",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 5.0,
+              "min_value": -5000.0,
+              "max_value": 5000.0,
+              "color": 4278238420,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "Voltage",
+            "x": 384.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Shooter/Voltage",
+              "period": 0.06,
+              "data_type": "double",
               "show_submit_button": false
             }
           }
