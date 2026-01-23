@@ -38,13 +38,12 @@ import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
-import frc.robot.subsystems.Shooter.ShooterSysid;
-import frc.robot.util.PARTs.Classes.PARTsButtonBoxController;
-import frc.robot.util.PARTs.Classes.PARTsCommandController;
-import frc.robot.util.PARTs.Classes.PARTsController.ControllerType;
-import frc.robot.util.PARTs.Classes.PARTsDashboard;
-import frc.robot.util.PARTs.Classes.PARTsNT;
-import frc.robot.util.PARTs.Interfaces.IPARTsSubsystem;
+import org.parts3492.partslib.input.PARTsButtonBoxController;
+import org.parts3492.partslib.input.PARTsCommandController;
+import org.parts3492.partslib.input.PARTsController.ControllerType;
+import org.parts3492.partslib.network.PARTsDashboard;
+import org.parts3492.partslib.network.PARTsNT;
+import org.parts3492.partslib.command.IPARTsSubsystem;
 
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
@@ -56,7 +55,7 @@ public class RobotContainer {
     private BooleanSupplier visionAlignActiveBooleanSupplier = () -> visionAlignActive;
 
     private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
-    private final PARTsCommandController operatorController = new PARTsCommandController(1, ControllerType.XBOX);
+    private final PARTsCommandController operatorController = new PARTsCommandController(1, RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
 
     private PARTsNT partsNT = new PARTsNT("RobotContainer");

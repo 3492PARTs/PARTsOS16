@@ -16,10 +16,10 @@ import frc.robot.constants.CameraConstants;
 import frc.robot.constants.CameraConstants.Camera;
 import frc.robot.constants.VisionConstants;
 import frc.robot.util.LimelightHelpers;
-import frc.robot.util.Field.Field;
+import org.parts3492.partslib.Field;
 import frc.robot.util.LimelightHelpers.PoseEstimate;
-import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
-import frc.robot.util.PARTs.Classes.Abstracts.PARTsSubsystem;
+import org.parts3492.partslib.command.PARTsCommandUtils;
+import org.parts3492.partslib.command.PARTsSubsystem;
 
 public class LimelightVision extends PARTsSubsystem {
 
