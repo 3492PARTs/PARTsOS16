@@ -135,7 +135,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 initializeClasses();
                 initializeControllers();
                 sendToDashboard();
-                configureAutoBuilder();
+                //configureAutoBuilder();
                 fieldObject2d = Field.FIELD2D.getObject("Robot");
                 targetObject2d = Field.FIELD2D.getObject("target pose");
                 telemetryLogger = new Telemetry(MaxSpeed);

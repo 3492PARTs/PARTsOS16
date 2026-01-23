@@ -26,7 +26,7 @@ public abstract class Shooter extends PARTsSubsystem{
         shooterPIDController = new PIDController(ShooterConstants.P, ShooterConstants.I, ShooterConstants.D);
         shooterFeedforward = new SimpleMotorFeedforward(ShooterConstants.S, ShooterConstants.V, ShooterConstants.A);
 
-        shooterPIDController.setTolerance(100);
+        shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
     }
 
     //region Generic Subsystem Functions
@@ -68,9 +68,9 @@ public abstract class Shooter extends PARTsSubsystem{
             shooterPIDController.setSetpoint(shooterState.getRPM());
 
             double pidCalc = shooterPIDController.calculate(getRPM(), shooterState.getRPM());
-            double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Inch) * 2) / (60 * 40));
+            double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
 
-            voltage = (pidCalc * 0) + ffCalc;
+            voltage = pidCalc + ffCalc;
 
             setVoltage(voltage);
         }

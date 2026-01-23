@@ -28,7 +28,7 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         // This is needed for lasercan, without it causes robot to lag on boot
-        // CanBridge.runTCP();
+        //CanBridge.runTCP();
 
         // Make elastic dashboard file available
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
@@ -81,7 +81,7 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG2);
         if (!RobotConstants.DEBUGGING) {
-            PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
+            //PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
         }
         m_robotContainer.setIdleCandleState();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -103,7 +103,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG2);
         if (!RobotConstants.DEBUGGING) {
-            PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
+            //PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
         }
 
         m_robotContainer.setIdleCandleState();
