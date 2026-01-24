@@ -15,8 +15,8 @@ import frc.robot.RobotContainer;
 import frc.robot.constants.CameraConstants;
 import frc.robot.constants.CameraConstants.Camera;
 import frc.robot.constants.VisionConstants;
+import frc.robot.util.Field;
 import frc.robot.util.LimelightHelpers;
-import org.parts3492.partslib.Field;
 import frc.robot.util.LimelightHelpers.PoseEstimate;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
@@ -34,8 +34,8 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public enum WhitelistMode {
-        BLUE_REEF_TAGS(Field.BLUE_REEF_TAG_IDS),
-        RED_REEF_TAGS(Field.RED_REEF_TAG_IDS),
+        BLUE_HUB_TAGS(Field.BLUE_HUB_TAG_IDS),
+        RED_HUB_TAGS(Field.RED_HUB_TAG_IDS),
         ALL(Field.getAllTagIDs()),
         NONE(new int[0]);
 
@@ -106,11 +106,11 @@ public class LimelightVision extends PARTsSubsystem {
     public void setWhitelistMode(WhitelistMode mode) {
         this.whitelistMode = mode;
         switch (mode) {
-            case BLUE_REEF_TAGS:
-                setTagWhitelist(WhitelistMode.BLUE_REEF_TAGS.getIds());
+            case BLUE_HUB_TAGS:
+                setTagWhitelist(WhitelistMode.BLUE_HUB_TAGS.getIds());
                 break;
-            case RED_REEF_TAGS:
-                setTagWhitelist(WhitelistMode.RED_REEF_TAGS.getIds());
+            case RED_HUB_TAGS:
+                setTagWhitelist(WhitelistMode.RED_HUB_TAGS.getIds());
                 break;
             case ALL:
                 setTagWhitelist(WhitelistMode.ALL.getIds());
@@ -164,11 +164,11 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     private void updateWhitelistMode() {
-        if (robotIsOnBlueSide() && getWhitelistMode() == WhitelistMode.RED_REEF_TAGS) {
-            setWhitelistMode(WhitelistMode.BLUE_REEF_TAGS);
+        if (robotIsOnBlueSide() && getWhitelistMode() == WhitelistMode.RED_HUB_TAGS) {
+            setWhitelistMode(WhitelistMode.BLUE_HUB_TAGS);
         }
-        if (!robotIsOnBlueSide() && getWhitelistMode() == WhitelistMode.BLUE_REEF_TAGS) {
-            setWhitelistMode(WhitelistMode.RED_REEF_TAGS);
+        if (!robotIsOnBlueSide() && getWhitelistMode() == WhitelistMode.BLUE_HUB_TAGS) {
+            setWhitelistMode(WhitelistMode.RED_HUB_TAGS);
         }
     }
 
@@ -189,7 +189,7 @@ public class LimelightVision extends PARTsSubsystem {
     public void periodic() {
         this.maxTagCount = 0;
 
-        //updateWhitelistMode();
+        updateWhitelistMode();
 
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(

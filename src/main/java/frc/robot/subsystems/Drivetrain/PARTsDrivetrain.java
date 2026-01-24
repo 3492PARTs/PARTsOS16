@@ -55,6 +55,9 @@ import frc.robot.Telemetry;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.generated.TunerConstants;
+import frc.robot.util.Hub;
+import frc.robot.util.Hub.Targets;
+
 import org.parts3492.partslib.Field;
 import org.parts3492.partslib.input.PARTsCommandController;
 import org.parts3492.partslib.command.PARTsCommandUtils;
@@ -146,6 +149,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         @Override
         public void outputTelemetry() {
                 partsNT.putBoolean("Fine Grain Drive", fineGrainDrive);
+                Targets zone = Hub.getZone(getFieldCentricPose());
+                partsNT.putString("Zone", zone == null ? "No zone": zone.toString());
         }
 
         @Override
