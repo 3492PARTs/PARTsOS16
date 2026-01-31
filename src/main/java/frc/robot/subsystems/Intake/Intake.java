@@ -23,7 +23,7 @@ public abstract class Intake extends PARTsSubsystem{
 
     @Override
     public void stop() {
-        state = IntakeState.IDLE;
+        state = IntakeState.DISABLED;
     }
 
     @Override
