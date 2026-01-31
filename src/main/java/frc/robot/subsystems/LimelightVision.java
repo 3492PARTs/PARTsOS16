@@ -14,6 +14,7 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.constants.CameraConstants;
 import frc.robot.constants.CameraConstants.Camera;
+import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.VisionConstants;
 import frc.robot.util.Field;
 import frc.robot.util.LimelightHelpers;
@@ -153,6 +154,7 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     private PoseEstimate getMegaTag2PoseEstimate(String limelightName) {
+        LimelightHelpers.setPipelineIndex(limelightName, imuMode);
         return RobotContainer.isBlue()
                 ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName)
                 : LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(limelightName);
@@ -229,8 +231,7 @@ public class LimelightVision extends PARTsSubsystem {
 
     @Override
     public void stop() {
-        // TODO Auto-generated method stub
-        //throw new UnsupportedOperationException("Unimplemented method 'stop'");
+        setPipelineIndex(Pipelines.VIEWING);
     }
 
     @Override
@@ -273,5 +274,13 @@ public class LimelightVision extends PARTsSubsystem {
             }
         }
         setMegaTagMode(MegaTagMode.MEGATAG2);
+    }
+
+    public void setPipelineIndex (Pipelines pipeline) {
+        partsNT.putString("Pipeline name", pipeline.name());
+        for (Camera camera : CameraConstants.LimelightCameras) {
+            LimelightHelpers.setLEDMode_PipelineControl(camera.getName());
+            LimelightHelpers.setPipelineIndex(camera.getName(), pipeline.getIndex());
+        }
     }
 }

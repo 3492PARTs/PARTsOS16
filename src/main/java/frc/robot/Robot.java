@@ -83,7 +83,7 @@ public class Robot extends TimedRobot {
         if (!RobotConstants.DEBUGGING) {
             //PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
         }
-        m_robotContainer.setIdleCandleState();
+        m_robotContainer.runOnEnabled();
         /*
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -108,7 +108,7 @@ public class Robot extends TimedRobot {
             //PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
         }
 
-        m_robotContainer.setIdleCandleState();
+        m_robotContainer.runOnEnabled();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }

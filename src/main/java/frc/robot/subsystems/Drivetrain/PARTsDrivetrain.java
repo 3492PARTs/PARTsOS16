@@ -643,7 +643,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         /*---------------------------------- Override Functions ----------------------------------*/
         @Override
         public void addVisionMeasurement(Pose2d measurement, double timestamp) {
-                super.addVisionMeasurement(measurement, Utils.fpgaToCurrentTime(timestamp));
+                super.addVisionMeasurement(measurement, timestamp);
         }
 
         /*---------------------------------- Interface Functions ----------------------------------*/

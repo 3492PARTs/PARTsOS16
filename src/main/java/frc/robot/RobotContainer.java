@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.RobotConstants;
+import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.generated.TunerConstants;
 import frc.robot.states.CandleState;
 import frc.robot.subsystems.Candle;
@@ -229,5 +230,14 @@ public class RobotContainer {
         if (DriverStation.getAlliance().isPresent()) {
             alliance = DriverStation.getAlliance().get();
         }
+    }
+
+    public void setLimelightMainMode() {
+        vision.setPipelineIndex(Pipelines.MAIN);
+    }
+
+    public void runOnEnabled() {
+        setLimelightMainMode();
+        setIdleCandleState();
     }
 }
