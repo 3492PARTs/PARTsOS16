@@ -39,13 +39,13 @@ public abstract class Hopper extends PARTsSubsystem {
             case DISABLED:
                 setSpeed(hopperstate.getSpeed());
                 break;
-            case EXTENDING:
+            case ROLLING:
                 setSpeed(hopperstate.getSpeed());
                 break;
             case IDLE:
                 setSpeed(hopperstate.getSpeed());
                 break;
-            case RETRACTING:
+            case BACKROLLING:
                 setSpeed(hopperstate.getSpeed());
                 break;
             default:
@@ -64,15 +64,15 @@ public abstract class Hopper extends PARTsSubsystem {
 
     public HopperState getState() { return hopperstate; }
 
-    public Command extend() {
-        return PARTsCommandUtils.setCommandName("Command extend", this.runOnce(() -> {
-            hopperstate = HopperState.EXTENDING;
+    public Command roll() {
+        return PARTsCommandUtils.setCommandName("Command Roll", this.runOnce(() -> {
+            hopperstate = HopperState.ROLLING;
         }));
     }
 
-    public Command retract() {
-        return PARTsCommandUtils.setCommandName("Command retract", this.runOnce(() -> {
-            hopperstate = HopperState.RETRACTING;
+    public Command backRoll() {
+        return PARTsCommandUtils.setCommandName("Command BackRoll", this.runOnce(() -> {
+            hopperstate = HopperState.BACKROLLING;
         }));
     }
 

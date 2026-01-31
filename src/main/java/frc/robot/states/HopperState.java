@@ -6,8 +6,8 @@ import frc.robot.constants.HopperConstants;
 public enum HopperState {
     IDLE(0),
     DISABLED(0),
-    EXTENDING(HopperConstants.EXTEND_SPEED),
-    RETRACTING(HopperConstants.WITHDRAW_SPEED);
+    ROLLING(HopperConstants.ROLL_SPEED),
+    BACKROLLING(HopperConstants.BACKROLL_SPEED);
     
     private final double speed;
 
