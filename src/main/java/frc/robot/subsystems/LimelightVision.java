@@ -154,7 +154,6 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     private PoseEstimate getMegaTag2PoseEstimate(String limelightName) {
-        LimelightHelpers.setPipelineIndex(limelightName, imuMode);
         return RobotContainer.isBlue()
                 ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName)
                 : LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(limelightName);
@@ -192,6 +191,7 @@ public class LimelightVision extends PARTsSubsystem {
         this.maxTagCount = 0;
 
         updateWhitelistMode();
+        partsNT.putNumber("robot rot (deg)", (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360);
 
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
@@ -206,6 +206,10 @@ public class LimelightVision extends PARTsSubsystem {
                 PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
+
+                        partsNT.putNumber("pose estimate x", poseEstimate.pose.getX());
+                        partsNT.putNumber("pose estimate y", poseEstimate.pose.getY());
+                         partsNT.putNumber("pose estimate rot (deg)", poseEstimate.pose.getRotation().getDegrees());
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
                     addVisionMeasurementBiConsumer.accept(poseEstimate.pose, poseEstimate.timestampSeconds);

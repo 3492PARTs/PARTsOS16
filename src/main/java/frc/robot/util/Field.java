@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.parts3492.partslib.AprilTag;
+import org.parts3492.partslib.RobotUtils;
 
 /** This interface stores information about the field elements. */
 public interface Field {
@@ -191,5 +192,22 @@ public interface Field {
 
     public static void clearFieldObject(FieldObject2d fieldObject)  {
         fieldObject.setPose(EMPTY_FIELD_POSE2D);
+    }
+
+    public static Pose3d conditionallyTransformToOppositeAlliance(Pose3d pose) {
+        return RobotContainer.isBlue() ? pose : transformToOppositeAlliance(pose);
+    }
+
+    public static Pose2d conditionallyTransformToOppositeAlliance(Pose2d pose) {
+        return RobotContainer.isBlue() ? pose : transformToOppositeAlliance(pose);
+    }
+
+    public static Translation2d conditionallyTransformToOppositeAlliance(
+            Translation2d translation) {
+        return RobotContainer.isBlue() ? translation : transformToOppositeAlliance(translation);
+    }
+
+    public static List<Pose2d> conditionallyTransformToOppositeAlliance(List<Pose2d> poses) {
+        return RobotContainer.isBlue() ? poses : transformToOppositeAlliance(poses);
     }
 }

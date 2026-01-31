@@ -64,7 +64,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
         m_robotContainer.stop();
         m_robotContainer.setCandleDisabledState();
     }
@@ -79,7 +78,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG2);
         if (!RobotConstants.DEBUGGING) {
             //PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
         }
@@ -103,7 +101,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG2);
         if (!RobotConstants.DEBUGGING) {
             //PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
         }

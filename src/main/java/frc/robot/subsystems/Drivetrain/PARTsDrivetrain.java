@@ -58,7 +58,7 @@ import frc.robot.constants.generated.TunerConstants;
 import frc.robot.util.Hub;
 import frc.robot.util.Hub.Targets;
 
-import org.parts3492.partslib.Field;
+import frc.robot.util.Field;
 import org.parts3492.partslib.input.PARTsCommandController;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.PARTsLogger;
