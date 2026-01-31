@@ -17,6 +17,7 @@ public class IntakePhys extends Intake {
     TalonFX pivotMotor;
 
     public IntakePhys() {
+        super();
         intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
         pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
     }
@@ -41,8 +42,9 @@ public class IntakePhys extends Intake {
         return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble(), PARTsUnitType.Rotations);
     }
 
-        @Override
+    @Override
     public void outputTelemetry() {
+        super.outputTelemetry();
         partsNT.putDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble());
         partsNT.putDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble());
 
