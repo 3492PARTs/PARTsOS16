@@ -9,11 +9,11 @@ import edu.wpi.first.math.util.Units;
 /** This interface stores information about each camera. */
 public interface CameraConstants {
     public enum CameraName {
-        RIGHT_FRONT_CAMERA("limelight-reed"),
+        RIGHT_FRONT_CAMERA("limelight-frankie"),
         RIGHT_SIDE_CAMERA("limelight-sue"),
         LEFT_FRONT_CAMERA("limelight-johnny"),
-        LEFT_SIDE_CAMERA("limelightben"),
-        FRONT_CENTER_CAMERA("limelightfrankie");
+        LEFT_SIDE_CAMERA("limelight-ben"),
+        FRONT_CENTER_CAMERA("limelight-reed");
 
         private String cameraName = "";
 
