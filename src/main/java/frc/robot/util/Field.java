@@ -13,11 +13,12 @@ import frc.robot.RobotContainer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.parts3492.partslib.AprilTag;
+import org.parts3492.partslib.game.AprilTag;
+import org.parts3492.partslib.game.FieldBase;
 import org.parts3492.partslib.RobotUtils;
 
 /** This interface stores information about the field elements. */
-public interface Field {
+public interface Field extends FieldBase {
 
     public static final Field2d FIELD2D = new Field2d();
 
@@ -25,7 +26,6 @@ public interface Field {
     double LENGTH = Units.inchesToMeters(690.876);
 
     /*** APRILTAGS ***/
-
     enum NamedTags {
         RED_RIGHT_TRENCH_NZ,        // #1
         RED_HUB_RIGHT_SIDE_MID,
