@@ -187,7 +187,7 @@ public class LimelightVision extends PARTsSubsystem {
         this.maxTagCount = 0;
 
         updateWhitelistMode();
-        partsNT.putNumber("robot rot (deg)", (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360);
+        partsNT.putNumber("Robot Rotation (deg)", (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360);
 
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
