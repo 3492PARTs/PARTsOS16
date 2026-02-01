@@ -148,15 +148,11 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public PoseEstimate getMegaTag1PoseEstimate(String limelightName) {
-        return RobotContainer.isBlue()
-                ? LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName)
-                : LimelightHelpers.getBotPoseEstimate_wpiRed(limelightName);
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
     }
 
     private PoseEstimate getMegaTag2PoseEstimate(String limelightName) {
-        return RobotContainer.isBlue()
-                ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName)
-                : LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(limelightName);
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
     }
 
     private boolean robotIsOnBlueSide() {
@@ -196,7 +192,10 @@ public class LimelightVision extends PARTsSubsystem {
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
+                    // i think this is still needed b/c if we always assume blue on red we start backwards.
                     (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360,
+                    // we may need to consider these values for when we go ove the bump
+                    // if we are at an angle on the bump it could throw our esimates off
                     0,
                     0,
                     0,
@@ -207,9 +206,9 @@ public class LimelightVision extends PARTsSubsystem {
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
 
-                        partsNT.putNumber("pose estimate x", poseEstimate.pose.getX());
-                        partsNT.putNumber("pose estimate y", poseEstimate.pose.getY());
-                         partsNT.putNumber("pose estimate rot (deg)", poseEstimate.pose.getRotation().getDegrees());
+                        partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX());
+                        partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY());
+                        partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
                     addVisionMeasurementBiConsumer.accept(poseEstimate.pose, poseEstimate.timestampSeconds);
