@@ -149,8 +149,13 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         @Override
         public void outputTelemetry() {
                 partsNT.putBoolean("Fine Grain Drive", fineGrainDrive);
-                Targets zone = Hub.getZone(getFieldCentricPose());
+                Targets zone = Hub.getZone(getPose());
                 partsNT.putString("Zone", zone == null ? "No zone": zone.toString());
+                partsNT.putDouble("HUB X coordinate", new PARTsUnit(Field.getAllianceHubPose().getX(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
+                partsNT.putDouble("HUB Y coordinate", new PARTsUnit(Field.getAllianceHubPose().getY(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
+
+                partsNT.putDouble("X coordinate", new PARTsUnit(getPose().getX(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
+                partsNT.putDouble("Y coordinate", new PARTsUnit(getPose().getY(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
         }
 
         @Override

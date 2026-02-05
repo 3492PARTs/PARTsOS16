@@ -28,10 +28,11 @@ public class Hub {
         double centerPoseX = center.getX();
         double centerPoseY = center.getY();
 
-        double pointPoseX = center.getX();
-        double pointPoseY = center.getY();
+        double pointPoseX = point.getX();
+        double pointPoseY = point.getY();
 
-        double distanceSquared = (Math.pow(pointPoseX - centerPoseX, 2) + Math.pow(pointPoseY - centerPoseY, 2));
+        double distanceSquared = (Math.pow(centerPoseX - pointPoseX, 2) + Math.pow(centerPoseY - pointPoseY, 2));
+        System.out.println(Math.sqrt(distanceSquared));
         return distanceSquared <= Math.pow(radius, 2);
     }
 
