@@ -28,7 +28,7 @@ public interface CameraConstants {
 
     public enum Pipelines {
         MAIN(1),
-        VIEWING (1);
+        VIEWING (0);
 
         private int pipelineIndex;
 
@@ -50,7 +50,7 @@ public interface CameraConstants {
                     new Pose3d(.21, -.368, .216, // meters
                             new Rotation3d(0, Units.degreesToRadians(15),
                                     Units.degreesToRadians(-90))),
-                    true),
+                    false),
             new Camera(CameraName.LEFT_FRONT_CAMERA.getCameraName(),
                     new Pose3d(.270, 0, .22, // meters
                             new Rotation3d(0, 0, 0)),
