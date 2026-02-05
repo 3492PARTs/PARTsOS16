@@ -1,58 +1,118 @@
 {
   "version": 1.0,
-  "grid_size": 128,
+  "grid_size": 64,
   "tabs": [
+    {
+      "name": "Teleoperated",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "RPM",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Shooter/RPM",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Shooter Speed",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Shooter/Shooter Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Shooter State",
+            "x": 896.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Shooter/Shooter State",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Voltage",
+            "x": 512.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Shooter/Voltage",
+              "period": 0.033,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "RPM",
+            "x": 640.0,
+            "y": 128.0,
+            "width": 512.0,
+            "height": 384.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/PARTs/Shooter/RPM",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 5.0,
+              "color": 4278238420,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "Get Setpoint",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Shooter/Get Setpoint",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Autonomous",
+      "grid_layout": {
+        "layouts": [],
+        "containers": []
+      }
+    },
     {
       "name": "Debug Drivetrain",
       "grid_layout": {
         "layouts": [
           {
-            "title": "Candle",
-            "x": 0.0,
-            "y": 500.0,
-            "width": 200.0,
-            "height": 200.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Animation",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 200.0,
-                "height": 200.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/PARTs/Candle/Animation",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "State",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 200.0,
-                "height": 200.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "/PARTs/Candle/State",
-                  "period": 0.06,
-                  "data_type": "string",
-                  "show_submit_button": false
-                }
-              }
-            ]
-          },
-          {
             "title": "vision",
-            "x": 700.0,
-            "y": 500.0,
-            "width": 200.0,
-            "height": 200.0,
+            "x": 1280.0,
+            "y": 192.0,
+            "width": 256.0,
+            "height": 256.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -76,6 +136,94 @@
                 }
               }
             ]
+          },
+          {
+            "title": "limelight-reed",
+            "x": 768.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Has Data",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-reed/Has Data",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Tag Count",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-reed/Tag Count",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "limelight-sue",
+            "x": 512.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Has Data",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-sue/Has Data",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Tag Count",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-sue/Tag Count",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              }
+            ]
           }
         ],
         "containers": [
@@ -83,13 +231,13 @@
             "title": "Pose",
             "x": 0.0,
             "y": 0.0,
-            "width": 1000.0,
-            "height": 500.0,
+            "width": 1024.0,
+            "height": 512.0,
             "type": "Field",
             "properties": {
               "topic": "/Pose",
               "period": 0.06,
-              "field_game": "Reefscape",
+              "field_game": "Rebuilt",
               "robot_width": 0.85,
               "robot_length": 0.85,
               "show_other_objects": true,
@@ -102,10 +250,10 @@
           },
           {
             "title": "PARTsDrivetrain",
-            "x": 1000.0,
+            "x": 1024.0,
             "y": 0.0,
-            "width": 400.0,
-            "height": 200.0,
+            "width": 384.0,
+            "height": 192.0,
             "type": "Subsystem",
             "properties": {
               "topic": "/SmartDashboard/PARTsDrivetrain",
@@ -114,10 +262,10 @@
           },
           {
             "title": "Swerve Drive",
-            "x": 1000.0,
-            "y": 200.0,
-            "width": 400.0,
-            "height": 400.0,
+            "x": 1024.0,
+            "y": 192.0,
+            "width": 256.0,
+            "height": 256.0,
             "type": "SwerveDrive",
             "properties": {
               "topic": "/SmartDashboard/PARTsDrivetrain/Swerve Drive",
@@ -127,17 +275,99 @@
             }
           },
           {
-            "title": "Align",
-            "x": 400.0,
-            "y": 500.0,
-            "width": 300.0,
-            "height": 200.0,
-            "type": "Command",
+            "title": "limelight-reed",
+            "x": 1024.0,
+            "y": 448.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
             "properties": {
-              "topic": "/SmartDashboard/PARTsDrivetrain/Align",
+              "topic": "/CameraPublisher/limelight-reed",
               "period": 0.06,
-              "show_type": false,
-              "maximize_button_space": false
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "limelight-sue",
+            "x": 1280.0,
+            "y": 448.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-sue",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "Zone",
+            "x": 1408.0,
+            "y": 64.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/PARTsDrivetrain/Zone",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Megatag Mode",
+            "x": 128.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/LimelightVision/Megatag Mode",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Whitelist Mode",
+            "x": 0.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/LimelightVision/Whitelist Mode",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Pipeline name",
+            "x": 384.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/LimelightVision/Pipeline name",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "pipeline",
+            "x": 256.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/limelight-sue/pipeline",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
             }
           }
         ]
@@ -150,10 +380,10 @@
         "containers": [
           {
             "title": "Animation",
-            "x": 600.0,
-            "y": 200.0,
-            "width": 200.0,
-            "height": 200.0,
+            "x": 576.0,
+            "y": 192.0,
+            "width": 192.0,
+            "height": 192.0,
             "type": "Text Display",
             "properties": {
               "topic": "/PARTs/Candle/Animation",
@@ -164,10 +394,10 @@
           },
           {
             "title": "State",
-            "x": 400.0,
-            "y": 200.0,
-            "width": 200.0,
-            "height": 200.0,
+            "x": 384.0,
+            "y": 192.0,
+            "width": 192.0,
+            "height": 192.0,
             "type": "Text Display",
             "properties": {
               "topic": "/PARTs/Candle/State",

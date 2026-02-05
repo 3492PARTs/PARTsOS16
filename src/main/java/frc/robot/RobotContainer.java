@@ -22,12 +22,15 @@ import edu.wpi.first.wpilibj.RuntimeType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.RobotConstants;
+import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.generated.TunerConstants;
 import frc.robot.states.CandleState;
 import frc.robot.subsystems.Candle;
@@ -55,7 +58,8 @@ public class RobotContainer {
     private BooleanSupplier visionAlignActiveBooleanSupplier = () -> visionAlignActive;
 
     private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
-    private final PARTsCommandController operatorController = new PARTsCommandController(1, RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
+    private final PARTsCommandController operatorController = new PARTsCommandController(1,
+            RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
 
     private PARTsNT partsNT = new PARTsNT("RobotContainer");
@@ -79,7 +83,7 @@ public class RobotContainer {
 
     private final Shooter shooter = Robot.isReal() ? new ShooterPhys() : new ShooterSim();
 
-    // private final ShooterSysid shooter = new ShooterSysid(); //for sysid 
+    // private final ShooterSysid shooter = new ShooterSysid(); //for sysid
 
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
             Arrays.asList(candle, drivetrain, vision, shooter));
@@ -152,14 +156,16 @@ public class RobotContainer {
         driveController.a().onTrue(shooter.shoot());
         driveController.b().onTrue(shooter.idle());
 
-        /*operatorController.a().and(operatorController.rightBumper())
-                .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        operatorController.b().and(operatorController.rightBumper())
-                .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        operatorController.x().and(operatorController.rightBumper())
-                .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        operatorController.y().and(operatorController.rightBumper())
-                .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
+        /*
+         * operatorController.a().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         * operatorController.b().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         * operatorController.x().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * operatorController.y().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         */
     }
 
     private void configureCandleBindings() {
@@ -183,10 +189,12 @@ public class RobotContainer {
         subsystems.forEach(s -> s.outputTelemetry());
         partsNT.putBoolean("Vision Mode", visionAlignActive);
         partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage());
+        partsNT.putBoolean("IsBlue", isBlue());
     }
 
     public void stop() {
         subsystems.forEach(s -> s.stop());
+        setMegaTagMode(MegaTagMode.MEGATAG1);
     }
 
     public void log() {
@@ -229,5 +237,22 @@ public class RobotContainer {
         if (DriverStation.getAlliance().isPresent()) {
             alliance = DriverStation.getAlliance().get();
         }
+    }
+
+    public void setLimelightMainMode() {
+        vision.setPipelineIndex(Pipelines.MAIN);
+    }
+
+    public void runOnEnabled() {
+        setLimelightMainMode();
+        setIdleCandleState();
+        CommandScheduler.getInstance().schedule(new WaitCommand(2).andThen(Commands.runOnce(() -> {
+            /*
+             * if (!RobotContainer.isBlue()) {
+             * drivetrain.resetPose(drivetrain.getPose().rotateBy(new Rotation2d(Math.PI)));
+             * }
+             */
+            setMegaTagMode(MegaTagMode.MEGATAG2);
+        })));
     }
 }

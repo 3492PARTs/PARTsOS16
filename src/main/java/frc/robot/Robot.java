@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
 
         CameraServer.startAutomaticCapture();
 
-        m_robotContainer.resetStartPose();
+        //m_robotContainer.resetStartPose();
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
 
         DriverStation.silenceJoystickConnectionWarning(!isReal());
@@ -64,7 +64,6 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledInit() {
-        m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
         m_robotContainer.stop();
         m_robotContainer.setCandleDisabledState();
     }
@@ -79,11 +78,10 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG2);
         if (!RobotConstants.DEBUGGING) {
             //PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
         }
-        m_robotContainer.setIdleCandleState();
+        m_robotContainer.runOnEnabled();
         /*
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -103,12 +101,11 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG2);
         if (!RobotConstants.DEBUGGING) {
             //PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
         }
 
-        m_robotContainer.setIdleCandleState();
+        m_robotContainer.runOnEnabled();
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
