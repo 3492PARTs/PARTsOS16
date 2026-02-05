@@ -58,7 +58,8 @@ public class RobotContainer {
     private BooleanSupplier visionAlignActiveBooleanSupplier = () -> visionAlignActive;
 
     private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
-    private final PARTsCommandController operatorController = new PARTsCommandController(1, RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
+    private final PARTsCommandController operatorController = new PARTsCommandController(1,
+            RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
 
     private PARTsNT partsNT = new PARTsNT("RobotContainer");
@@ -82,7 +83,7 @@ public class RobotContainer {
 
     private final Shooter shooter = Robot.isReal() ? new ShooterPhys() : new ShooterSim();
 
-    // private final ShooterSysid shooter = new ShooterSysid(); //for sysid 
+    // private final ShooterSysid shooter = new ShooterSysid(); //for sysid
 
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
             Arrays.asList(candle, drivetrain, vision, shooter));
@@ -155,14 +156,16 @@ public class RobotContainer {
         driveController.a().onTrue(shooter.shoot());
         driveController.b().onTrue(shooter.idle());
 
-        /*operatorController.a().and(operatorController.rightBumper())
-                .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        operatorController.b().and(operatorController.rightBumper())
-                .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        operatorController.x().and(operatorController.rightBumper())
-                .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        operatorController.y().and(operatorController.rightBumper())
-                .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
+        /*
+         * operatorController.a().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         * operatorController.b().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         * operatorController.x().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * operatorController.y().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         */
     }
 
     private void configureCandleBindings() {
@@ -243,6 +246,13 @@ public class RobotContainer {
     public void runOnEnabled() {
         setLimelightMainMode();
         setIdleCandleState();
-        CommandScheduler.getInstance().schedule(new WaitCommand(2).andThen(Commands.runOnce(() -> setMegaTagMode(MegaTagMode.MEGATAG2))));
+        CommandScheduler.getInstance().schedule(new WaitCommand(2).andThen(Commands.runOnce(() -> {
+            /*
+             * if (!RobotContainer.isBlue()) {
+             * drivetrain.resetPose(drivetrain.getPose().rotateBy(new Rotation2d(Math.PI)));
+             * }
+             */
+            setMegaTagMode(MegaTagMode.MEGATAG2);
+        })));
     }
 }

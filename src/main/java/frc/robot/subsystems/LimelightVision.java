@@ -190,14 +190,14 @@ public class LimelightVision extends PARTsSubsystem {
 
         updateWhitelistMode();
         partsNT.putNumber("Robot Rotation (deg)",
-                (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360);
+                (poseSupplier.get().getRotation().getDegrees()) % 360);
 
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
                     // i think this is still needed b/c if we always assume blue on red we start
                     // backwards.
-                    (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360,
+                    (poseSupplier.get().getRotation().getDegrees()) % 360,
                     // we may need to consider these values for when we go ove the bump
                     // if we are at an angle on the bump it could throw our esimates off
                     0,
@@ -258,7 +258,7 @@ public class LimelightVision extends PARTsSubsystem {
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
-                    (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360,
+                    (poseSupplier.get().getRotation().getDegrees()) % 360,
                     0,
                     0,
                     0,
