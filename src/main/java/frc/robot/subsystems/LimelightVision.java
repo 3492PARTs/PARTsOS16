@@ -81,9 +81,11 @@ public class LimelightVision extends PARTsSubsystem {
         setWhitelistMode(WhitelistMode.ALL);
         setIMUMode(1);
 
-        //elastic crashes :(
-        //super.partsNT.putSmartDashboardSendable("Set MT-1", commandMegaTagMode(MegaTagMode.MEGATAG1));
-        //super.partsNT.putSmartDashboardSendable("Set MT-2", commandMegaTagMode(MegaTagMode.MEGATAG2));
+        // elastic crashes :(
+        // super.partsNT.putSmartDashboardSendable("Set MT-1",
+        // commandMegaTagMode(MegaTagMode.MEGATAG1));
+        // super.partsNT.putSmartDashboardSendable("Set MT-2",
+        // commandMegaTagMode(MegaTagMode.MEGATAG2));
     }
 
     public void setMegaTagMode(MegaTagMode mode) {
@@ -148,15 +150,11 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public PoseEstimate getMegaTag1PoseEstimate(String limelightName) {
-        return RobotContainer.isBlue()
-                ? LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName)
-                : LimelightHelpers.getBotPoseEstimate_wpiRed(limelightName);
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
     }
 
     private PoseEstimate getMegaTag2PoseEstimate(String limelightName) {
-        return RobotContainer.isBlue()
-                ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName)
-                : LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(limelightName);
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
     }
 
     private boolean robotIsOnBlueSide() {
@@ -191,12 +189,17 @@ public class LimelightVision extends PARTsSubsystem {
         this.maxTagCount = 0;
 
         updateWhitelistMode();
-        partsNT.putNumber("robot rot (deg)", (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360);
+        partsNT.putNumber("Robot Rotation (deg)",
+                (poseSupplier.get().getRotation().getDegrees()) % 360);
 
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
-                    (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360,
+                    // i think this is still needed b/c if we always assume blue on red we start
+                    // backwards.
+                    (poseSupplier.get().getRotation().getDegrees()) % 360,
+                    // we may need to consider these values for when we go ove the bump
+                    // if we are at an angle on the bump it could throw our esimates off
                     0,
                     0,
                     0,
@@ -207,9 +210,9 @@ public class LimelightVision extends PARTsSubsystem {
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
 
-                        partsNT.putNumber("pose estimate x", poseEstimate.pose.getX());
-                        partsNT.putNumber("pose estimate y", poseEstimate.pose.getY());
-                         partsNT.putNumber("pose estimate rot (deg)", poseEstimate.pose.getRotation().getDegrees());
+                partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX());
+                partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY());
+                partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
                     addVisionMeasurementBiConsumer.accept(poseEstimate.pose, poseEstimate.timestampSeconds);
@@ -241,13 +244,13 @@ public class LimelightVision extends PARTsSubsystem {
     @Override
     public void reset() {
         // TODO Auto-generated method stub
-        //throw new UnsupportedOperationException("Unimplemented method 'reset'");
+        // throw new UnsupportedOperationException("Unimplemented method 'reset'");
     }
 
     @Override
     public void log() {
         // TODO Auto-generated method stub
-        //throw new UnsupportedOperationException("Unimplemented method 'log'");
+        // throw new UnsupportedOperationException("Unimplemented method 'log'");
     }
 
     public void resetRobotPose() {
@@ -255,7 +258,7 @@ public class LimelightVision extends PARTsSubsystem {
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
-                    (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360,
+                    (poseSupplier.get().getRotation().getDegrees()) % 360,
                     0,
                     0,
                     0,
@@ -280,11 +283,13 @@ public class LimelightVision extends PARTsSubsystem {
         setMegaTagMode(MegaTagMode.MEGATAG2);
     }
 
-    public void setPipelineIndex (Pipelines pipeline) {
+    public void setPipelineIndex(Pipelines pipeline) {
         partsNT.putString("Pipeline name", pipeline.name());
         for (Camera camera : CameraConstants.LimelightCameras) {
-            LimelightHelpers.setLEDMode_PipelineControl(camera.getName());
-            LimelightHelpers.setPipelineIndex(camera.getName(), pipeline.getIndex());
+            if (camera.isEnabled()) {
+                LimelightHelpers.setLEDMode_PipelineControl(camera.getName());
+                LimelightHelpers.setPipelineIndex(camera.getName(), pipeline.getIndex());
+            }
         }
     }
 }

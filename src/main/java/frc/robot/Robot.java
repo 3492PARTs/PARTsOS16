@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
 
         CameraServer.startAutomaticCapture();
 
-        m_robotContainer.resetStartPose();
+        //m_robotContainer.resetStartPose();
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
 
         DriverStation.silenceJoystickConnectionWarning(!isReal());
