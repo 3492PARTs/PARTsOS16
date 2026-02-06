@@ -55,7 +55,10 @@ import frc.robot.Telemetry;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.generated.TunerConstants;
-import org.parts3492.partslib.Field;
+import frc.robot.util.Hub;
+import frc.robot.util.Hub.Targets;
+
+import frc.robot.util.Field;
 import org.parts3492.partslib.input.PARTsCommandController;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.PARTsLogger;
@@ -146,6 +149,13 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         @Override
         public void outputTelemetry() {
                 partsNT.putBoolean("Fine Grain Drive", fineGrainDrive);
+                Targets zone = Hub.getZone(getPose());
+                partsNT.putString("Zone", zone == null ? "No zone": zone.toString());
+                partsNT.putDouble("HUB X coordinate", new PARTsUnit(Field.getAllianceHubPose().getX(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
+                partsNT.putDouble("HUB Y coordinate", new PARTsUnit(Field.getAllianceHubPose().getY(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
+
+                partsNT.putDouble("X coordinate", new PARTsUnit(getPose().getX(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
+                partsNT.putDouble("Y coordinate", new PARTsUnit(getPose().getY(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
         }
 
         @Override
@@ -638,7 +648,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         /*---------------------------------- Override Functions ----------------------------------*/
         @Override
         public void addVisionMeasurement(Pose2d measurement, double timestamp) {
-                super.addVisionMeasurement(measurement, Utils.fpgaToCurrentTime(timestamp));
+                super.addVisionMeasurement(measurement, timestamp);
         }
 
         /*---------------------------------- Interface Functions ----------------------------------*/

@@ -19,3 +19,4 @@ This can quickly get confusing if you lose track of your branches.
 
 It's recommended to push the branch to master/main as soon as you're done and ready to avoid confusion.\
 As a general rule of thumb, you should be on the master/main branch of the library with the exception that you are actively working on or testing it.
+```git submodule update --init -r```

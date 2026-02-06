@@ -9,8 +9,11 @@ import edu.wpi.first.math.util.Units;
 /** This interface stores information about each camera. */
 public interface CameraConstants {
     public enum CameraName {
-        FRONT_CAMERA("limelight-slimmy"),
-        BACK_CAMERA("limelight-thereal");
+        RIGHT_FRONT_CAMERA("limelight-frankie"),
+        RIGHT_SIDE_CAMERA("limelight-sue"),
+        LEFT_FRONT_CAMERA("limelight-johnny"),
+        LEFT_SIDE_CAMERA("limelight-ben"),
+        FRONT_CENTER_CAMERA("limelight-reed");
 
         private String cameraName = "";
 
@@ -23,16 +26,45 @@ public interface CameraConstants {
         }
     }
 
+    public enum Pipelines {
+        MAIN(1),
+        VIEWING (0);
+
+        private int pipelineIndex;
+
+        private Pipelines(int index) {
+            pipelineIndex = index;
+        }
+
+        public int getIndex() {
+            return pipelineIndex;
+        }
+    }
+
     public Camera[] LimelightCameras = new Camera[] {
-            new Camera(CameraName.FRONT_CAMERA.getCameraName(),
+            new Camera(CameraName.RIGHT_FRONT_CAMERA.getCameraName(),
+                    new Pose3d(.343, -.229, .216, // meters
+                            new Rotation3d(0, Units.degreesToRadians(15), 0)),
+                    true),
+            new Camera(CameraName.RIGHT_SIDE_CAMERA.getCameraName(),
+                    new Pose3d(.21, -.368, .216, // meters
+                            new Rotation3d(0, Units.degreesToRadians(15),
+                                    Units.degreesToRadians(-90))),
+                    false),
+            new Camera(CameraName.LEFT_FRONT_CAMERA.getCameraName(),
                     new Pose3d(.270, 0, .22, // meters
                             new Rotation3d(0, 0, 0)),
-                    true),
-            new Camera(CameraName.BACK_CAMERA.getCameraName(),
+                    false),
+            new Camera(CameraName.LEFT_SIDE_CAMERA.getCameraName(),
                     new Pose3d(-.265, 0, .545, // meters
                             new Rotation3d(0, 0,
                                     Units.degreesToRadians(180))),
-                    true)
+                    false),
+            new Camera(CameraName.FRONT_CENTER_CAMERA.getCameraName(),
+                    new Pose3d(-.265, 0, .545, // meters
+                            new Rotation3d(0, 0,
+                                    Units.degreesToRadians(180))),
+                    false)
     };
 
     public static class Camera {
