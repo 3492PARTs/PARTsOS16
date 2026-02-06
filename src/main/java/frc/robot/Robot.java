@@ -15,6 +15,9 @@ import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import org.parts3492.partslib.network.PARTsDashboard;
 import org.parts3492.partslib.network.PARTsDashboard.DashboardTab;
+
+import com.pathplanner.lib.commands.FollowPathCommand;
+
 import org.parts3492.partslib.PARTsLogger;
 import org.parts3492.partslib.network.PARTsNT;
 
@@ -49,6 +52,8 @@ public class Robot extends TimedRobot {
         DriverStation.silenceJoystickConnectionWarning(!isReal());
 
         m_robotContainer.getAlliance();
+
+        CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
     }
 
     @Override
@@ -82,13 +87,11 @@ public class Robot extends TimedRobot {
             //PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
         }
         m_robotContainer.runOnEnabled();
-        /*
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         if (m_autonomousCommand != null) {
             m_autonomousCommand.schedule();
         }
-        */
     }
 
     @Override
