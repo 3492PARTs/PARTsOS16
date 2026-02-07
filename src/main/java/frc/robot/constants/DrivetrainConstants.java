@@ -6,7 +6,7 @@ import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 public class DrivetrainConstants {
         public static final String CAN_BUS_NAME = "hi";
         public static final double MAX_ANGULAR_SPEED = Math.PI / 4; // Radians
-        public static final double MAX_SPEED = .5; // Meters per second
+        public static final double SPEED_PERCENT = 1; // percentage (0 to 1)
 
         public static final double MAX_AIM_VELOCITY = 1.5 * Math.PI; // radd/s
         public static final double MAX_AIM_ACCELERATION = Math.PI / 2; // rad/s^2
