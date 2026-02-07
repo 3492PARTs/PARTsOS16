@@ -41,6 +41,8 @@ import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
+import frc.robot.util.Field;
+
 import org.parts3492.partslib.input.PARTsButtonBoxController;
 import org.parts3492.partslib.input.PARTsCommandController;
 import org.parts3492.partslib.input.PARTsController.ControllerType;
@@ -118,7 +120,8 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
-        driveController.x().whileTrue(drivetrain.commandPathFindToPath("Circleish"));
+
+        driveController.x().onTrue(drivetrain.targetPoseCommand(() -> Field.blueHubCenter, () -> driveController.y().getAsBoolean()));
 
         /*
          * if (RobotConstants.DEBUGGING) {
