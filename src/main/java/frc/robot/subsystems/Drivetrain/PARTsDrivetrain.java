@@ -51,6 +51,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.RobotContainer;
 import frc.robot.Telemetry;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.RobotConstants;
@@ -138,7 +139,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 initializeClasses();
                 initializeControllers();
                 sendToDashboard();
-                //configureAutoBuilder();
+                configureAutoBuilder();
                 fieldObject2d = Field.FIELD2D.getObject("Robot");
                 targetObject2d = Field.FIELD2D.getObject("target pose");
                 telemetryLogger = new Telemetry(MaxSpeed);
@@ -209,7 +210,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 // Note that X is defined as forward according to WPILib convention,
                 // and Y is defined as to the left according to WPILib convention.
                 return PARTsCommandUtils.setCommandName("commandJoystickDrive", applyRequest(() -> {
-                        double limit = MaxSpeed;
+                        double limit = MaxSpeed * frc.robot.constants.DrivetrainConstants.SPEED_PERCENT;
                         if (fineGrainDrive)
                                 limit *= 0.25;
                         return getFieldCentricDriveRequest().withVelocityX(-controller.getLeftY() * limit) // Drive forward with negative Y
@@ -395,7 +396,6 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                         path,
                                         constraints);
                         pathfindingCommand.setName("pathFindToPathCommand");
-                        System.out.println("anything");
                         return pathfindingCommand;
 
                 } catch (IOException e) {
@@ -692,7 +692,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                         config,
                                         // Assume the path needs to be flipped for Red vs Blue, this is normally the
                                         // case
-                                        () -> false,
+                                        () -> !RobotContainer.isBlue(),
                                         this // Subsystem for requirements
                         );
                 } catch (Exception ex) {
