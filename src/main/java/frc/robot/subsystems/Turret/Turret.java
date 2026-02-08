@@ -2,6 +2,7 @@ package frc.robot.subsystems.Turret;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
@@ -13,6 +14,8 @@ import org.parts3492.partslib.command.PARTsSubsystem;
 
 public abstract class Turret extends PARTsSubsystem{
     private TurretState turretState = TurretState.IDLE;
+
+    private Pose2d pose = new Pose2d();
 
     private PIDController turretPIDController;
     private SimpleMotorFeedforward turretFeedforward;
