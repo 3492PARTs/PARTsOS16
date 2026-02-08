@@ -73,7 +73,7 @@ public class RobotContainer {
             TunerConstants.BackRight);
 
     private final LimelightVision vision = new LimelightVision(drivetrain.supplierGetPose(),
-            drivetrain.biConsumerAddVisionMeasurement(), drivetrain.consumerSetVisionMeasurementStdDevs(),
+            drivetrain.bifunctionAddVisionMeasurement(), drivetrain.consumerSetVisionMeasurementStdDevs(),
             drivetrain.consumerResetPose());
 
     public final Candle candle = new Candle();
@@ -122,6 +122,8 @@ public class RobotContainer {
         driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
 
         driveController.x().onTrue(drivetrain.targetPoseCommand(() -> Field.blueHubCenter, () -> driveController.y().getAsBoolean()));
+        driveController.a().onTrue(drivetrain.commandSnapToAngle(90));
+        driveController.b().onTrue(drivetrain.commandAlign(Field.getTag(28).getLocation().toPose2d()));
 
         /*
          * if (RobotConstants.DEBUGGING) {
@@ -153,8 +155,8 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
-        driveController.a().onTrue(shooter.shoot());
-        driveController.b().onTrue(shooter.idle());
+        //driveController.a().onTrue(shooter.shoot());
+        //driveController.b().onTrue(shooter.idle());
 
         /*
          * operatorController.a().and(operatorController.rightBumper())

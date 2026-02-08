@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
@@ -178,6 +179,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 applyRequest(() -> new SwerveRequest.RobotCentric().withVelocityX(0)
                                 .withVelocityY(0)
                                 .withRotationalRate(0));
+                isControlledRotationEnabled = false;
         }
 
         @Override
@@ -205,6 +207,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 return new SwerveRequest.FieldCentric()
                                 .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10%
                                                                                                            // deadband
+                                .withDesaturateWheelSpeeds(true)
                                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for
                                                                                          // drive
         }
@@ -370,22 +373,24 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         }
 
         public Command commandSnapToAngle(double angle) {
-
-                PARTsUnit currentRobotAngle = new PARTsUnit(getRotation3d().getAngle(), PARTsUnitType.Angle);
-                PARTsUnit goalAngle = new PARTsUnit(currentRobotAngle.to(PARTsUnitType.Angle) + angle,
-                                PARTsUnitType.Angle);
-                thetaController.setGoal(goalAngle.to(PARTsUnitType.Radian));
-
-                // double pidCalc = thetaController.calculate(currentRobotAngle, goalAngle);
-                Rotation2d thetaOutput = new Rotation2d(
-                                thetaController.calculate(currentRobotAngle.to(PARTsUnitType.Radian),
-                                                goalAngle.to(PARTsUnitType.Radian)));
-
-                return this.runOnce(() -> super.setControl(getFieldCentricDriveRequest()
-                                .withVelocityX(0)
-                                .withVelocityY(0)
-                                .withRotationalRate(thetaOutput.getRadians()))).until(() -> (thetaController.atGoal()));
-
+                Command c = new FunctionalCommand(() -> {
+                        PARTsUnit currentRobotAngle = new PARTsUnit(getPose().getRotation().getRadians(),
+                                        PARTsUnitType.Radian);
+                        PARTsUnit goalAngle = new PARTsUnit(currentRobotAngle.to(PARTsUnitType.Angle) + angle,
+                                        PARTsUnitType.Angle);
+                        thetaController.setGoal(goalAngle.to(PARTsUnitType.Radian));
+                }, () -> {
+                        PARTsUnit calculatingRobotAngle = new PARTsUnit(getPose().getRotation().getRadians(),
+                                        PARTsUnitType.Radian);
+                        Rotation2d thetaOutput = new Rotation2d(
+                                        thetaController.calculate(calculatingRobotAngle.to(PARTsUnitType.Radian),
+                                                        thetaController.getGoal()));
+                        super.setControl(getFieldCentricDriveRequest()
+                                        .withVelocityX(0)
+                                        .withVelocityY(0)
+                                        .withRotationalRate(thetaOutput.getRadians()));
+                }, (Boolean b) -> stop(), () -> thetaController.atGoal(), this);
+                return c.withName("drivetrain.commandSnapToAngle");
         }
 
         public void setChassisSpeeds(ChassisSpeeds robotSpeeds) {
@@ -400,6 +405,14 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         public PARTsUnit getYVelocity() {
                 return new PARTsUnit(super.getState().Speeds.vyMetersPerSecond, PARTsUnitType.MetersPerSecond);
+        }
+
+        public double getXAngularVelocity() {
+                return getPigeon2().getAngularVelocityXDevice().getValueAsDouble();
+        }
+
+        public double getYAngularVelocity() {
+                return getPigeon2().getAngularVelocityYDevice().getValueAsDouble();
         }
 
         public Command commandPathFindToPath(String pathname) {
@@ -512,12 +525,12 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         }
 
         /**
-     * Creates a command that controls the chassis rotation to keep it pointed a
-     * specific target location.
-     * 
-     * @param targetPose a supplier for the target pose to point the chassis at
-     * @return the command
-     */
+         * Creates a command that controls the chassis rotation to keep it pointed a
+         * specific target location.
+         * 
+         * @param targetPose a supplier for the target pose to point the chassis at
+         * @return the command
+         */
         public Command targetPoseCommand(Supplier<Pose2d> targetPose, BooleanSupplier condition) {
                 return controlledRotateCommand(() -> {
                         Pose2d target = targetPose.get();
@@ -536,8 +549,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 return this::setVisionMeasurementStdDevs;
         }
 
-        public BiConsumer<Pose2d, Double> biConsumerAddVisionMeasurement() {
-                return this::addVisionMeasurement;
+        public BiFunction<Pose2d, Double, Boolean> bifunctionAddVisionMeasurement() {
+                return this::acceptVisionMeasurement;
         }
 
         public Consumer<Pose2d> consumerResetPose() {
@@ -546,6 +559,14 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         public Supplier<Pose2d> supplierGetPose() {
                 return this::getPose;
+        }
+
+        public boolean acceptVisionMeasurement(Pose2d measurement, double timestamp) {
+                if (Math.max(Math.abs(getXAngularVelocity()), Math.abs(getYAngularVelocity()) ) < 2 * Math.PI){
+                        super.addVisionMeasurement(measurement, timestamp);
+                        return true;
+                }
+                return false;
         }
 
         /*---------------------------------- Custom Private Functions ---------------------------------*/
@@ -711,7 +732,6 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         /*---------------------------------- Override Functions ----------------------------------*/
         @Override
         public void addVisionMeasurement(Pose2d measurement, double timestamp) {
-                super.addVisionMeasurement(measurement, timestamp);
         }
 
         /*---------------------------------- Interface Functions ----------------------------------*/
