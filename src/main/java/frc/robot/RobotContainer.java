@@ -122,6 +122,7 @@ public class RobotContainer {
         driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
 
         driveController.x().onTrue(drivetrain.targetPoseCommand(() -> Field.blueHubCenter, () -> driveController.y().getAsBoolean()));
+        driveController.a().onTrue(drivetrain.commandSnapToAngle(90));
 
         /*
          * if (RobotConstants.DEBUGGING) {
@@ -153,8 +154,8 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
-        driveController.a().onTrue(shooter.shoot());
-        driveController.b().onTrue(shooter.idle());
+        //driveController.a().onTrue(shooter.shoot());
+        //driveController.b().onTrue(shooter.idle());
 
         /*
          * operatorController.a().and(operatorController.rightBumper())

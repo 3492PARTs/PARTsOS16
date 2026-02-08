@@ -205,6 +205,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 return new SwerveRequest.FieldCentric()
                                 .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10%
                                                                                                            // deadband
+                                .withDesaturateWheelSpeeds(true)
                                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for
                                                                                          // drive
         }
@@ -370,22 +371,24 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         }
 
         public Command commandSnapToAngle(double angle) {
-
-                PARTsUnit currentRobotAngle = new PARTsUnit(getRotation3d().getAngle(), PARTsUnitType.Angle);
-                PARTsUnit goalAngle = new PARTsUnit(currentRobotAngle.to(PARTsUnitType.Angle) + angle,
-                                PARTsUnitType.Angle);
-                thetaController.setGoal(goalAngle.to(PARTsUnitType.Radian));
-
-                // double pidCalc = thetaController.calculate(currentRobotAngle, goalAngle);
-                Rotation2d thetaOutput = new Rotation2d(
-                                thetaController.calculate(currentRobotAngle.to(PARTsUnitType.Radian),
-                                                goalAngle.to(PARTsUnitType.Radian)));
-
-                return this.runOnce(() -> super.setControl(getFieldCentricDriveRequest()
-                                .withVelocityX(0)
-                                .withVelocityY(0)
-                                .withRotationalRate(thetaOutput.getRadians()))).until(() -> (thetaController.atGoal()));
-
+                Command c = new FunctionalCommand(() -> {
+                        PARTsUnit currentRobotAngle = new PARTsUnit(getPose().getRotation().getRadians(),
+                                        PARTsUnitType.Radian);
+                        PARTsUnit goalAngle = new PARTsUnit(currentRobotAngle.to(PARTsUnitType.Angle) + angle,
+                                        PARTsUnitType.Angle);
+                        thetaController.setGoal(goalAngle.to(PARTsUnitType.Radian));
+                }, () -> {
+                        PARTsUnit calculatingRobotAngle = new PARTsUnit(getPose().getRotation().getRadians(),
+                                        PARTsUnitType.Radian);
+                        Rotation2d thetaOutput = new Rotation2d(
+                                        thetaController.calculate(calculatingRobotAngle.to(PARTsUnitType.Radian),
+                                                        thetaController.getGoal()));
+                        super.setControl(getFieldCentricDriveRequest()
+                                        .withVelocityX(0)
+                                        .withVelocityY(0)
+                                        .withRotationalRate(thetaOutput.getRadians()));
+                }, (Boolean b) -> stop(), () -> thetaController.atGoal(), this);
+                return c.withName("drivetrain.commandSnapToAngle");
         }
 
         public void setChassisSpeeds(ChassisSpeeds robotSpeeds) {
@@ -512,12 +515,12 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         }
 
         /**
-     * Creates a command that controls the chassis rotation to keep it pointed a
-     * specific target location.
-     * 
-     * @param targetPose a supplier for the target pose to point the chassis at
-     * @return the command
-     */
+         * Creates a command that controls the chassis rotation to keep it pointed a
+         * specific target location.
+         * 
+         * @param targetPose a supplier for the target pose to point the chassis at
+         * @return the command
+         */
         public Command targetPoseCommand(Supplier<Pose2d> targetPose, BooleanSupplier condition) {
                 return controlledRotateCommand(() -> {
                         Pose2d target = targetPose.get();
