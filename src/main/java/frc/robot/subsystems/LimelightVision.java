@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -25,7 +26,7 @@ import org.parts3492.partslib.command.PARTsSubsystem;
 public class LimelightVision extends PARTsSubsystem {
 
     private final Supplier<Pose2d> poseSupplier;
-    private final BiConsumer<Pose2d, Double> addVisionMeasurementBiConsumer;
+    private final BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction;
     private final Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer;
     private final Consumer<Pose2d> resetPoseConsumer;
 
@@ -56,11 +57,11 @@ public class LimelightVision extends PARTsSubsystem {
     private int imuMode;
     private int maxTagCount;
 
-    public LimelightVision(Supplier<Pose2d> poseSupplier, BiConsumer<Pose2d, Double> addVisionMeasurementBiConsumer,
+    public LimelightVision(Supplier<Pose2d> poseSupplier, BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
             Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer, Consumer<Pose2d> resetPoseConsumer) {
         super("LimelightVision");
         this.poseSupplier = poseSupplier;
-        this.addVisionMeasurementBiConsumer = addVisionMeasurementBiConsumer;
+        this.addVisionMeasurementBiFunction = addVisionMeasurementBiFunction;
         this.setVisionMeasurementStdDevsConsumer = setVisionMeasurementStdDevsConsumer;
         this.resetPoseConsumer = resetPoseConsumer;
         for (Camera camera : CameraConstants.LimelightCameras) {
@@ -215,9 +216,10 @@ public class LimelightVision extends PARTsSubsystem {
                 partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
-                    addVisionMeasurementBiConsumer.accept(poseEstimate.pose, poseEstimate.timestampSeconds);
+                    boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose, poseEstimate.timestampSeconds);
 
                     partsNT.putBoolean(camera.getName() + "/Has Data", true);
+                    partsNT.putBoolean(camera.getName() + "/Accepted Data", success);
                     partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount);
 
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);

@@ -13,7 +13,7 @@ import frc.robot.RobotContainer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.parts3492.partslib.AprilTag;
+import org.parts3492.partslib.game.AprilTag;
 import org.parts3492.partslib.RobotUtils;
 
 /** This interface stores information about the field elements. */
