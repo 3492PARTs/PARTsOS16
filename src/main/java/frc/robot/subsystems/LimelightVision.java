@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -25,13 +26,29 @@ import org.parts3492.partslib.command.PARTsSubsystem;
 public class LimelightVision extends PARTsSubsystem {
 
     private final Supplier<Pose2d> poseSupplier;
-    private final BiConsumer<Pose2d, Double> addVisionMeasurementBiConsumer;
+    private final BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction;
     private final Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer;
     private final Consumer<Pose2d> resetPoseConsumer;
 
     public enum MegaTagMode {
         MEGATAG1,
         MEGATAG2
+    }
+
+    public enum IMUMode {
+        EXTERNAL(1), // Seed internal IMU
+        INTERNAL(3), // Use internal IMU + MT1
+        BOTH(4); // Use internal IMU + external IMU
+
+        private int value;
+
+        private IMUMode(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
     public enum WhitelistMode {
@@ -53,14 +70,14 @@ public class LimelightVision extends PARTsSubsystem {
 
     private MegaTagMode megaTagMode;
     private WhitelistMode whitelistMode;
-    private int imuMode;
+    private IMUMode imuMode;
     private int maxTagCount;
 
-    public LimelightVision(Supplier<Pose2d> poseSupplier, BiConsumer<Pose2d, Double> addVisionMeasurementBiConsumer,
+    public LimelightVision(Supplier<Pose2d> poseSupplier, BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
             Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer, Consumer<Pose2d> resetPoseConsumer) {
         super("LimelightVision");
         this.poseSupplier = poseSupplier;
-        this.addVisionMeasurementBiConsumer = addVisionMeasurementBiConsumer;
+        this.addVisionMeasurementBiFunction = addVisionMeasurementBiFunction;
         this.setVisionMeasurementStdDevsConsumer = setVisionMeasurementStdDevsConsumer;
         this.resetPoseConsumer = resetPoseConsumer;
         for (Camera camera : CameraConstants.LimelightCameras) {
@@ -77,9 +94,9 @@ public class LimelightVision extends PARTsSubsystem {
 
         maxTagCount = 0;
 
-        setMegaTagMode(MegaTagMode.MEGATAG2);
+        setMegaTagMode(MegaTagMode.MEGATAG1);
         setWhitelistMode(WhitelistMode.ALL);
-        setIMUMode(1);
+        setIMUMode(IMUMode.EXTERNAL);
 
         // elastic crashes :(
         // super.partsNT.putSmartDashboardSendable("Set MT-1",
@@ -90,7 +107,11 @@ public class LimelightVision extends PARTsSubsystem {
 
     public void setMegaTagMode(MegaTagMode mode) {
         this.megaTagMode = mode;
-        switch (mode) {
+        setVisionMeasurementStdDevs();
+    }
+
+    public void setVisionMeasurementStdDevs() {
+        switch (this.megaTagMode) {
             case MEGATAG1:
                 setVisionMeasurementStdDevsConsumer.accept(VisionConstants.MT1_STDEVS);
                 break;
@@ -134,10 +155,10 @@ public class LimelightVision extends PARTsSubsystem {
         }
     }
 
-    public void setIMUMode(int mode) {
+    public void setIMUMode(IMUMode mode) {
         this.imuMode = mode;
         for (Camera camera : CameraConstants.LimelightCameras) {
-            LimelightHelpers.SetIMUMode(camera.getName(), mode);
+            LimelightHelpers.SetIMUMode(camera.getName(), mode.getValue());
         }
     }
 
@@ -215,15 +236,35 @@ public class LimelightVision extends PARTsSubsystem {
                 partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
-                    addVisionMeasurementBiConsumer.accept(poseEstimate.pose, poseEstimate.timestampSeconds);
 
                     partsNT.putBoolean(camera.getName() + "/Has Data", true);
                     partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount);
 
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
+
+                    boolean rejectUpdate = false;
+
+                    if (poseEstimate.tagCount <= 1) rejectUpdate = true;
+
+                    if (this.megaTagMode == MegaTagMode.MEGATAG1) {
+                        if (poseEstimate.rawFiducials[0].ambiguity > .7) rejectUpdate = true;
+                        if (poseEstimate.rawFiducials[0].distToCamera > 3) rejectUpdate = true;
+                    }
+
+                    if (!rejectUpdate) {
+                        setVisionMeasurementStdDevs();
+                        Boolean result = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
+                                poseEstimate.timestampSeconds);
+                        partsNT.putBoolean(camera.getName() + "/Measurement Accepted", result);
+                    }
+                    else {
+                        partsNT.putBoolean(camera.getName() + "/Measurement Accepted", false);
+                    }
                 } else {
                     partsNT.putBoolean(camera.getName() + "/Has Data", false);
                     partsNT.putNumber(camera.getName() + "/Tag Count", 0);
+                    partsNT.putBoolean(camera.getName() + "/Measurement Accepted", false);
+
                 }
             }
         }

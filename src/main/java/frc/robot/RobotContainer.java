@@ -35,6 +35,7 @@ import frc.robot.constants.generated.TunerConstants;
 import frc.robot.states.CandleState;
 import frc.robot.subsystems.Candle;
 import frc.robot.subsystems.LimelightVision;
+import frc.robot.subsystems.LimelightVision.IMUMode;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
@@ -73,7 +74,7 @@ public class RobotContainer {
             TunerConstants.BackRight);
 
     private final LimelightVision vision = new LimelightVision(drivetrain.supplierGetPose(),
-            drivetrain.biConsumerAddVisionMeasurement(), drivetrain.consumerSetVisionMeasurementStdDevs(),
+            drivetrain.biFunctionAddVisionMeasurement(), drivetrain.consumerSetVisionMeasurementStdDevs(),
             drivetrain.consumerResetPose());
 
     public final Candle candle = new Candle();
@@ -195,6 +196,7 @@ public class RobotContainer {
     public void stop() {
         subsystems.forEach(s -> s.stop());
         setMegaTagMode(MegaTagMode.MEGATAG1);
+        vision.setIMUMode(IMUMode.EXTERNAL);
     }
 
     public void log() {
@@ -253,6 +255,7 @@ public class RobotContainer {
              * }
              */
             setMegaTagMode(MegaTagMode.MEGATAG2);
+            vision.setIMUMode(IMUMode.BOTH);
         })));
     }
 }

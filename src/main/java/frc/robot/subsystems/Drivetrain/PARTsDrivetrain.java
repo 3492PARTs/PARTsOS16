@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
@@ -402,6 +403,14 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 return new PARTsUnit(super.getState().Speeds.vyMetersPerSecond, PARTsUnitType.MetersPerSecond);
         }
 
+        public double getXAngularVelocity() {
+                return getPigeon2().getAngularVelocityXDevice().getValueAsDouble();
+        }
+
+        public double getYAngularVelocity() {
+                return getPigeon2().getAngularVelocityYDevice().getValueAsDouble();
+        }
+
         public Command commandPathFindToPath(String pathname) {
                 try {
                         // Load the path we want to pathfind to and follow
@@ -536,8 +545,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 return this::setVisionMeasurementStdDevs;
         }
 
-        public BiConsumer<Pose2d, Double> biConsumerAddVisionMeasurement() {
-                return this::addVisionMeasurement;
+        public BiFunction<Pose2d, Double, Boolean> biFunctionAddVisionMeasurement() {
+                return this::acceptVisionMeasurement;
         }
 
         public Consumer<Pose2d> consumerResetPose() {
@@ -546,6 +555,14 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         public Supplier<Pose2d> supplierGetPose() {
                 return this::getPose;
+        }
+
+        public boolean acceptVisionMeasurement(Pose2d measurement, double timestamp) {
+                if (getXAngularVelocity() < 360 && getYAngularVelocity() < 360){
+                        super.addVisionMeasurement(measurement, timestamp);
+                        return true;
+                }
+                return false;
         }
 
         /*---------------------------------- Custom Private Functions ---------------------------------*/
@@ -710,8 +727,9 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         /*---------------------------------- Override Functions ----------------------------------*/
         @Override
+        @Deprecated
         public void addVisionMeasurement(Pose2d measurement, double timestamp) {
-                super.addVisionMeasurement(measurement, timestamp);
+                
         }
 
         /*---------------------------------- Interface Functions ----------------------------------*/
