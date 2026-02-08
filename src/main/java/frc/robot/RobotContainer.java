@@ -255,7 +255,7 @@ public class RobotContainer {
              * }
              */
             setMegaTagMode(MegaTagMode.MEGATAG2);
-            vision.setIMUMode(IMUMode.BOTH);
+            vision.setIMUMode(IMUMode.EXTERNAL);
         })));
     }
 }

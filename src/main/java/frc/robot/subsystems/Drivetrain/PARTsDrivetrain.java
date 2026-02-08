@@ -172,6 +172,12 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 partsNT.putDouble("Y coordinate",
                                 new PARTsUnit(getPose().getY(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
                 partsNT.putBoolean("Controlled Rotation Enabled", isControlledRotationEnabled);
+
+                partsNT.putNumber("X Angular Velocity", getXAngularVelocity());
+                partsNT.putNumber("Y Angular Velocity", getYAngularVelocity());
+
+                partsNT.putNumber("X Velocity", getXVelocity().getValue());
+                partsNT.putNumber("Y Velocity", getYVelocity().getValue());
         }
 
         @Override
@@ -558,7 +564,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         }
 
         public boolean acceptVisionMeasurement(Pose2d measurement, double timestamp) {
-                if (getXAngularVelocity() < 360 && getYAngularVelocity() < 360){
+                if (Math.max(Math.abs(getXAngularVelocity()), Math.abs(getYAngularVelocity()) ) < 2 * Math.PI){
                         super.addVisionMeasurement(measurement, timestamp);
                         return true;
                 }

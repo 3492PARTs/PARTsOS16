@@ -274,12 +274,13 @@ public class LimelightVision extends PARTsSubsystem {
     public void outputTelemetry() {
         partsNT.putString("Megatag Mode", getMTmode().toString());
         partsNT.putString("Whitelist Mode", getWhitelistMode().toString());
-        partsNT.putNumber("IMU Mode", imuMode);
+        partsNT.putString("IMU Mode", imuMode.toString());
     }
 
     @Override
     public void stop() {
         setPipelineIndex(Pipelines.VIEWING);
+        setIMUMode(IMUMode.EXTERNAL);
     }
 
     @Override
