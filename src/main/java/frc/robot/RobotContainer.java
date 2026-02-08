@@ -41,6 +41,8 @@ import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
+import frc.robot.util.Field;
+
 import org.parts3492.partslib.input.PARTsButtonBoxController;
 import org.parts3492.partslib.input.PARTsCommandController;
 import org.parts3492.partslib.input.PARTsController.ControllerType;
@@ -49,11 +51,6 @@ import org.parts3492.partslib.network.PARTsNT;
 import org.parts3492.partslib.command.IPARTsSubsystem;
 
 public class RobotContainer {
-    private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
-                                                                                        // speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
-                                                                                      // max angular velocity
-
     private boolean visionAlignActive = true;
     private BooleanSupplier visionAlignActiveBooleanSupplier = () -> visionAlignActive;
 
@@ -94,7 +91,8 @@ public class RobotContainer {
         configureDrivetrainBindings();
         configureCandleBindings();
         configureShooterBindings();
-
+        configureAutonomousCommands();
+        
         // partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
     }
 
@@ -122,6 +120,8 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
+
+        driveController.x().onTrue(drivetrain.targetPoseCommand(() -> Field.blueHubCenter, () -> driveController.y().getAsBoolean()));
 
         /*
          * if (RobotConstants.DEBUGGING) {

@@ -65,8 +65,8 @@
           },
           {
             "title": "RPM",
-            "x": 640.0,
-            "y": 128.0,
+            "x": 0.0,
+            "y": 0.0,
             "width": 512.0,
             "height": 384.0,
             "type": "Graph",
@@ -108,9 +108,9 @@
       "grid_layout": {
         "layouts": [
           {
-            "title": "vision",
-            "x": 1280.0,
-            "y": 192.0,
+            "title": "limelight-ben",
+            "x": 1024.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 256.0,
             "type": "List Layout",
@@ -119,14 +119,14 @@
             },
             "children": [
               {
-                "title": "MT2 Status",
+                "title": "Has Data",
                 "x": 0.0,
                 "y": 0.0,
-                "width": 200.0,
-                "height": 200.0,
+                "width": 128.0,
+                "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/PARTs/PARTsDrivetrain/align/vision/MT2 Status",
+                  "topic": "/PARTs/LimelightVision/limelight-ben/Has Data",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
@@ -134,12 +134,154 @@
                   "true_icon": "None",
                   "false_icon": "None"
                 }
+              },
+              {
+                "title": "Rotation (deg)",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-ben/Rotation (deg)",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Tag Count",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-ben/Tag Count",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "X",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-ben/X",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Y",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-ben/Y",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
               }
             ]
           },
           {
-            "title": "limelight-reed",
-            "x": 768.0,
+            "title": "limelight-frankie",
+            "x": 1280.0,
+            "y": 256.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Has Data",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-frankie/Has Data",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              },
+              {
+                "title": "Rotation (deg)",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-frankie/Rotation (deg)",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Tag Count",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-frankie/Tag Count",
+                  "period": 0.06,
+                  "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "X",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-frankie/X",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Y",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-frankie/Y",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "limelight-johnny",
+            "x": 1024.0,
             "y": 512.0,
             "width": 256.0,
             "height": 256.0,
@@ -156,13 +298,27 @@
                 "height": 128.0,
                 "type": "Boolean Box",
                 "properties": {
-                  "topic": "/PARTs/LimelightVision/limelight-reed/Has Data",
+                  "topic": "/PARTs/LimelightVision/limelight-johnny/Has Data",
                   "period": 0.06,
                   "data_type": "boolean",
                   "true_color": 4283215696,
                   "false_color": 4294198070,
                   "true_icon": "None",
                   "false_icon": "None"
+                }
+              },
+              {
+                "title": "Rotation (deg)",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-johnny/Rotation (deg)",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
                 }
               },
               {
@@ -173,9 +329,37 @@
                 "height": 128.0,
                 "type": "Text Display",
                 "properties": {
-                  "topic": "/PARTs/LimelightVision/limelight-reed/Tag Count",
+                  "topic": "/PARTs/LimelightVision/limelight-johnny/Tag Count",
                   "period": 0.06,
                   "data_type": "int",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "X",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-johnny/X",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Y",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-johnny/Y",
+                  "period": 0.06,
+                  "data_type": "double",
                   "show_submit_button": false
                 }
               }
@@ -183,7 +367,7 @@
           },
           {
             "title": "limelight-sue",
-            "x": 512.0,
+            "x": 1280.0,
             "y": 512.0,
             "width": 256.0,
             "height": 256.0,
@@ -210,6 +394,20 @@
                 }
               },
               {
+                "title": "Rotation (deg)",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-sue/Rotation (deg)",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
                 "title": "Tag Count",
                 "x": 0.0,
                 "y": 0.0,
@@ -222,6 +420,34 @@
                   "data_type": "int",
                   "show_submit_button": false
                 }
+              },
+              {
+                "title": "X",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-sue/X",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Y",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/LimelightVision/limelight-sue/Y",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
               }
             ]
           }
@@ -231,8 +457,8 @@
             "title": "Pose",
             "x": 0.0,
             "y": 0.0,
-            "width": 1024.0,
-            "height": 512.0,
+            "width": 768.0,
+            "height": 384.0,
             "type": "Field",
             "properties": {
               "topic": "/Pose",
@@ -250,10 +476,10 @@
           },
           {
             "title": "PARTsDrivetrain",
-            "x": 1024.0,
+            "x": 768.0,
             "y": 0.0,
-            "width": 384.0,
-            "height": 192.0,
+            "width": 320.0,
+            "height": 128.0,
             "type": "Subsystem",
             "properties": {
               "topic": "/SmartDashboard/PARTsDrivetrain",
@@ -262,8 +488,8 @@
           },
           {
             "title": "Swerve Drive",
-            "x": 1024.0,
-            "y": 192.0,
+            "x": 768.0,
+            "y": 128.0,
             "width": 256.0,
             "height": 256.0,
             "type": "SwerveDrive",
@@ -275,22 +501,9 @@
             }
           },
           {
-            "title": "limelight-reed",
-            "x": 1024.0,
-            "y": 448.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/limelight-reed",
-              "period": 0.06,
-              "rotation_turns": 0
-            }
-          },
-          {
             "title": "limelight-sue",
-            "x": 1280.0,
-            "y": 448.0,
+            "x": 256.0,
+            "y": 384.0,
             "width": 256.0,
             "height": 256.0,
             "type": "Camera Stream",
@@ -302,8 +515,8 @@
           },
           {
             "title": "Zone",
-            "x": 1408.0,
-            "y": 64.0,
+            "x": 1088.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -316,8 +529,8 @@
           },
           {
             "title": "Megatag Mode",
-            "x": 128.0,
-            "y": 512.0,
+            "x": 1152.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -330,8 +543,8 @@
           },
           {
             "title": "Whitelist Mode",
-            "x": 0.0,
-            "y": 512.0,
+            "x": 1280.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -344,8 +557,8 @@
           },
           {
             "title": "Pipeline name",
-            "x": 384.0,
-            "y": 512.0,
+            "x": 1344.0,
+            "y": 0.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -358,8 +571,8 @@
           },
           {
             "title": "pipeline",
-            "x": 256.0,
-            "y": 512.0,
+            "x": 1024.0,
+            "y": 128.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Text Display",
@@ -368,6 +581,79 @@
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "Controlled Rotation Enabled",
+            "x": 1216.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/PARTs/PARTsDrivetrain/Controlled Rotation Enabled",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "limelight-ben",
+            "x": 0.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-ben",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "limelight-frankie",
+            "x": 512.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-frankie",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "limelight-johnny",
+            "x": 768.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/limelight-johnny",
+              "period": 0.06,
+              "rotation_turns": 0
+            }
+          },
+          {
+            "title": "Fine Grain Drive",
+            "x": 1408.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/PARTs/PARTsDrivetrain/Fine Grain Drive",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
             }
           }
         ]
@@ -380,8 +666,8 @@
         "containers": [
           {
             "title": "Animation",
-            "x": 576.0,
-            "y": 192.0,
+            "x": 192.0,
+            "y": 0.0,
             "width": 192.0,
             "height": 192.0,
             "type": "Text Display",
@@ -394,8 +680,8 @@
           },
           {
             "title": "State",
-            "x": 384.0,
-            "y": 192.0,
+            "x": 0.0,
+            "y": 0.0,
             "width": 192.0,
             "height": 192.0,
             "type": "Text Display",

@@ -32,7 +32,7 @@ public class Hub {
         double pointPoseY = point.getY();
 
         double distanceSquared = (Math.pow(centerPoseX - pointPoseX, 2) + Math.pow(centerPoseY - pointPoseY, 2));
-        System.out.println(Math.sqrt(distanceSquared));
+        //System.out.println(Math.sqrt(distanceSquared));
         return distanceSquared <= Math.pow(radius, 2);
     }
 
