@@ -55,11 +55,8 @@ public class Robot extends TimedRobot {
 
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
 
-        // in debugging start limelights in viewing to stop overheating
-        // when debugging since the robot is on to long
-        if (RobotConstants.DEBUGGING)
-            m_robotContainer.setLimelightViewingMode();
-        else
+        // if not debugging make sure limelights are in working mode
+        if (!RobotConstants.DEBUGGING)
             m_robotContainer.setLimelightMainMode();
     }
 

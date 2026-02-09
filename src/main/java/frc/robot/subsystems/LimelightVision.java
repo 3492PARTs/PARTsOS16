@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.constants.CameraConstants;
+import frc.robot.constants.RobotConstants;
 import frc.robot.constants.CameraConstants.Camera;
 import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.VisionConstants;
@@ -303,7 +304,9 @@ public class LimelightVision extends PARTsSubsystem {
 
     @Override
     public void stop() {
-        setPipelineIndex(Pipelines.VIEWING);
+        // Turn off camera pipelines when not in use while testing
+        if (RobotConstants.DEBUGGING)
+            setPipelineIndex(Pipelines.VIEWING);
         setIMUMode(IMUMode.EXTERNAL);
     }
 

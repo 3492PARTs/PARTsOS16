@@ -244,12 +244,10 @@ public class RobotContainer {
         vision.setPipelineIndex(Pipelines.MAIN);
     }
 
-    public void setLimelightViewingMode() {
-        vision.setPipelineIndex(Pipelines.VIEWING);
-    }
-
     public void runOnEnabled() {
+        // turn on or make sure we are in working pipelines wheh robot runs
         setLimelightMainMode();
+        
         setIdleCandleState();
 
         // in debugging start limelights in viewing to stop overheating
