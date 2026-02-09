@@ -28,7 +28,6 @@ public class LimelightVision extends PARTsSubsystem {
     private final Supplier<Pose2d> poseSupplier;
     private final BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction;
     private final Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer;
-    private final Consumer<Pose2d> resetPoseConsumer;
 
     public enum MegaTagMode {
         MEGATAG1,
@@ -73,13 +72,13 @@ public class LimelightVision extends PARTsSubsystem {
     private IMUMode imuMode;
     private int maxTagCount;
 
-    public LimelightVision(Supplier<Pose2d> poseSupplier, BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
-            Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer, Consumer<Pose2d> resetPoseConsumer) {
+    public LimelightVision(Supplier<Pose2d> poseSupplier,
+            BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
+            Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer) {
         super("LimelightVision");
         this.poseSupplier = poseSupplier;
         this.addVisionMeasurementBiFunction = addVisionMeasurementBiFunction;
         this.setVisionMeasurementStdDevsConsumer = setVisionMeasurementStdDevsConsumer;
-        this.resetPoseConsumer = resetPoseConsumer;
         for (Camera camera : CameraConstants.LimelightCameras) {
             Pose3d robotRelativePose = camera.getLocation();
             LimelightHelpers.setCameraPose_RobotSpace(
@@ -98,11 +97,13 @@ public class LimelightVision extends PARTsSubsystem {
         setWhitelistMode(WhitelistMode.ALL);
         setIMUMode(IMUMode.EXTERNAL);
 
-        // elastic crashes :(
-        // super.partsNT.putSmartDashboardSendable("Set MT-1",
-        // commandMegaTagMode(MegaTagMode.MEGATAG1));
-        // super.partsNT.putSmartDashboardSendable("Set MT-2",
-        // commandMegaTagMode(MegaTagMode.MEGATAG2));
+        super.partsNT.putSmartDashboardSendable("Set MT-1", commandMegaTagMode(MegaTagMode.MEGATAG1));
+        super.partsNT.putSmartDashboardSendable("Set MT-2", commandMegaTagMode(MegaTagMode.MEGATAG2));
+        super.partsNT.putSmartDashboardSendable("Set EXTERNAL IMU", commandIMUMode(IMUMode.EXTERNAL));
+        super.partsNT.putSmartDashboardSendable("Set INTERNAL IMU", commandIMUMode(IMUMode.INTERNAL));
+        super.partsNT.putSmartDashboardSendable("Set BOTH IMU", commandIMUMode(IMUMode.BOTH));
+        super.partsNT.putSmartDashboardSendable("Set VIEWING PIPELINE", commandPipeline(Pipelines.VIEWING));
+        super.partsNT.putSmartDashboardSendable("Set MAIN PIPELINE", commandPipeline(Pipelines.MAIN));
     }
 
     public void setMegaTagMode(MegaTagMode mode) {
@@ -123,6 +124,18 @@ public class LimelightVision extends PARTsSubsystem {
 
     public Command commandMegaTagMode(MegaTagMode mode) {
         Command c = PARTsCommandUtils.setCommandName("commandMegaTagMode", this.runOnce(() -> setMegaTagMode(mode)));
+        c = c.ignoringDisable(true);
+        return c;
+    }
+
+    public Command commandIMUMode(IMUMode mode) {
+        Command c = PARTsCommandUtils.setCommandName("commandIMUMode", this.runOnce(() -> setIMUMode(mode)));
+        c = c.ignoringDisable(true);
+        return c;
+    }
+
+    public Command commandPipeline(Pipelines mode) {
+        Command c = PARTsCommandUtils.setCommandName("commandPipeline", this.runOnce(() -> setPipelineIndex(mode)));
         c = c.ignoringDisable(true);
         return c;
     }
@@ -170,6 +183,10 @@ public class LimelightVision extends PARTsSubsystem {
         return megaTagMode;
     }
 
+    public IMUMode getIMUmode() {
+        return imuMode;
+    }
+
     public PoseEstimate getMegaTag1PoseEstimate(String limelightName) {
         return LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
     }
@@ -214,13 +231,13 @@ public class LimelightVision extends PARTsSubsystem {
                 (poseSupplier.get().getRotation().getDegrees()) % 360);
 
         for (Camera camera : CameraConstants.LimelightCameras) {
+            boolean hasData = false;
+            int tagCount = 0;
+            boolean measurementAccepted = false;
+            // this only works if the robots pose is set correctly with MT1
             LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
-                    // i think this is still needed b/c if we always assume blue on red we start
-                    // backwards.
                     (poseSupplier.get().getRotation().getDegrees()) % 360,
-                    // we may need to consider these values for when we go ove the bump
-                    // if we are at an angle on the bump it could throw our esimates off
                     0,
                     0,
                     0,
@@ -237,35 +254,42 @@ public class LimelightVision extends PARTsSubsystem {
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
 
-                    partsNT.putBoolean(camera.getName() + "/Has Data", true);
-                    partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount);
+                    hasData = true;
+                    tagCount = poseEstimate.tagCount;
 
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
 
                     boolean rejectUpdate = false;
 
-                    if (poseEstimate.tagCount <= 1) rejectUpdate = true;
+                    if (poseEstimate.tagCount <= 1)
+                        rejectUpdate = true;
 
                     if (this.megaTagMode == MegaTagMode.MEGATAG1) {
-                        if (poseEstimate.rawFiducials[0].ambiguity > .7) rejectUpdate = true;
-                        if (poseEstimate.rawFiducials[0].distToCamera > 3) rejectUpdate = true;
+                        if (poseEstimate.rawFiducials.length > 0) {
+                            if (poseEstimate.rawFiducials[0].ambiguity > .7)
+                                rejectUpdate = true;
+                            if (poseEstimate.rawFiducials[0].distToCamera > 3)
+                                rejectUpdate = true;
+                        } else
+                            rejectUpdate = true;
                     }
 
                     if (!rejectUpdate) {
                         setVisionMeasurementStdDevs();
                         Boolean result = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
                                 poseEstimate.timestampSeconds);
-                        partsNT.putBoolean(camera.getName() + "/Measurement Accepted", result);
-                    }
-                    else {
-                        partsNT.putBoolean(camera.getName() + "/Measurement Accepted", false);
+                        measurementAccepted = result;
+                    } else {
+                        measurementAccepted = false;
                     }
                 } else {
-                    partsNT.putBoolean(camera.getName() + "/Has Data", false);
-                    partsNT.putNumber(camera.getName() + "/Tag Count", 0);
-                    partsNT.putBoolean(camera.getName() + "/Measurement Accepted", false);
-
+                    hasData = false;
+                    tagCount = 0;
+                    measurementAccepted = false;
                 }
+                partsNT.putBoolean(camera.getName() + "/Has Data", hasData);
+                partsNT.putNumber(camera.getName() + "/Tag Count", tagCount);
+                partsNT.putBoolean(camera.getName() + "/Measurement Accepted", measurementAccepted);
             }
         }
     }
@@ -274,7 +298,7 @@ public class LimelightVision extends PARTsSubsystem {
     public void outputTelemetry() {
         partsNT.putString("Megatag Mode", getMTmode().toString());
         partsNT.putString("Whitelist Mode", getWhitelistMode().toString());
-        partsNT.putString("IMU Mode", imuMode.toString());
+        partsNT.putString("IMU Mode", getIMUmode().toString());
     }
 
     @Override
@@ -293,36 +317,6 @@ public class LimelightVision extends PARTsSubsystem {
     public void log() {
         // TODO Auto-generated method stub
         // throw new UnsupportedOperationException("Unimplemented method 'log'");
-    }
-
-    public void resetRobotPose() {
-        setMegaTagMode(MegaTagMode.MEGATAG1);
-        for (Camera camera : CameraConstants.LimelightCameras) {
-            LimelightHelpers.SetRobotOrientation(
-                    camera.getName(),
-                    (poseSupplier.get().getRotation().getDegrees()) % 360,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0);
-            if (camera.isEnabled()) {
-                PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
-                        ? getMegaTag2PoseEstimate(camera.getName())
-                        : getMegaTag1PoseEstimate(camera.getName());
-
-                if (poseEstimate != null && poseEstimate.tagCount > 0) {
-                    resetPoseConsumer.accept(poseEstimate.pose);
-                    partsNT.putBoolean(camera.getName() + "/Has Data", true);
-                    partsNT.putInteger(camera.getName() + "/Tag Count", poseEstimate.tagCount);
-                    maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
-                } else {
-                    partsNT.putBoolean(camera.getName() + "/Has Data", false);
-                    partsNT.putInteger(camera.getName() + "/Tag Count", 0);
-                }
-            }
-        }
-        setMegaTagMode(MegaTagMode.MEGATAG2);
     }
 
     public void setPipelineIndex(Pipelines pipeline) {

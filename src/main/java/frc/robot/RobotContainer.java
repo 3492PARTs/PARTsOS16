@@ -74,8 +74,7 @@ public class RobotContainer {
             TunerConstants.BackRight);
 
     private final LimelightVision vision = new LimelightVision(drivetrain.supplierGetPose(),
-            drivetrain.biFunctionAddVisionMeasurement(), drivetrain.consumerSetVisionMeasurementStdDevs(),
-            drivetrain.consumerResetPose());
+            drivetrain.biFunctionAddVisionMeasurement(), drivetrain.consumerSetVisionMeasurementStdDevs());
 
     public final Candle candle = new Candle();
 
@@ -245,10 +244,23 @@ public class RobotContainer {
         vision.setPipelineIndex(Pipelines.MAIN);
     }
 
+    public void setLimelightViewingMode() {
+        vision.setPipelineIndex(Pipelines.VIEWING);
+    }
+
     public void runOnEnabled() {
         setLimelightMainMode();
         setIdleCandleState();
-        CommandScheduler.getInstance().schedule(new WaitCommand(2).andThen(Commands.runOnce(() -> {
+
+        // in debugging start limelights in viewing to stop overheating
+        // when debugging since the robot is on to long
+        int mt2Wait = 0;
+
+        if (RobotConstants.DEBUGGING)
+            mt2Wait = 2;
+        // this is to allow MT1 a chance to seed the pose once the 
+        // viewing mode is switched to main and sees tags for the first time
+        CommandScheduler.getInstance().schedule(new WaitCommand(mt2Wait).andThen(Commands.runOnce(() -> {
             /*
              * if (!RobotContainer.isBlue()) {
              * drivetrain.resetPose(drivetrain.getPose().rotateBy(new Rotation2d(Math.PI)));

@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         // This is needed for lasercan, without it causes robot to lag on boot
-        //CanBridge.runTCP();
+        // CanBridge.runTCP();
 
         // Make elastic dashboard file available
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
 
         CameraServer.startAutomaticCapture();
 
-        //m_robotContainer.resetStartPose();
+        // m_robotContainer.resetStartPose();
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
 
         DriverStation.silenceJoystickConnectionWarning(!isReal());
@@ -54,6 +54,13 @@ public class Robot extends TimedRobot {
         m_robotContainer.getAlliance();
 
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
+
+        // in debugging start limelights in viewing to stop overheating
+        // when debugging since the robot is on to long
+        if (RobotConstants.DEBUGGING)
+            m_robotContainer.setLimelightViewingMode();
+        else
+            m_robotContainer.setLimelightMainMode();
     }
 
     @Override
@@ -84,7 +91,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {
         if (!RobotConstants.DEBUGGING) {
-            //PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
+            // PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
         }
         m_robotContainer.runOnEnabled();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -105,7 +112,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         if (!RobotConstants.DEBUGGING) {
-            //PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
+            // PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
         }
 
         m_robotContainer.runOnEnabled();

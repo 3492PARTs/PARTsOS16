@@ -15,6 +15,6 @@ public class VisionConstants {
     //public static final double PROCCESSOR_APRILTAG_HEIGHT = 45.875; // Inches
     //public static final double CORAL_APRILTAG_HEIGHT = 53.25; // Inches*/
 
-    public static final edu.wpi.first.math.Vector<N3> MT1_STDEVS = VecBuilder.fill(0.5, 0.5, 9999999);
+    public static final edu.wpi.first.math.Vector<N3> MT1_STDEVS = VecBuilder.fill(0.5, 0.5, 1);
     public static final edu.wpi.first.math.Vector<N3> MT2_STDEVS = VecBuilder.fill(0.7, 0.7, 9999999);
 }
