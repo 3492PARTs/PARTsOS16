@@ -41,6 +41,9 @@ import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
+import frc.robot.subsystems.Turret.Turret;
+import frc.robot.subsystems.Turret.TurretPhys;
+import frc.robot.subsystems.Turret.TurretSim;
 import frc.robot.util.Field;
 
 import org.parts3492.partslib.input.PARTsButtonBoxController;
@@ -80,10 +83,12 @@ public class RobotContainer {
 
     private final Shooter shooter = Robot.isReal() ? new ShooterPhys() : new ShooterSim();
 
+    private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose()) : new TurretSim(drivetrain.supplierGetPose());
+
     // private final ShooterSysid shooter = new ShooterSysid(); //for sysid
 
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
-            Arrays.asList(candle, drivetrain, vision, shooter));
+            Arrays.asList(candle, drivetrain, vision, shooter, turret));
 
     /* End Subsystems */
 
