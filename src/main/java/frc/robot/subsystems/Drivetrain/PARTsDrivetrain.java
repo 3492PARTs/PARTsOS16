@@ -15,7 +15,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.FileVersionException; 
+import com.pathplanner.lib.util.FileVersionException;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -25,7 +25,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.json.simple.parser.ParseException;
@@ -34,6 +37,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -71,8 +75,10 @@ import org.parts3492.partslib.command.IPARTsSubsystem;
 public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSubsystem {
         /*-------------------------------- Private instance variables ---------------------------------*/
         private boolean fineGrainDrive = false;
-        private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-        private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+        private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
+                                                                                      // speed
+        private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per
+                                                                                          // second max angular velocity
 
         private Telemetry telemetryLogger;
 
@@ -100,6 +106,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         private ProfiledPIDController thetaController;
         private ProfiledPIDController xRangeController;
         private ProfiledPIDController yRangeController;
+
+        private boolean isControlledRotationEnabled = false;
 
         public PARTsDrivetrain(
                         SwerveDrivetrainConstants DrivetrainConstants,
@@ -151,12 +159,19 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         public void outputTelemetry() {
                 partsNT.putBoolean("Fine Grain Drive", fineGrainDrive);
                 Targets zone = Hub.getZone(getPose());
-                partsNT.putString("Zone", zone == null ? "No zone": zone.toString());
-                partsNT.putDouble("HUB X coordinate", new PARTsUnit(Field.getAllianceHubPose().getX(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
-                partsNT.putDouble("HUB Y coordinate", new PARTsUnit(Field.getAllianceHubPose().getY(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
+                partsNT.putString("Zone", zone == null ? "No zone" : zone.toString());
+                partsNT.putDouble("HUB X coordinate",
+                                new PARTsUnit(Field.getAllianceHubPose().getX(), PARTsUnitType.Meter)
+                                                .to(PARTsUnitType.Inch));
+                partsNT.putDouble("HUB Y coordinate",
+                                new PARTsUnit(Field.getAllianceHubPose().getY(), PARTsUnitType.Meter)
+                                                .to(PARTsUnitType.Inch));
 
-                partsNT.putDouble("X coordinate", new PARTsUnit(getPose().getX(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
-                partsNT.putDouble("Y coordinate", new PARTsUnit(getPose().getY(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
+                partsNT.putDouble("X coordinate",
+                                new PARTsUnit(getPose().getX(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
+                partsNT.putDouble("Y coordinate",
+                                new PARTsUnit(getPose().getY(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
+                partsNT.putBoolean("Controlled Rotation Enabled", isControlledRotationEnabled);
         }
 
         @Override
@@ -164,6 +179,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 applyRequest(() -> new SwerveRequest.RobotCentric().withVelocityX(0)
                                 .withVelocityY(0)
                                 .withRotationalRate(0));
+                isControlledRotationEnabled = false;
         }
 
         @Override
@@ -189,8 +205,11 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         public SwerveRequest.FieldCentric getFieldCentricDriveRequest() {
                 /* Setting up bindings for necessary control of the swerve drive platform */
                 return new SwerveRequest.FieldCentric()
-                                .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-                                .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive
+                                .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10%
+                                                                                                           // deadband
+                                .withDesaturateWheelSpeeds(true)
+                                .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for
+                                                                                         // drive
         }
 
         public SwerveRequest.SwerveDriveBrake getBrakeDriveRequest() {
@@ -213,15 +232,22 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         double limit = MaxSpeed * frc.robot.constants.DrivetrainConstants.SPEED_PERCENT;
                         if (fineGrainDrive)
                                 limit *= 0.25;
-                        return getFieldCentricDriveRequest().withVelocityX(-controller.getLeftY() * limit) // Drive forward with negative Y
+                        double rotation = -controller.getRightX() * MaxAngularRate;
+                        if (isControlledRotationEnabled) {
+                                rotation = thetaController.calculate(getPose().getRotation().getRadians());
+                        }
+                        return getFieldCentricDriveRequest().withVelocityX(-controller.getLeftY() * limit) // Drive
+                                                                                                           // forward
+                                                                                                           // with
+                                                                                                           // negative Y
                                         // (forward)
                                         .withVelocityY(-controller.getLeftX() * limit) // Drive left with negative
                                         // X (left)
-                                        .withRotationalRate(-controller.getRightX() * MaxAngularRate); // Drive
-                                                                                                       // counterclockwise
-                                                                                                       // with
-                                                                                                       // negative
-                                                                                                       // X (left)
+                                        .withRotationalRate(rotation); // Drive
+                                                                       // counterclockwise
+                                                                       // with
+                                                                       // negative
+                                                                       // X (left)
                 }));
         }
 
@@ -347,22 +373,24 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         }
 
         public Command commandSnapToAngle(double angle) {
-
-                PARTsUnit currentRobotAngle = new PARTsUnit(getRotation3d().getAngle(), PARTsUnitType.Angle);
-                PARTsUnit goalAngle = new PARTsUnit(currentRobotAngle.to(PARTsUnitType.Angle) + angle,
-                                PARTsUnitType.Angle);
-                thetaController.setGoal(goalAngle.to(PARTsUnitType.Radian));
-
-                // double pidCalc = thetaController.calculate(currentRobotAngle, goalAngle);
-                Rotation2d thetaOutput = new Rotation2d(
-                                thetaController.calculate(currentRobotAngle.to(PARTsUnitType.Radian),
-                                                goalAngle.to(PARTsUnitType.Radian)));
-
-                return this.runOnce(() -> super.setControl(getFieldCentricDriveRequest()
-                                .withVelocityX(0)
-                                .withVelocityY(0)
-                                .withRotationalRate(thetaOutput.getRadians()))).until(() -> (thetaController.atGoal()));
-
+                Command c = new FunctionalCommand(() -> {
+                        PARTsUnit currentRobotAngle = new PARTsUnit(getPose().getRotation().getRadians(),
+                                        PARTsUnitType.Radian);
+                        PARTsUnit goalAngle = new PARTsUnit(currentRobotAngle.to(PARTsUnitType.Angle) + angle,
+                                        PARTsUnitType.Angle);
+                        thetaController.setGoal(goalAngle.to(PARTsUnitType.Radian));
+                }, () -> {
+                        PARTsUnit calculatingRobotAngle = new PARTsUnit(getPose().getRotation().getRadians(),
+                                        PARTsUnitType.Radian);
+                        Rotation2d thetaOutput = new Rotation2d(
+                                        thetaController.calculate(calculatingRobotAngle.to(PARTsUnitType.Radian),
+                                                        thetaController.getGoal()));
+                        super.setControl(getFieldCentricDriveRequest()
+                                        .withVelocityX(0)
+                                        .withVelocityY(0)
+                                        .withRotationalRate(thetaOutput.getRadians()));
+                }, (Boolean b) -> stop(), () -> thetaController.atGoal(), this);
+                return c.withName("drivetrain.commandSnapToAngle");
         }
 
         public void setChassisSpeeds(ChassisSpeeds robotSpeeds) {
@@ -377,6 +405,14 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         public PARTsUnit getYVelocity() {
                 return new PARTsUnit(super.getState().Speeds.vyMetersPerSecond, PARTsUnitType.MetersPerSecond);
+        }
+
+        public double getXAngularVelocity() {
+                return getPigeon2().getAngularVelocityXDevice().getValueAsDouble();
+        }
+
+        public double getYAngularVelocity() {
+                return getPigeon2().getAngularVelocityYDevice().getValueAsDouble();
         }
 
         public Command commandPathFindToPath(String pathname) {
@@ -440,7 +476,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
                         Pose2d fieldPose = Field.conditionallyTransformToOppositeAlliance(pose);
 
-                        //this is a point 1m from the end
+                        // this is a point 1m from the end
                         Pose2d middlePoint = fieldPose.transformBy(new Transform2d(
                                         -1 + RobotConstants.ROBOT_VISION_OFFSET.to(PARTsUnitType.Meter), 0,
                                         new Rotation2d()));
@@ -452,8 +488,9 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         PathPlannerPath path = new PathPlannerPath(
                                         PathPlannerPath.waypointsFromPoses(getPose(), middlePoint, lastPoint),
                                         constraints,
-                                        null, // The ideal starting state, this is only relevant for pre-planned paths, so can
-                                        // be null for on-the-fly paths.
+                                        null, // The ideal starting state, this is only relevant for pre-planned paths,
+                                              // so can
+                                              // be null for on-the-fly paths.
                                         new GoalEndState(0.0, fieldPose.getRotation()) // Goal end state. You can set a
                         // holonomic rotation here. If using
                         // a differential drivetrain, the
@@ -465,16 +502,55 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
                         return AutoBuilder.followPath(path);
                 }, new HashSet<>(Arrays.asList(this))));
-
         }
-        
+
+        /**
+         * Command to enable rotation to a specific angle while driving (controller used
+         * in {@link #drive}).
+         * 
+         * @param angle the angle to rotate to
+         * @return the command
+         */
+        public Command controlledRotateCommand(DoubleSupplier angle, BooleanSupplier condition) {
+                return Commands.run(() -> {
+                        if (!isControlledRotationEnabled) {
+                                thetaController.reset(getPose().getRotation().getRadians());
+                        }
+                        isControlledRotationEnabled = true;
+                        if (!RobotContainer.isBlue())
+                                thetaController.setGoal(angle.getAsDouble() + Math.PI);
+                        else
+                                thetaController.setGoal(angle.getAsDouble());
+                }).until(condition).andThen(disableControlledRotation()).withName("drivetrain.controlledRotate");
+        }
+
+        /**
+         * Creates a command that controls the chassis rotation to keep it pointed a
+         * specific target location.
+         * 
+         * @param targetPose a supplier for the target pose to point the chassis at
+         * @return the command
+         */
+        public Command targetPoseCommand(Supplier<Pose2d> targetPose, BooleanSupplier condition) {
+                return controlledRotateCommand(() -> {
+                        Pose2d target = targetPose.get();
+                        Transform2d diff = getPose().minus(target);
+                        Rotation2d rot = new Rotation2d(diff.getX(), diff.getY());
+                        rot = rot.plus(Rotation2d.kPi);
+                        return rot.getRadians();
+                }, condition).withName("drivetrain.targetPose");
+        }
+
+        public Command disableControlledRotation() {
+                return Commands.runOnce(() -> isControlledRotationEnabled = false);
+        }
 
         public Consumer<Vector<N3>> consumerSetVisionMeasurementStdDevs() {
                 return this::setVisionMeasurementStdDevs;
         }
 
-        public BiConsumer<Pose2d, Double> biConsumerAddVisionMeasurement() {
-                return this::addVisionMeasurement;
+        public BiFunction<Pose2d, Double, Boolean> bifunctionAddVisionMeasurement() {
+                return this::acceptVisionMeasurement;
         }
 
         public Consumer<Pose2d> consumerResetPose() {
@@ -483,6 +559,14 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         public Supplier<Pose2d> supplierGetPose() {
                 return this::getPose;
+        }
+
+        public boolean acceptVisionMeasurement(Pose2d measurement, double timestamp) {
+                if (Math.max(Math.abs(getXAngularVelocity()), Math.abs(getYAngularVelocity()) ) < 2 * Math.PI){
+                        super.addVisionMeasurement(measurement, timestamp);
+                        return true;
+                }
+                return false;
         }
 
         /*---------------------------------- Custom Private Functions ---------------------------------*/
@@ -648,7 +732,6 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         /*---------------------------------- Override Functions ----------------------------------*/
         @Override
         public void addVisionMeasurement(Pose2d measurement, double timestamp) {
-                super.addVisionMeasurement(measurement, timestamp);
         }
 
         /*---------------------------------- Interface Functions ----------------------------------*/
@@ -698,6 +781,6 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 } catch (Exception ex) {
                         DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder",
                                         ex.getStackTrace());
-                } 
+                }
         }
 }
