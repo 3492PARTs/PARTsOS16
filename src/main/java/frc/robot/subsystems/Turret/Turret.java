@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
@@ -17,7 +18,7 @@ import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
-public abstract class Turret extends PARTsSubsystem{
+public abstract class Turret extends PARTsSubsystem {
     private TurretState turretState = TurretState.IDLE;
 
     private PIDController turretPIDController;
@@ -26,9 +27,11 @@ public abstract class Turret extends PARTsSubsystem{
 
     public Turret(Supplier<Pose2d> robotPoseSupplier) {
         super("Turret", RobotConstants.LOGGING);
-        /*if (RobotConstants.DEBUGGING) {
-            partsNT.putDouble("Turret Speed", 0);
-        }*/
+        /*
+         * if (RobotConstants.DEBUGGING) {
+         * partsNT.putDouble("Turret Speed", 0);
+         * }
+         */
 
         this.robotPoseSupplier = robotPoseSupplier;
 
@@ -38,7 +41,7 @@ public abstract class Turret extends PARTsSubsystem{
         turretPIDController.setTolerance(TurretConstants.PID_THRESHOLD);
     }
 
-    //region Generic Subsystem Functions
+    // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
         partsNT.putString("Turret State", turretState.toString());
@@ -47,6 +50,7 @@ public abstract class Turret extends PARTsSubsystem{
         partsNT.putDouble("Get Setpoint", turretPIDController.getSetpoint());
         partsNT.putBoolean("At Setpoint", turretPIDController.atSetpoint());
         partsNT.putDouble("Current Error", turretPIDController.getError());
+        partsNT.putDouble("Get Angle to Turret", getAngleToTarget());
     }
 
     @Override
@@ -63,16 +67,13 @@ public abstract class Turret extends PARTsSubsystem{
     public void log() {
         partsLogger.logString("Turret State", turretState.toString());
     }
-    //endregion
-
-
+    // endregion
 
     @Override
     public void periodic() {
         if (RobotConstants.DEBUGGING) {
             setSpeed(partsNT.getDouble("Turret Speed"));
-        }
-        else {
+        } else {
             double voltage = 0;
             turretPIDController.setSetpoint(turretState.getAngle());
 
@@ -85,10 +86,12 @@ public abstract class Turret extends PARTsSubsystem{
         }
     }
 
-    //region Custom Public Functions
-    /** Sets the speed of the Turret.
+    // region Custom Public Functions
+    /**
+     * Sets the speed of the Turret.
+     * 
      * @param speed The speed between <code>-1.0</code> and <code>1.0</code>.
-    */
+     */
     protected abstract void setSpeed(double speed);
 
     protected abstract void setVoltage(double voltage);
@@ -97,7 +100,9 @@ public abstract class Turret extends PARTsSubsystem{
 
     protected abstract double getAngle();
 
-    public TurretState getState() { return turretState; }
+    public TurretState getState() {
+        return turretState;
+    }
 
     public Command track() {
         return PARTsCommandUtils.setCommandName("Command Track", this.runOnce(() -> {
@@ -110,14 +115,20 @@ public abstract class Turret extends PARTsSubsystem{
             turretState = TurretState.IDLE;
         }));
     }
-    //endregion
+    // endregion
 
-    //region private functions
-    private Rotation2d getAngleToTarget() {
-        Pose2d targetPose = Field.getAllianceHubPose();
-        Pose2d robotPose = robotPoseSupplier.get();
-        Rotation2d angleToTarget = targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle();
+    // region private functions
+    private double getAngleToTarget() {
+        /*
+         * Pose2d targetPose = Field.getAllianceHubPose();
+         * Pose2d robotPose = robotPoseSupplier.get();
+         * Rotation2d angleToTarget =
+         * targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle();
+         */
+        double angleToTarget = robotPoseSupplier.get().getRotation().getDegrees()
+                - (Math.atan2(Field.getAllianceHubPose().getY() - robotPoseSupplier.get().getY(),
+                        Field.getAllianceHubPose().getX() - robotPoseSupplier.get().getX()) * 180 / Math.PI);
         return angleToTarget;
     }
-    //endregion private functions
+    // endregion private functions
 }
