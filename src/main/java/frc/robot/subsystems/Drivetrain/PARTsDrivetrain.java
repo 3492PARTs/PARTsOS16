@@ -45,6 +45,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -88,8 +91,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         private SwerveModule<TalonFX, TalonFX, CANcoder> backRightModule;
         private SwerveModule<TalonFX, TalonFX, CANcoder> backLeftModule;
 
-        // show robot pose on field dashboard display
-        private FieldObject2d fieldObject2d;
+        // show robot pose on field dashboard 
+        private FieldObject2d robotFieldObject2d;
 
         // parts util classes
         private PARTsNT partsNT;
@@ -100,7 +103,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         private PARTsUnit drivetrainVelocityX;
         private PARTsUnit drivetrainVelocityY;
         private boolean timerElapsed = false;
-        private FieldObject2d targetObject2d;
+        private FieldObject2d targetFieldObject2d;
 
         // pid controllers
         private ProfiledPIDController thetaController;
@@ -148,8 +151,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 initializeControllers();
                 sendToDashboard();
                 configureAutoBuilder();
-                fieldObject2d = Field.FIELD2D.getObject("Robot");
-                targetObject2d = Field.FIELD2D.getObject("target pose");
+                robotFieldObject2d = Field.FIELD2D.getRobotObject();
+                targetFieldObject2d = Field.FIELD2D.getObject("target");
                 telemetryLogger = new Telemetry(MaxSpeed);
                 registerTelemetry(telemetryLogger::telemeterize);
         }
@@ -197,7 +200,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         @Override
         public void periodic() {
                 super.periodic();
-                fieldObject2d.setPose(getFieldCentricPose());
+                robotFieldObject2d.setPose(getPose());
         }
 
         /*---------------------------------- Custom Public Functions ----------------------------------*/
@@ -275,7 +278,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 Command c = new FunctionalCommand(
                                 () -> {
                                         timerElapsed = false;
-                                        targetObject2d.setPose(goalPose.get());
+                                        targetFieldObject2d.setPose(goalPose.get());
                                         alignTimer = new Timer();
                                         alignTimer.start();
 
@@ -562,7 +565,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         }
 
         public boolean acceptVisionMeasurement(Pose2d measurement, double timestamp) {
-                if (Math.max(Math.abs(getXAngularVelocity()), Math.abs(getYAngularVelocity()) ) < 2 * Math.PI){
+                if (Math.max(Math.abs(getXAngularVelocity()), Math.abs(getYAngularVelocity())) < 2 * Math.PI) {
                         super.addVisionMeasurement(measurement, timestamp);
                         return true;
                 }
