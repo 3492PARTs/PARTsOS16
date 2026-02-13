@@ -224,6 +224,7 @@ public class LimelightVision extends PARTsSubsystem {
 
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
                 } else {
+                    partsNT.putBoolean(camera.getName() + "/Accepted Data", false);
                     partsNT.putBoolean(camera.getName() + "/Has Data", false);
                     partsNT.putNumber(camera.getName() + "/Tag Count", 0);
                 }

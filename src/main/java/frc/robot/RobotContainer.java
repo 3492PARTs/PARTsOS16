@@ -56,8 +56,6 @@ import org.parts3492.partslib.command.IPARTsSubsystem;
 
 public class RobotContainer {
     private FieldObject2d hubFieldObject2d;
-    private boolean visionAlignActive = true;
-    private BooleanSupplier visionAlignActiveBooleanSupplier = () -> visionAlignActive;
 
     private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
     private final PARTsCommandController operatorController = new PARTsCommandController(1,
@@ -199,7 +197,6 @@ public class RobotContainer {
 
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());
-        partsNT.putBoolean("Vision Mode", visionAlignActive);
         partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage());
         partsNT.putBoolean("IsBlue", isBlue());
     }
