@@ -21,7 +21,7 @@ public interface Field {
 
     public static final Field2d FIELD2D = new Field2d();
 
-    double WIDTH = Units.inchesToMeters(317.000); 
+    double WIDTH = Units.inchesToMeters(317.69); 
     double LENGTH = Units.inchesToMeters(651.22);
 
     /*** APRILTAGS ***/

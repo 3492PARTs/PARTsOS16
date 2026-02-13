@@ -91,8 +91,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         private SwerveModule<TalonFX, TalonFX, CANcoder> backRightModule;
         private SwerveModule<TalonFX, TalonFX, CANcoder> backLeftModule;
 
-        // show robot pose on field dashboard display
-        private FieldObject2d fieldObject2d;
+        // show robot pose on field dashboard 
+        private FieldObject2d robotFieldObject2d;
 
         // parts util classes
         private PARTsNT partsNT;
@@ -103,8 +103,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         private PARTsUnit drivetrainVelocityX;
         private PARTsUnit drivetrainVelocityY;
         private boolean timerElapsed = false;
-        private FieldObject2d targetObject2d;
-        DoubleArrayPublisher hubPub;
+        private FieldObject2d targetFieldObject2d;
 
         // pid controllers
         private ProfiledPIDController thetaController;
@@ -152,10 +151,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 initializeControllers();
                 sendToDashboard();
                 configureAutoBuilder();
-                NetworkTableInstance inst = NetworkTableInstance.getDefault();
-                NetworkTable table = inst.getTable("Pose");
-                hubPub = table.getDoubleArrayTopic("hubPose").publish();
-                targetObject2d = Field.FIELD2D.getObject("target pose");
+                robotFieldObject2d = Field.FIELD2D.getRobotObject();
+                targetFieldObject2d = Field.FIELD2D.getObject("target");
                 telemetryLogger = new Telemetry(MaxSpeed);
                 registerTelemetry(telemetryLogger::telemeterize);
         }
@@ -203,8 +200,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         @Override
         public void periodic() {
                 super.periodic();
-                targetObject2d.setPose(Field.getAllianceHubPose());
-                hubPub.set(new double [] {Field.getAllianceHubPose().getX(), Field.getAllianceHubPose().getY(), Field.getAllianceHubPose().getRotation().getDegrees()});
+                robotFieldObject2d.setPose(getPose());
         }
 
         /*---------------------------------- Custom Public Functions ----------------------------------*/
@@ -282,7 +278,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 Command c = new FunctionalCommand(
                                 () -> {
                                         timerElapsed = false;
-                                        targetObject2d.setPose(goalPose.get());
+                                        targetFieldObject2d.setPose(goalPose.get());
                                         alignTimer = new Timer();
                                         alignTimer.start();
 
