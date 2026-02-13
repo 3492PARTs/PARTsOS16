@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RuntimeType;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,6 +42,9 @@ import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
+import frc.robot.subsystems.Turret.Turret;
+import frc.robot.subsystems.Turret.TurretPhys;
+import frc.robot.subsystems.Turret.TurretSim;
 import frc.robot.util.Field;
 
 import org.parts3492.partslib.input.PARTsButtonBoxController;
@@ -51,10 +55,9 @@ import org.parts3492.partslib.network.PARTsNT;
 import org.parts3492.partslib.command.IPARTsSubsystem;
 
 public class RobotContainer {
-    private boolean visionAlignActive = true;
-    private BooleanSupplier visionAlignActiveBooleanSupplier = () -> visionAlignActive;
+    private FieldObject2d hubFieldObject2d;
 
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
+    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
     private final PARTsCommandController operatorController = new PARTsCommandController(1,
             RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
@@ -80,10 +83,13 @@ public class RobotContainer {
 
     private final Shooter shooter = Robot.isReal() ? new ShooterPhys() : new ShooterSim();
 
+    private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose())
+            : new TurretSim(drivetrain.supplierGetPose());
+
     // private final ShooterSysid shooter = new ShooterSysid(); //for sysid
 
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
-            Arrays.asList(candle, drivetrain, vision, shooter));
+            Arrays.asList(candle, drivetrain, vision, shooter, turret));
 
     /* End Subsystems */
 
@@ -92,8 +98,9 @@ public class RobotContainer {
         configureCandleBindings();
         configureShooterBindings();
         configureAutonomousCommands();
-        
-        // partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
+
+        partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
+        hubFieldObject2d = Field.FIELD2D.getObject("hub");
     }
 
     /* Configs */
@@ -121,7 +128,8 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
 
-        driveController.x().onTrue(drivetrain.targetPoseCommand(() -> Field.blueHubCenter, () -> driveController.y().getAsBoolean()));
+        driveController.x().onTrue(
+                drivetrain.targetPoseCommand(() -> Field.blueHubCenter, () -> driveController.y().getAsBoolean()));
         driveController.a().onTrue(drivetrain.commandSnapToAngle(90));
         driveController.b().onTrue(drivetrain.commandAlign(Field.getTag(28).getLocation().toPose2d()));
 
@@ -155,8 +163,8 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
-        //driveController.a().onTrue(shooter.shoot());
-        //driveController.b().onTrue(shooter.idle());
+        // driveController.a().onTrue(shooter.shoot());
+        // driveController.b().onTrue(shooter.idle());
 
         /*
          * operatorController.a().and(operatorController.rightBumper())
@@ -189,7 +197,6 @@ public class RobotContainer {
 
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());
-        partsNT.putBoolean("Vision Mode", visionAlignActive);
         partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage());
         partsNT.putBoolean("IsBlue", isBlue());
     }
@@ -248,6 +255,7 @@ public class RobotContainer {
     public void runOnEnabled() {
         setLimelightMainMode();
         setIdleCandleState();
+        hubFieldObject2d.setPose(Field.getAllianceHubPose());
         CommandScheduler.getInstance().schedule(new WaitCommand(2).andThen(Commands.runOnce(() -> {
             /*
              * if (!RobotContainer.isBlue()) {
