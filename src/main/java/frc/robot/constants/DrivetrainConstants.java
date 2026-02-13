@@ -8,12 +8,18 @@ public class DrivetrainConstants {
         public static final double MAX_ANGULAR_SPEED = Math.PI / 4; // Radians
         public static final double SPEED_PERCENT = 1; // percentage (0 to 1)
 
-        public static final double MAX_AIM_VELOCITY = 1.5 * Math.PI; // radd/s
-        public static final double MAX_AIM_ACCELERATION = Math.PI / 2; // rad/s^2
+        public static final double MAX_AIM_VELOCITY = 75 * Math.PI; // radd/s 50
+        public static final double MAX_AIM_ACCELERATION = 20 * Math.PI; // rad/s^2 10
         public static final double MAX_RANGE_VELOCITY = 2;// m/s
         public static final double MAX_RANGE_ACCELERATION = 2;// m/2^s
 
-        public static final double THETA_P = 5; // Proprotinal //4.5
+        /*SWERVE_CONSTANTS.MAX_DRIVING_VELOCITY_METERS_PER_SECOND = 5.41;
+            SWERVE_CONSTANTS.MAX_DRIVING_ACCELERATION_METERS_PER_SECOND_SQUARED = 32;
+            SWERVE_CONSTANTS.MAX_STEER_VELOCITY_RADIANS_PER_SECOND = 125.5 * 2 * Math.PI;
+            // max velocity in 1/10 sec
+            SWERVE_CONSTANTS.MAX_STEER_ACCELERATION_RADIANS_PER_SECOND_SQUARED = 10 * 125.5 * 2 * Math.PI;*/
+
+        public static final double THETA_P = 10; // Proprotinal //4.5 15
         public static final double THETA_I = 0; // Gradual corretction
         public static final double THETA_D = 0; // Smooth oscilattions
 

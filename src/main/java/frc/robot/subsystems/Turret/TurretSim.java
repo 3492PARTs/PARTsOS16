@@ -1,9 +1,13 @@
 package frc.robot.subsystems.Turret;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Pose2d;
+
 public class TurretSim extends Turret {
 
-    public TurretSim() {
-        super();
+    public TurretSim(Supplier<Pose2d> robotPoseSupplier) {
+        super(robotPoseSupplier);
 }
 
     @Override

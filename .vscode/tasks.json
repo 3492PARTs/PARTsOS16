@@ -1,0 +1,48 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Update Git Submodules",
+      "type": "shell",
+      "command": "git submodule update --init -r",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": true
+      }
+    },
+    {
+      "label": "Gradle Build Lib",
+      "type": "shell",
+      "command": "./gradlew PARTsLib:build",
+      "windows": {
+        "command": ".\\gradlew PARTsLib:build"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      }
+    },
+    {
+      "label": "Init Submodules",
+      "dependsOn": [
+        "Update Git Submodules",
+        "Gradle Build Lib"
+      ],
+      "dependsOrder": "sequence",
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
