@@ -125,10 +125,19 @@ public abstract class Turret extends PARTsSubsystem {
          * Rotation2d angleToTarget =
          * targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle();
          */
-        double angleToTarget = robotPoseSupplier.get().getRotation().getDegrees()
+        double angleToTarget = edu.wpi.first.math.MathUtil
+                .inputModulus(robotPoseSupplier.get().getRotation().getDegrees(), -180, 180)
                 - (Math.atan2(Field.getAllianceHubPose().getY() - robotPoseSupplier.get().getY(),
                         Field.getAllianceHubPose().getX() - robotPoseSupplier.get().getX()) * 180 / Math.PI);
         return angleToTarget;
+
+        /*if (angleToTarget > 180) {
+            return 180 - angleToTarget;
+        } else if (angleToTarget < -180) {
+            return 360 + angleToTarget;
+        } else {
+            return angleToTarget;
+        }*/
     }
     // endregion private functions
 }
