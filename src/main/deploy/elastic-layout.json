@@ -282,7 +282,7 @@
           {
             "title": "Match Time",
             "x": 768.0,
-            "y": 384.0,
+            "y": 512.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Match Time",
@@ -316,14 +316,34 @@
             "title": "Battery Voltage",
             "x": 640.0,
             "y": 384.0,
-            "width": 128.0,
+            "width": 256.0,
             "height": 128.0,
-            "type": "Text Display",
+            "type": "Voltage View",
             "properties": {
               "topic": "/PARTs/RobotContainer/Battery Voltage",
               "period": 0.06,
               "data_type": "double",
-              "show_submit_button": false
+              "min_value": 4.0,
+              "max_value": 13.0,
+              "divisions": 5,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "Time Left",
+            "x": 640.0,
+            "y": 512.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Match Time",
+            "properties": {
+              "topic": "/PARTs/Hub/Time Left",
+              "period": 0.06,
+              "data_type": "double",
+              "time_display_mode": "Minutes and Seconds",
+              "red_start_time": 5,
+              "yellow_start_time": 15
             }
           },
           {
@@ -334,7 +354,7 @@
             "height": 128.0,
             "type": "Boolean Box",
             "properties": {
-              "topic": "/PARTs/Robot/Hub Active",
+              "topic": "/PARTs/Hub/Hub Active",
               "period": 0.06,
               "data_type": "boolean",
               "true_color": 4283215696,

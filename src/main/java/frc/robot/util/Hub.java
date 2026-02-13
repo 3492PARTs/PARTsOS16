@@ -3,14 +3,19 @@ package frc.robot.util;
 import java.util.Optional;
 
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+import org.parts3492.partslib.network.PARTsNT;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.constants.FieldConstants;
 
 public class Hub {
     private static Pose2d hubPose2d = Field.getAllianceHubPose();
+    private static Timer timer = new Timer();
+    private static boolean previousHubActive = true;
+    private static PARTsNT partsNT = new PARTsNT("Hub");
 
     public static enum Targets {
         ZONE1(FieldConstants.ZONE1_RADIUS.to(PARTsUnitType.Meter)),
@@ -121,5 +126,22 @@ public class Hub {
             // End game, hub always active.
             return true;
         }
+    }
+
+    public static void startHubActiveTimer() {
+        timer.start();
+    }
+
+    public static void outputTelemetry() {
+        partsNT.putBoolean("Hub Active", Hub.isHubActive());
+        partsNT.putDouble("Time Left", timer.get() <=25 ? 25 - timer.get() : 0);
+        checkHubActivity();
+    }
+
+    public static void checkHubActivity() {
+        if (previousHubActive != Hub.isHubActive()) {
+            timer.restart();
+        }
+        previousHubActive = Hub.isHubActive();
     }
 }
