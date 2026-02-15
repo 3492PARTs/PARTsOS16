@@ -39,6 +39,12 @@ import frc.robot.subsystems.LimelightVision;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
+import frc.robot.subsystems.Hopper.Hopper;
+import frc.robot.subsystems.Hopper.HopperPhys;
+import frc.robot.subsystems.Hopper.HopperSim;
+import frc.robot.subsystems.Kicker.Kicker;
+import frc.robot.subsystems.Kicker.KickerPhys;
+import frc.robot.subsystems.Kicker.KickerSim;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
@@ -57,7 +63,7 @@ import org.parts3492.partslib.command.IPARTsSubsystem;
 public class RobotContainer {
     private FieldObject2d hubFieldObject2d;
 
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
+    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
     private final PARTsCommandController operatorController = new PARTsCommandController(1,
             RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
@@ -68,7 +74,7 @@ public class RobotContainer {
 
     private static Alliance alliance;
 
-    /* Subsystems */
+    //region Subsystems
 
     public final PARTsDrivetrain drivetrain = new PARTsDrivetrain(
             TunerConstants.DrivetrainConstants,
@@ -86,12 +92,15 @@ public class RobotContainer {
     private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose())
             : new TurretSim(drivetrain.supplierGetPose());
 
+    private final Kicker kicker = Robot.isReal() ? new KickerPhys() : new KickerSim();
+
+    private final Hopper hopper = Robot.isReal() ? new HopperPhys() : new HopperSim();
     // private final ShooterSysid shooter = new ShooterSysid(); //for sysid
 
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
-            Arrays.asList(candle, drivetrain, vision, shooter, turret));
+            Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper));
 
-    /* End Subsystems */
+    //endregion End Subsystems
 
     public RobotContainer() {
         configureDrivetrainBindings();
@@ -103,7 +112,7 @@ public class RobotContainer {
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
     }
 
-    /* Configs */
+    //region Configs
 
     private void configureDrivetrainBindings() {
 
@@ -187,13 +196,13 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
-    /* End Configs */
+    //endregion End Configs
 
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
 
-    /* Custom Public Functions */
+    //region Custom Public Functions
 
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());

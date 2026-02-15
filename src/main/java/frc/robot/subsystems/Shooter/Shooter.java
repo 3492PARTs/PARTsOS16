@@ -55,7 +55,6 @@ public abstract class Shooter extends PARTsSubsystem{
     public void log() {
         partsLogger.logString("Shooter State", shooterState.toString());
     }
-    //endregion
 
 
 
@@ -76,6 +75,7 @@ public abstract class Shooter extends PARTsSubsystem{
             setVoltage(voltage);
         }
     }
+    //endregion
 
     //region Custom Public Functions
     /** Sets the speed of the Shooter.
@@ -98,7 +98,7 @@ public abstract class Shooter extends PARTsSubsystem{
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Command Idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Command Shooter Idle", this.runOnce(() -> {
             shooterState = ShooterState.IDLE;
         }));
     }
