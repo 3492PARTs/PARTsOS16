@@ -10,16 +10,16 @@ import frc.robot.constants.ShooterConstants;
 public enum ShooterState {
     IDLE(0),
     DISABLED(0),
-    CHARGING(0),
-    SHOOTING(ShooterConstants.SHOOTER_SPEED);
+    CHARGING(ShooterConstants.SHOOTER_RPM),
+    SHOOTING(ShooterConstants.SHOOTER_RPM);
 
-    private final double speed;
-
-    ShooterState(double speed) {
-        this.speed = speed;
+    private final double rpm;
+    ShooterState(double rpm) {
+        this.rpm = rpm;
     }
     
-    public double getSpeed() {
-        return speed;
+
+    public double getRPM() {
+        return rpm;
     }
 }

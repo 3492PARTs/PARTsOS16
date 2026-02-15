@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -13,17 +14,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.constants.CameraConstants;
 import frc.robot.constants.CameraConstants.Camera;
+import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.VisionConstants;
+import frc.robot.util.Field;
 import frc.robot.util.LimelightHelpers;
-import frc.robot.util.Field.Field;
 import frc.robot.util.LimelightHelpers.PoseEstimate;
-import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
-import frc.robot.util.PARTs.Classes.Abstracts.PARTsSubsystem;
+import org.parts3492.partslib.command.PARTsCommandUtils;
+import org.parts3492.partslib.command.PARTsSubsystem;
 
 public class LimelightVision extends PARTsSubsystem {
 
     private final Supplier<Pose2d> poseSupplier;
-    private final BiConsumer<Pose2d, Double> addVisionMeasurementBiConsumer;
+    private final BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction;
     private final Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer;
     private final Consumer<Pose2d> resetPoseConsumer;
 
@@ -33,8 +35,8 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public enum WhitelistMode {
-        BLUE_REEF_TAGS(Field.BLUE_REEF_TAG_IDS),
-        RED_REEF_TAGS(Field.RED_REEF_TAG_IDS),
+        BLUE_HUB_TAGS(Field.BLUE_HUB_TAG_IDS),
+        RED_HUB_TAGS(Field.RED_HUB_TAG_IDS),
         ALL(Field.getAllTagIDs()),
         NONE(new int[0]);
 
@@ -54,11 +56,11 @@ public class LimelightVision extends PARTsSubsystem {
     private int imuMode;
     private int maxTagCount;
 
-    public LimelightVision(Supplier<Pose2d> poseSupplier, BiConsumer<Pose2d, Double> addVisionMeasurementBiConsumer,
+    public LimelightVision(Supplier<Pose2d> poseSupplier, BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
             Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer, Consumer<Pose2d> resetPoseConsumer) {
         super("LimelightVision");
         this.poseSupplier = poseSupplier;
-        this.addVisionMeasurementBiConsumer = addVisionMeasurementBiConsumer;
+        this.addVisionMeasurementBiFunction = addVisionMeasurementBiFunction;
         this.setVisionMeasurementStdDevsConsumer = setVisionMeasurementStdDevsConsumer;
         this.resetPoseConsumer = resetPoseConsumer;
         for (Camera camera : CameraConstants.LimelightCameras) {
@@ -79,9 +81,11 @@ public class LimelightVision extends PARTsSubsystem {
         setWhitelistMode(WhitelistMode.ALL);
         setIMUMode(1);
 
-        //elastic crashes :(
-        //super.partsNT.putSmartDashboardSendable("Set MT-1", commandMegaTagMode(MegaTagMode.MEGATAG1));
-        //super.partsNT.putSmartDashboardSendable("Set MT-2", commandMegaTagMode(MegaTagMode.MEGATAG2));
+        // elastic crashes :(
+        // super.partsNT.putSmartDashboardSendable("Set MT-1",
+        // commandMegaTagMode(MegaTagMode.MEGATAG1));
+        // super.partsNT.putSmartDashboardSendable("Set MT-2",
+        // commandMegaTagMode(MegaTagMode.MEGATAG2));
     }
 
     public void setMegaTagMode(MegaTagMode mode) {
@@ -105,11 +109,11 @@ public class LimelightVision extends PARTsSubsystem {
     public void setWhitelistMode(WhitelistMode mode) {
         this.whitelistMode = mode;
         switch (mode) {
-            case BLUE_REEF_TAGS:
-                setTagWhitelist(WhitelistMode.BLUE_REEF_TAGS.getIds());
+            case BLUE_HUB_TAGS:
+                setTagWhitelist(WhitelistMode.BLUE_HUB_TAGS.getIds());
                 break;
-            case RED_REEF_TAGS:
-                setTagWhitelist(WhitelistMode.RED_REEF_TAGS.getIds());
+            case RED_HUB_TAGS:
+                setTagWhitelist(WhitelistMode.RED_HUB_TAGS.getIds());
                 break;
             case ALL:
                 setTagWhitelist(WhitelistMode.ALL.getIds());
@@ -146,15 +150,11 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public PoseEstimate getMegaTag1PoseEstimate(String limelightName) {
-        return RobotContainer.isBlue()
-                ? LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName)
-                : LimelightHelpers.getBotPoseEstimate_wpiRed(limelightName);
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue(limelightName);
     }
 
     private PoseEstimate getMegaTag2PoseEstimate(String limelightName) {
-        return RobotContainer.isBlue()
-                ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName)
-                : LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(limelightName);
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelightName);
     }
 
     private boolean robotIsOnBlueSide() {
@@ -163,11 +163,11 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     private void updateWhitelistMode() {
-        if (robotIsOnBlueSide() && getWhitelistMode() == WhitelistMode.RED_REEF_TAGS) {
-            setWhitelistMode(WhitelistMode.BLUE_REEF_TAGS);
+        if (robotIsOnBlueSide() && getWhitelistMode() == WhitelistMode.RED_HUB_TAGS) {
+            setWhitelistMode(WhitelistMode.BLUE_HUB_TAGS);
         }
-        if (!robotIsOnBlueSide() && getWhitelistMode() == WhitelistMode.BLUE_REEF_TAGS) {
-            setWhitelistMode(WhitelistMode.RED_REEF_TAGS);
+        if (!robotIsOnBlueSide() && getWhitelistMode() == WhitelistMode.BLUE_HUB_TAGS) {
+            setWhitelistMode(WhitelistMode.RED_HUB_TAGS);
         }
     }
 
@@ -188,12 +188,18 @@ public class LimelightVision extends PARTsSubsystem {
     public void periodic() {
         this.maxTagCount = 0;
 
-        //updateWhitelistMode();
+        updateWhitelistMode();
+        partsNT.putNumber("Robot Rotation (deg)",
+                (poseSupplier.get().getRotation().getDegrees()) % 360);
 
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
-                    (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360,
+                    // i think this is still needed b/c if we always assume blue on red we start
+                    // backwards.
+                    (poseSupplier.get().getRotation().getDegrees()) % 360,
+                    // we may need to consider these values for when we go ove the bump
+                    // if we are at an angle on the bump it could throw our esimates off
                     0,
                     0,
                     0,
@@ -204,14 +210,20 @@ public class LimelightVision extends PARTsSubsystem {
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
 
+                partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX());
+                partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY());
+                partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
+
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
-                    addVisionMeasurementBiConsumer.accept(poseEstimate.pose, poseEstimate.timestampSeconds);
+                    boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose, poseEstimate.timestampSeconds);
 
                     partsNT.putBoolean(camera.getName() + "/Has Data", true);
+                    partsNT.putBoolean(camera.getName() + "/Accepted Data", success);
                     partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount);
 
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
                 } else {
+                    partsNT.putBoolean(camera.getName() + "/Accepted Data", false);
                     partsNT.putBoolean(camera.getName() + "/Has Data", false);
                     partsNT.putNumber(camera.getName() + "/Tag Count", 0);
                 }
@@ -228,20 +240,19 @@ public class LimelightVision extends PARTsSubsystem {
 
     @Override
     public void stop() {
-        // TODO Auto-generated method stub
-        //throw new UnsupportedOperationException("Unimplemented method 'stop'");
+        setPipelineIndex(Pipelines.VIEWING);
     }
 
     @Override
     public void reset() {
         // TODO Auto-generated method stub
-        //throw new UnsupportedOperationException("Unimplemented method 'reset'");
+        // throw new UnsupportedOperationException("Unimplemented method 'reset'");
     }
 
     @Override
     public void log() {
         // TODO Auto-generated method stub
-        //throw new UnsupportedOperationException("Unimplemented method 'log'");
+        // throw new UnsupportedOperationException("Unimplemented method 'log'");
     }
 
     public void resetRobotPose() {
@@ -249,7 +260,7 @@ public class LimelightVision extends PARTsSubsystem {
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
-                    (poseSupplier.get().getRotation().getDegrees() + (RobotContainer.isBlue() ? 0 : 180)) % 360,
+                    (poseSupplier.get().getRotation().getDegrees()) % 360,
                     0,
                     0,
                     0,
@@ -272,5 +283,15 @@ public class LimelightVision extends PARTsSubsystem {
             }
         }
         setMegaTagMode(MegaTagMode.MEGATAG2);
+    }
+
+    public void setPipelineIndex(Pipelines pipeline) {
+        partsNT.putString("Pipeline name", pipeline.name());
+        for (Camera camera : CameraConstants.LimelightCameras) {
+            if (camera.isEnabled()) {
+                LimelightHelpers.setLEDMode_PipelineControl(camera.getName());
+                LimelightHelpers.setPipelineIndex(camera.getName(), pipeline.getIndex());
+            }
+        }
     }
 }

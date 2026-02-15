@@ -19,14 +19,19 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RuntimeType;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.RobotConstants;
+import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.generated.TunerConstants;
 import frc.robot.states.CandleState;
 import frc.robot.subsystems.Candle;
@@ -37,31 +42,31 @@ import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
-import frc.robot.util.PARTs.Classes.PARTsButtonBoxController;
-import frc.robot.util.PARTs.Classes.PARTsCommandController;
-import frc.robot.util.PARTs.Classes.PARTsController.ControllerType;
-import frc.robot.util.PARTs.Classes.PARTsDashboard;
-import frc.robot.util.PARTs.Classes.PARTsNT;
-import frc.robot.util.PARTs.Interfaces.IPARTsSubsystem;
+import frc.robot.subsystems.Turret.Turret;
+import frc.robot.subsystems.Turret.TurretPhys;
+import frc.robot.subsystems.Turret.TurretSim;
+import frc.robot.util.Field;
+
+import org.parts3492.partslib.input.PARTsButtonBoxController;
+import org.parts3492.partslib.input.PARTsCommandController;
+import org.parts3492.partslib.input.PARTsController.ControllerType;
+import org.parts3492.partslib.network.PARTsDashboard;
+import org.parts3492.partslib.network.PARTsNT;
+import org.parts3492.partslib.command.IPARTsSubsystem;
 
 public class RobotContainer {
-    private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top
-                                                                                        // speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
-                                                                                      // max angular velocity
+    private FieldObject2d hubFieldObject2d;
 
-    private boolean visionAlignActive = true;
-    private BooleanSupplier visionAlignActiveBooleanSupplier = () -> visionAlignActive;
-
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
-    private final PARTsCommandController operatorController = new PARTsCommandController(1, ControllerType.XBOX);
+    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
+    private final PARTsCommandController operatorController = new PARTsCommandController(1,
+            RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
 
     private PARTsNT partsNT = new PARTsNT("RobotContainer");
 
     private SendableChooser<Command> autoChooser;
 
-     private static Alliance alliance;
+    private static Alliance alliance;
 
     //region Subsystems
 
@@ -71,16 +76,20 @@ public class RobotContainer {
             TunerConstants.BackRight);
 
     private final LimelightVision vision = new LimelightVision(drivetrain.supplierGetPose(),
-            drivetrain.biConsumerAddVisionMeasurement(), drivetrain.consumerSetVisionMeasurementStdDevs(),
+            drivetrain.bifunctionAddVisionMeasurement(), drivetrain.consumerSetVisionMeasurementStdDevs(),
             drivetrain.consumerResetPose());
 
     public final Candle candle = new Candle();
 
     private final Shooter shooter = Robot.isReal() ? new ShooterPhys() : new ShooterSim();
 
-     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
-                        Arrays.asList(candle, drivetrain, vision, shooter));
+    private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose())
+            : new TurretSim(drivetrain.supplierGetPose());
 
+    // private final ShooterSysid shooter = new ShooterSysid(); //for sysid
+
+    private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
+            Arrays.asList(candle, drivetrain, vision, shooter, turret));
 
     //endregion End Subsystems
 
@@ -88,8 +97,10 @@ public class RobotContainer {
         configureDrivetrainBindings();
         configureCandleBindings();
         configureShooterBindings();
+        configureAutonomousCommands();
 
-        // partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
+        partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
+        hubFieldObject2d = Field.FIELD2D.getObject("hub");
     }
 
     //region Configs
@@ -109,13 +120,18 @@ public class RobotContainer {
         // candle.removeState(CandleState.FINE_GRAIN_DRIVE)));
 
         // brakes swerve, puts modules into x configuration
-        //driveController.a().whileTrue(drivetrain.commandBrake());
+        // driveController.a().whileTrue(drivetrain.commandBrake());
 
         // manual module direction control
-        //driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
+        // driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
 
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
+
+        driveController.x().onTrue(
+                drivetrain.targetPoseCommand(() -> Field.blueHubCenter, () -> driveController.y().getAsBoolean()));
+        driveController.a().onTrue(drivetrain.commandSnapToAngle(90));
+        driveController.b().onTrue(drivetrain.commandAlign(Field.getTag(28).getLocation().toPose2d()));
 
         /*
          * if (RobotConstants.DEBUGGING) {
@@ -147,8 +163,19 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
-        driveController.a().onTrue(shooter.shoot());
-        driveController.b().onTrue(shooter.idle());
+        // driveController.a().onTrue(shooter.shoot());
+        // driveController.b().onTrue(shooter.idle());
+
+        /*
+         * operatorController.a().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         * operatorController.b().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         * operatorController.x().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * operatorController.y().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         */
     }
 
     private void configureCandleBindings() {
@@ -170,12 +197,13 @@ public class RobotContainer {
 
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());
-        partsNT.putBoolean("Vision Mode", visionAlignActive);
         partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage());
+        partsNT.putBoolean("IsBlue", isBlue());
     }
 
     public void stop() {
         subsystems.forEach(s -> s.stop());
+        setMegaTagMode(MegaTagMode.MEGATAG1);
     }
 
     public void log() {
@@ -219,5 +247,22 @@ public class RobotContainer {
             alliance = DriverStation.getAlliance().get();
         }
     }
-    //endregion
+
+    public void setLimelightMainMode() {
+        vision.setPipelineIndex(Pipelines.MAIN);
+    }
+
+    public void runOnEnabled() {
+        setLimelightMainMode();
+        setIdleCandleState();
+        hubFieldObject2d.setPose(Field.getAllianceHubPose());
+        CommandScheduler.getInstance().schedule(new WaitCommand(2).andThen(Commands.runOnce(() -> {
+            /*
+             * if (!RobotContainer.isBlue()) {
+             * drivetrain.resetPose(drivetrain.getPose().rotateBy(new Rotation2d(Math.PI)));
+             * }
+             */
+            setMegaTagMode(MegaTagMode.MEGATAG2);
+        })));
+    }
 }
