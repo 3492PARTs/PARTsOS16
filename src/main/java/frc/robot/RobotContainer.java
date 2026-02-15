@@ -39,6 +39,9 @@ import frc.robot.subsystems.LimelightVision;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
+import frc.robot.subsystems.Kicker.Kicker;
+import frc.robot.subsystems.Kicker.KickerPhys;
+import frc.robot.subsystems.Kicker.KickerSim;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
@@ -86,10 +89,11 @@ public class RobotContainer {
     private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose())
             : new TurretSim(drivetrain.supplierGetPose());
 
+    private final Kicker kicker = Robot.isReal() ? new KickerPhys() : new KickerSim();
     // private final ShooterSysid shooter = new ShooterSysid(); //for sysid
 
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
-            Arrays.asList(candle, drivetrain, vision, shooter, turret));
+            Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker));
 
     /* End Subsystems */
 

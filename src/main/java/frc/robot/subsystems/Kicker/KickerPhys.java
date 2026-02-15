@@ -1,5 +1,8 @@
 package frc.robot.subsystems.Kicker;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -10,28 +13,21 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import frc.robot.constants.KickerConstants;
 
 public class KickerPhys extends Kicker {
-    protected final SparkMax kickerMotor;
-
-    protected final RelativeEncoder kickerEncoder;
+    protected final TalonFX kickerMotor;
 
     public KickerPhys() {
         super();
-
-        SparkMaxConfig kickerConfig = new SparkMaxConfig();
-        kickerConfig.idleMode(IdleMode.kCoast);
-
-        kickerMotor = new SparkMax(KickerConstants.KICKER_MOTOR_ID,
-                MotorType.kBrushless);
-        kickerEncoder = kickerMotor.getEncoder();
-        kickerMotor.configure(kickerConfig, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        kickerMotor = new TalonFX(KickerConstants.KICKER_MOTOR_ID);
+        kickerMotor.getConfigurator().apply(config);
     }
 
     @Override
     public void outputTelemetry() {
-        partsNT.putDouble("KickerCurrent", kickerMotor.getOutputCurrent());
+        partsNT.putDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble());
 
-        partsNT.putDouble("KickerOutput", kickerMotor.getAppliedOutput());
+        partsNT.putDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble());
     }
 
     @Override
@@ -46,8 +42,8 @@ public class KickerPhys extends Kicker {
 
     @Override
     public void log() {
-        partsLogger.logDouble("KickerCurrent", kickerMotor.getOutputCurrent());
+        partsLogger.logDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble());
 
-        partsLogger.logDouble("KickerOutput", kickerMotor.getAppliedOutput());
+        partsLogger.logDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble());
     }
 }

@@ -1,9 +1,13 @@
 package frc.robot.subsystems.Kicker;
 
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+import org.parts3492.partslib.command.PARTsCommandUtils;
+import org.parts3492.partslib.command.PARTsSubsystem;
+
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.RobotConstants;
+import frc.robot.constants.ShooterConstants;
 import frc.robot.states.KickerState;
-import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
-import frc.robot.util.PARTs.Classes.Abstracts.PARTsSubsystem;
 
 public abstract class Kicker extends PARTsSubsystem {
 
@@ -11,6 +15,10 @@ public abstract class Kicker extends PARTsSubsystem {
 
     public Kicker() {
         super("Kicker");
+
+        if (RobotConstants.DEBUGGING) {
+            partsNT.putDouble("Kicker Speed", 0);
+        }
     }
 
     // region Generic Subsystem Functions
@@ -37,7 +45,11 @@ public abstract class Kicker extends PARTsSubsystem {
 
     @Override
     public void periodic() {
-        switch (kickerState) {
+        if (RobotConstants.DEBUGGING) {
+            setSpeed(partsNT.getDouble("Kicker Speed"));
+        }
+        else {
+            switch (kickerState) {
             case ROLLING:
                 setSpeed(kickerState.getSpeed());
                 break;
@@ -50,6 +62,7 @@ public abstract class Kicker extends PARTsSubsystem {
             default:
                 setSpeed(0);
                 break;
+        }
         }
     }
 
