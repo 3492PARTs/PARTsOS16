@@ -27,11 +27,9 @@ public abstract class Turret extends PARTsSubsystem {
 
     public Turret(Supplier<Pose2d> robotPoseSupplier) {
         super("Turret", RobotConstants.LOGGING);
-        /*
-         * if (RobotConstants.DEBUGGING) {
-         * partsNT.putDouble("Turret Speed", 0);
-         * }
-         */
+         if (RobotConstants.DEBUGGING) {
+         partsNT.putDouble("Turret Speed", 0);
+        }
 
         this.robotPoseSupplier = robotPoseSupplier;
 
