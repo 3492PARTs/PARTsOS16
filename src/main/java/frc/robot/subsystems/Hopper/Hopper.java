@@ -4,6 +4,7 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.RobotConstants;
 import frc.robot.states.HopperState;
 
 public abstract class Hopper extends PARTsSubsystem {
@@ -11,6 +12,10 @@ public abstract class Hopper extends PARTsSubsystem {
 
     public Hopper () {
         super("Hopper");
+
+        if (RobotConstants.DEBUGGING) {
+            partsNT.putDouble("Hopper Speed", 0);
+        }
     }
 
     //region Generic Subsystem Functions
@@ -36,7 +41,11 @@ public abstract class Hopper extends PARTsSubsystem {
 
     @Override
     public void periodic() {
-        switch(hopperstate) {
+        if (RobotConstants.DEBUGGING) {
+            setSpeed(partsNT.getDouble("Hopper Speed"));
+        }
+        else {
+            switch(hopperstate) {
             case DISABLED:
                 setSpeed(hopperstate.getSpeed());
                 break;
@@ -52,7 +61,7 @@ public abstract class Hopper extends PARTsSubsystem {
             default:
                 setSpeed(0);
                 break;
-            
+        }
         }
     }
     //endregion
