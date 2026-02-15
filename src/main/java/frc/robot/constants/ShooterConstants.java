@@ -5,8 +5,8 @@ import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 public class ShooterConstants {
     public static final double SHOOTER_RPM = 3000; 
-    public static final int LEFT_MOTOR_ID = 3;
-    public static final int RIGHT_MOTOR_ID = 5;
+    public static final int LEFT_MOTOR_ID = 33;
+    public static final int RIGHT_MOTOR_ID = 0;
 
 
     public static final PARTsUnit SHOOTER_WHEEL_RADIUS = new PARTsUnit(1.5, PARTsUnitType.Inch);
