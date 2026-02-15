@@ -1,7 +1,7 @@
 package frc.robot.constants;
 
-import frc.robot.util.PARTs.Classes.PARTsUnit;
-import frc.robot.util.PARTs.Classes.PARTsUnit.PARTsUnitType;
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 public class RobotConstants {
         public static final PARTsUnit HALF_ROBOT_WIDTH = new PARTsUnit(13.5, PARTsUnitType.Inch);
@@ -12,6 +12,6 @@ public class RobotConstants {
                         PARTsUnitType.Inch);
 
         public static boolean LOGGING = true;
-        public static boolean DEBUGGING = true;
+        public static boolean DEBUGGING = false;
         public static boolean ALLOW_AUTO_CONTROLLER_DETECTION = false;
 }
