@@ -1,14 +1,10 @@
 package frc.robot.subsystems.Shooter;
 
-import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.wpilibj.PowerDistribution;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterPhys extends Shooter {
@@ -20,6 +16,11 @@ public class ShooterPhys extends Shooter {
 
         leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR_ID);
         rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID);
+
+        //rightMotor.setControl(new Follower(ShooterConstants.LEFT_MOTOR_ID, MotorAlignmentValue.Opposed));
+
+        leftMotor.setNeutralMode(NeutralModeValue.Coast);
+        rightMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     @Override
