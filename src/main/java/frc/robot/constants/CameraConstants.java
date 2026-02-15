@@ -54,12 +54,12 @@ public interface CameraConstants {
             new Camera(CameraName.RIGHT_FRONT_CAMERA.getCameraName(),
                     new Pose3d(.343, -.1905, .22225, // meters
                             new Rotation3d(0, Units.degreesToRadians(15), 0)),
-                    true),
+                    false),
             new Camera(CameraName.RIGHT_SIDE_CAMERA.getCameraName(),
                     new Pose3d(.22225, -.3302, .22225, // meters
                             new Rotation3d(0, Units.degreesToRadians(15),
                                     Units.degreesToRadians(-90))),        
-                    true),
+                    false),
             new Camera(CameraName.FRONT_CENTER_CAMERA.getCameraName(),
                     new Pose3d(-.265, 0, .545, // meters
                             new Rotation3d(0, 0,
