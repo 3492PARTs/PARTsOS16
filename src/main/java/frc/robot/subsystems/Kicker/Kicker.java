@@ -47,22 +47,21 @@ public abstract class Kicker extends PARTsSubsystem {
     public void periodic() {
         if (RobotConstants.DEBUGGING) {
             setSpeed(partsNT.getDouble("Kicker Speed"));
-        }
-        else {
+        } else {
             switch (kickerState) {
-            case ROLLING:
-                setSpeed(kickerState.getSpeed());
-                break;
-            case DISABLED:
-                setSpeed(kickerState.getSpeed());
-                break;
-            case IDLE:
-                setSpeed(kickerState.getSpeed());
-                break;
-            default:
-                setSpeed(0);
-                break;
-        }
+                case ROLLING:
+                    setSpeed(kickerState.getSpeed());
+                    break;
+                case DISABLED:
+                    setSpeed(kickerState.getSpeed());
+                    break;
+                case IDLE:
+                    setSpeed(kickerState.getSpeed());
+                    break;
+                default:
+                    setSpeed(0);
+                    break;
+            }
         }
     }
 
