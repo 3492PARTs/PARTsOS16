@@ -6,7 +6,9 @@ import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.network.PARTsNT;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 
@@ -18,7 +20,10 @@ public class IntakePhys extends Intake {
 
     public IntakePhys() {
         super();
+        TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
         intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
+        intakeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        intakeMotor.getConfigurator().apply(intakeConfig);
         pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
     }
 
@@ -72,5 +77,10 @@ public class IntakePhys extends Intake {
         
         partsLogger.logDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble());
         partsLogger.logDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble());
+    }
+
+    @Override
+    public void setPivotSpeed(double speed) {
+        pivotMotor.set(speed);
     }
 }

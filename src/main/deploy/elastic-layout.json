@@ -1826,6 +1826,92 @@
           }
         ]
       }
+    },
+    {
+      "name": "Debug Hopper",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Hopper Speed",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Hopper/Hopper Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Debug Intake",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Intake State",
+            "x": 576.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Intake/Intake State",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Pivot Position",
+            "x": 576.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Intake/Pivot Position",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Pivot Speed",
+            "x": 448.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Intake/Pivot Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Intake Speed",
+            "x": 448.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Intake/Intake Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          }
+        ]
+      }
     }
   ]
 }
