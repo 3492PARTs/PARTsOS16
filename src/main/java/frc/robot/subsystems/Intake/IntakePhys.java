@@ -25,6 +25,10 @@ public class IntakePhys extends Intake {
         intakeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         intakeMotor.getConfigurator().apply(intakeConfig);
         pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
+        TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
+        pivotMotor.getConfigurator().apply(pivotConfig);
+        pivotMotor.getConfigurator().setPosition(0);
+    
     }
 
     @Override
@@ -44,7 +48,7 @@ public class IntakePhys extends Intake {
 
     @Override
     public PARTsUnit getPivotPosition() {
-        return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble(), PARTsUnitType.Rotations);
+        return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO, PARTsUnitType.Rotations);
     }
 
     @Override
