@@ -1,7 +1,9 @@
 package frc.robot.subsystems.Shooter;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -9,28 +11,30 @@ import frc.robot.constants.ShooterConstants;
 
 public class ShooterPhys extends Shooter {
     protected final TalonFX leftMotor;
-    protected final TalonFX rightMotor;
+    //protected final TalonFX rightMotor;
 
     public ShooterPhys() {
         super();
-
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR_ID);
-        rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID);
+        leftMotor.getConfigurator().apply(config);
+        //rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID);
 
         //rightMotor.setControl(new Follower(ShooterConstants.LEFT_MOTOR_ID, MotorAlignmentValue.Opposed));
 
         leftMotor.setNeutralMode(NeutralModeValue.Coast);
-        rightMotor.setNeutralMode(NeutralModeValue.Coast);
+        //rightMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
         partsNT.putDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble());
-        partsNT.putDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble());
+        //partsNT.putDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble());
 
         partsNT.putDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble());
-        partsNT.putDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble());
+        //partsNT.putDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble());
     }
 
     @Override
@@ -62,9 +66,9 @@ public class ShooterPhys extends Shooter {
     public void log() {
         super.log();
         partsLogger.logDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble());
-        partsLogger.logDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble());
+        //partsLogger.logDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble());
 
         partsLogger.logDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble());
-        partsLogger.logDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble());
+        //partsLogger.logDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble());
     }
 }
