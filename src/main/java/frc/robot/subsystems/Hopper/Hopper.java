@@ -1,9 +1,10 @@
 package frc.robot.subsystems.Hopper;
 
+import org.parts3492.partslib.command.PARTsCommandUtils;
+import org.parts3492.partslib.command.PARTsSubsystem;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.states.HopperState;
-import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
-import frc.robot.util.PARTs.Classes.Abstracts.PARTsSubsystem;
 
 public abstract class Hopper extends PARTsSubsystem {
     private HopperState hopperstate = HopperState.IDLE;
