@@ -9,9 +9,10 @@ import java.util.Set;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.constants.CandleConstants;
 import frc.robot.states.CandleState;
-import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
-import frc.robot.util.PARTs.Classes.Abstracts.PARTsCandle;
+import org.parts3492.partslib.command.PARTsCommandUtils;
+import org.parts3492.partslib.PARTsCandle;
 
 /** Add your docs here. */
 public class Candle extends PARTsCandle {
@@ -19,7 +20,7 @@ public class Candle extends PARTsCandle {
     private Set<CandleState> candleStates = new HashSet<>();
 
     public Candle() {
-        super("Candle");
+        super("Candle", CandleConstants.CAN_ID, CandleConstants.LED_LENGTH);
     }
 
     /*---------------------------------- Custom Public Functions ----------------------------------*/

@@ -1,39 +1,63 @@
 package frc.robot.subsystems.Shooter;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
+import frc.robot.constants.ShooterConstants;
 import frc.robot.states.ShooterState;
-import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
+
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+import org.parts3492.partslib.command.PARTsCommandUtils;
 import frc.robot.states.ShooterState;
-import frc.robot.util.PARTs.Classes.Abstracts.PARTsSubsystem;
+import org.parts3492.partslib.command.PARTsSubsystem;
 
 public abstract class Shooter extends PARTsSubsystem{
     private ShooterState shooterState = ShooterState.IDLE;
 
+    private PIDController shooterPIDController;
+    private SimpleMotorFeedforward shooterFeedforward;
+
     public Shooter() {
-        super("Shooter");
+        super("Shooter", RobotConstants.LOGGING);
         if (RobotConstants.DEBUGGING) {
             partsNT.putDouble("Shooter Speed", 0);
         }
+
+        shooterPIDController = new PIDController(ShooterConstants.P, ShooterConstants.I, ShooterConstants.D);
+        shooterFeedforward = new SimpleMotorFeedforward(ShooterConstants.S, ShooterConstants.V, ShooterConstants.A);
+
+        shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
     }
 
     //region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
+        partsNT.putString("Shooter State", shooterState.toString());
+        partsNT.putDouble("RPM", getRPM());
+        partsNT.putDouble("Voltage", getVoltage());
+        partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint());
+        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint());
+        partsNT.putDouble("Current Error", shooterPIDController.getError());
     }
 
     @Override
     public void stop() {
+        shooterState = ShooterState.DISABLED;
     }
 
     @Override
     public void reset() {
+        shooterState = ShooterState.IDLE;
     }
 
     @Override
     public void log() {
+        partsLogger.logString("Shooter State", shooterState.toString());
     }
     //endregion
+
+
 
     @Override
     public void periodic() {
@@ -41,24 +65,15 @@ public abstract class Shooter extends PARTsSubsystem{
             setSpeed(partsNT.getDouble("Shooter Speed"));
         }
         else {
-            switch (shooterState) {
-                case CHARGING:
-                    setSpeed(shooterState.getSpeed());
-                    break;
-                case DISABLED:
-                    setSpeed(shooterState.getSpeed());
-                    break;
-                case IDLE:
-                    setSpeed(shooterState.getSpeed());
-                    break;
-                case SHOOTING:
-                    setSpeed(shooterState.getSpeed());
-                    break;
-                default:
-                    setSpeed(0);
-                    break;
+            double voltage = 0;
+            shooterPIDController.setSetpoint(shooterState.getRPM());
 
-            }
+            double pidCalc = shooterPIDController.calculate(getRPM(), shooterState.getRPM());
+            double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
+
+            voltage = pidCalc + ffCalc;
+
+            setVoltage(voltage);
         }
     }
 
@@ -67,6 +82,12 @@ public abstract class Shooter extends PARTsSubsystem{
      * @param speed The speed between <code>-1.0</code> and <code>1.0</code>.
     */
     protected abstract void setSpeed(double speed);
+
+    protected abstract void setVoltage(double voltage);
+
+    protected abstract double getVoltage();
+
+    protected abstract double getRPM();
 
     public ShooterState getState() { return shooterState; }
 
