@@ -14,6 +14,10 @@ import edu.wpi.first.wpilibj.motorcontrol.Talon;
 
 import frc.robot.constants.IntakeConstants;
 
+/**
+ * The physical intake subsystem.<p>
+ * WARNING: The pivot arm MUST be in home position when the robot starts.
+ */
 public class IntakePhys extends Intake {
     TalonFX intakeMotor;
     TalonFX pivotMotor;
