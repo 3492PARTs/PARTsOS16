@@ -10,9 +10,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.RobotConstants;
-import frc.robot.constants.ShooterConstants;
 import frc.robot.states.IntakeState;
-import frc.robot.states.ShooterState;
 
 public abstract class Intake extends PARTsSubsystem {
 
@@ -104,6 +102,12 @@ public abstract class Intake extends PARTsSubsystem {
     public Command intake() {
         return PARTsCommandUtils.setCommandName("Command Intake", this.runOnce(() -> {
             intakeState = IntakeState.INTAKING;
+        }));
+    }
+
+    public Command intakeShooting() {
+        return PARTsCommandUtils.setCommandName("Command IntakeShooting", this.runOnce(() -> {
+            intakeState = IntakeState.SHOOTING;
         }));
     }
 }

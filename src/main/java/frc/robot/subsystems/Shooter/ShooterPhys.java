@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Shooter;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -7,14 +9,15 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterPhys extends Shooter {
     protected final TalonFX leftMotor;
     protected final TalonFX rightMotor;
 
-    public ShooterPhys() {
-        super();
+    public ShooterPhys(Supplier <Pose2d> poseSupplier) {
+        super(poseSupplier);
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);

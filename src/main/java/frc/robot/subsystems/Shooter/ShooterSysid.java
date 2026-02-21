@@ -4,6 +4,9 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutLinearVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
@@ -24,8 +27,8 @@ public class ShooterSysid extends ShooterPhys {
     private SysIdRoutine routine;
 
 
-    public ShooterSysid() {
-        super();
+    public ShooterSysid(Supplier <Pose2d> poseSupplier) {
+        super(poseSupplier);
 
         appliedVoltage = Volts.mutable(0);
 

@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.constants.TurretConstants;
@@ -18,13 +19,14 @@ public class TurretPhys extends Turret {
         TalonFXConfiguration turretConfig = new TalonFXConfiguration();
         turretMotor.getConfigurator().apply(turretConfig);
         turretMotor.getConfigurator().setPosition(0);
+        turretMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
         partsNT.putDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble());
-        
+
         partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble());
     }
 

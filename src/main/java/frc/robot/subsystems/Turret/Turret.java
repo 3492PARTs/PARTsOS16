@@ -76,7 +76,7 @@ public abstract class Turret extends PARTsSubsystem {
                     setSpeed(0);
                     break;
                 case TRACKING:
-                    if (Math.abs(getAngleToTarget()) <= 90) {
+                    if (isValidAngle()) {
                         turretPIDController.setSetpoint(getAngleToTarget());
                         double pidCalc = turretPIDController.calculate(getAngle(), getAngleToTarget());
                         double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
@@ -112,6 +112,10 @@ public abstract class Turret extends PARTsSubsystem {
     protected abstract double getVoltage();
 
     protected abstract double getAngle();
+
+    public boolean isValidAngle() {
+        return Math.abs(getAngleToTarget()) <= 90;
+    }
 
     public TurretState getState() {
         return turretState;

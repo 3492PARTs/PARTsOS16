@@ -5,6 +5,7 @@
 package frc.robot.states;
 
 import frc.robot.constants.ShooterConstants;
+import frc.robot.util.Hub.Targets;
 
 /** The state that the Shooter is in. */
 public enum ShooterState {
@@ -21,5 +22,23 @@ public enum ShooterState {
 
     public double getRPM() {
         return rpm;
+    }
+
+    public double getZoneRPM(Targets zone) {
+        if (zone == null) {
+            return 0;
+        }
+        switch (zone) {
+            case ZONE1:
+                return 1;
+            case ZONE2:
+                return 2;
+            case ZONE3:
+                return 3;
+            case ZONE4:
+                return 4;
+            default:
+            return 0;
+        }
     }
 }

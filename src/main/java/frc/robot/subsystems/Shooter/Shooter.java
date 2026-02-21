@@ -2,10 +2,15 @@ package frc.robot.subsystems.Shooter;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.states.ShooterState;
+import frc.robot.util.Hub;
+import frc.robot.util.Hub.Targets;
+
+import java.util.function.Supplier;
 
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
@@ -16,9 +21,11 @@ public abstract class Shooter extends PARTsSubsystem {
 
     private PIDController shooterPIDController;
     private SimpleMotorFeedforward shooterFeedforward;
+    private Pose2d poseSupplier;
 
-    public Shooter() {
+    public Shooter(Supplier <Pose2d> poseSupplier) {
         super("Shooter", RobotConstants.LOGGING);
+        this.poseSupplier = poseSupplier.get();
         if (RobotConstants.DEBUGGING) {
             partsNT.putDouble("Shooter Speed", 0);
         }
@@ -38,6 +45,9 @@ public abstract class Shooter extends PARTsSubsystem {
         partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint());
         partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint());
         partsNT.putDouble("Current Error", shooterPIDController.getError());
+
+        Targets zone = Hub.getZone(poseSupplier);
+        partsNT.putString("Zone", zone == null ? "No zone" : zone.toString());
     }
 
     @Override
@@ -66,9 +76,10 @@ public abstract class Shooter extends PARTsSubsystem {
                 case IDLE:
                 case SHOOTING:
                     double voltage = 0;
-                    shooterPIDController.setSetpoint(shooterState.getRPM());
+                    Targets zone = Hub.getZone(poseSupplier);
+                    shooterPIDController.setSetpoint(shooterState.getZoneRPM(zone));
 
-                    double pidCalc = shooterPIDController.calculate(getRPM(), shooterState.getRPM());
+                    double pidCalc = shooterPIDController.calculate(getRPM(), shooterState.getZoneRPM(zone));
                     double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
                             * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
 

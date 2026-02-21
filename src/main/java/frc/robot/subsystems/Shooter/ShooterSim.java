@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Shooter;
 
+import java.util.function.Supplier;
+
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 import com.revrobotics.PersistMode;
@@ -11,6 +13,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -29,8 +32,8 @@ public class ShooterSim extends Shooter {
     SparkRelativeEncoderSim motorEncoder;
     FlywheelSim shooterSim;
 
-    public ShooterSim() {
-        super();
+    public ShooterSim(Supplier <Pose2d> poseSupplier) {
+        super(poseSupplier);
         maxGearbox = DCMotor.getNEO(2);
 
         SparkMaxConfig shooterConfig = new SparkMaxConfig();

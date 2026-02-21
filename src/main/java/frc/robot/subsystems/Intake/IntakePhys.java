@@ -1,16 +1,12 @@
 package frc.robot.subsystems.Intake;
 
-import static edu.wpi.first.units.Units.Rotations;
-
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
-import org.parts3492.partslib.network.PARTsNT;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.constants.IntakeConstants;
 
@@ -28,11 +24,13 @@ public class IntakePhys extends Intake {
         intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);
         intakeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         intakeMotor.getConfigurator().apply(intakeConfig);
+        intakeMotor.setNeutralMode(NeutralModeValue.Brake);
 
         pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);
         TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
         pivotMotor.getConfigurator().apply(pivotConfig);
         pivotMotor.getConfigurator().setPosition(0);
+        pivotMotor.setNeutralMode(NeutralModeValue.Brake);
     
     }
 
