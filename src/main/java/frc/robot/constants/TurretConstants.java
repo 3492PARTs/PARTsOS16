@@ -2,6 +2,7 @@ package frc.robot.constants;
 
 public class TurretConstants {
     public static final int TURRET_MOTOR_ID = 39;
+    public static final String CAN_BUS_NAME = "bye";
     /** The turret gear ratio. The total ratio is {@code 40/1}. */
     public static final double TURRET_GEAR_RATIO = (200.0/1.0)*(1.0/20.0)*(4.0/1.0);
 

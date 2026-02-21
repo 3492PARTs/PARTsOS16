@@ -20,7 +20,7 @@ public class HopperPhys extends Hopper {
         super();
         TalonFXConfiguration hopperConfig = new TalonFXConfiguration();
         hopperConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        hopperMotor = new TalonFX(HopperConstants.HOPPER_MOTOR_ID);
+        hopperMotor = new TalonFX(HopperConstants.HOPPER_MOTOR_ID, HopperConstants.CAN_BUS_NAME);
         hopperMotor.getConfigurator().apply(hopperConfig);
     }
 

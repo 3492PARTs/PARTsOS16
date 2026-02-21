@@ -12,7 +12,7 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import frc.robot.states.ShooterState;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
-public abstract class Shooter extends PARTsSubsystem{
+public abstract class Shooter extends PARTsSubsystem {
     private ShooterState shooterState = ShooterState.IDLE;
 
     private PIDController shooterPIDController;
@@ -30,7 +30,7 @@ public abstract class Shooter extends PARTsSubsystem{
         shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
     }
 
-    //region Generic Subsystem Functions
+    // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
         partsNT.putString("Shooter State", shooterState.toString());
@@ -56,31 +56,41 @@ public abstract class Shooter extends PARTsSubsystem{
         partsLogger.logString("Shooter State", shooterState.toString());
     }
 
-
-
     @Override
     public void periodic() {
         if (RobotConstants.DEBUGGING) {
             setSpeed(partsNT.getDouble("Shooter Speed"));
-        }
-        else {
-            double voltage = 0;
-            shooterPIDController.setSetpoint(shooterState.getRPM());
+        } else {
+            switch (shooterState) {
+                case CHARGING:
+                case DISABLED:
+                case IDLE:
+                case SHOOTING:
+                    double voltage = 0;
+                    shooterPIDController.setSetpoint(shooterState.getRPM());
 
-            double pidCalc = shooterPIDController.calculate(getRPM(), shooterState.getRPM());
-            double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
+                    double pidCalc = shooterPIDController.calculate(getRPM(), shooterState.getRPM());
+                    double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
+                            * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
 
-            voltage = pidCalc + ffCalc;
+                    voltage = pidCalc + ffCalc;
 
-            setVoltage(voltage);
+                    setVoltage(voltage);
+                    break;
+                default:
+                    setSpeed(0);
+                    break;
+            }
         }
     }
-    //endregion
+    // endregion
 
-    //region Custom Public Functions
-    /** Sets the speed of the Shooter.
+    // region Custom Public Functions
+    /**
+     * Sets the speed of the Shooter.
+     * 
      * @param speed The speed between <code>-1.0</code> and <code>1.0</code>.
-    */
+     */
     protected abstract void setSpeed(double speed);
 
     protected abstract void setVoltage(double voltage);
@@ -89,7 +99,9 @@ public abstract class Shooter extends PARTsSubsystem{
 
     protected abstract double getRPM();
 
-    public ShooterState getState() { return shooterState; }
+    public ShooterState getState() {
+        return shooterState;
+    }
 
     public Command shoot() {
         return PARTsCommandUtils.setCommandName("Command Shoot", this.runOnce(() -> {
@@ -102,5 +114,5 @@ public abstract class Shooter extends PARTsSubsystem{
             shooterState = ShooterState.IDLE;
         }));
     }
-    //endregion
+    // endregion
 }

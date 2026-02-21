@@ -18,11 +18,11 @@ public class ShooterPhys extends Shooter {
         super();
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR_ID);
+        leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
         leftMotor.getConfigurator().apply(config);
-        rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID);
+        rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
 
-        //rightMotor.setControl(new Follower(ShooterConstants.LEFT_MOTOR_ID, MotorAlignmentValue.Opposed));
+        rightMotor.setControl(new Follower(ShooterConstants.LEFT_MOTOR_ID, MotorAlignmentValue.Opposed));
 
         leftMotor.setNeutralMode(NeutralModeValue.Coast);
         rightMotor.setNeutralMode(NeutralModeValue.Coast);
@@ -40,7 +40,7 @@ public class ShooterPhys extends Shooter {
 
     @Override
     protected void setSpeed(double speed) {
-        rightMotor.set(speed);
+        leftMotor.set(speed);
     }
 
     @Override

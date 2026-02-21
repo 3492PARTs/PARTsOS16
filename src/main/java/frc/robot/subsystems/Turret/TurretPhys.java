@@ -21,10 +21,10 @@ public class TurretPhys extends Turret {
     public TurretPhys(Supplier<Pose2d> robotPoseSupplier) {
         super(robotPoseSupplier);
 
-        turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID);
+        turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID, TurretConstants.CAN_BUS_NAME);
         TalonFXConfiguration turretConfig = new TalonFXConfiguration();
         turretMotor.getConfigurator().apply(turretConfig);
-        turretMotor.setPosition(100);
+        turretMotor.getConfigurator().setPosition(0);
     }
 
     @Override

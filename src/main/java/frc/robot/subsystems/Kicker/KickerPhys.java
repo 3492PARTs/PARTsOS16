@@ -19,7 +19,7 @@ public class KickerPhys extends Kicker {
         super();
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        kickerMotor = new TalonFX(KickerConstants.KICKER_MOTOR_ID);
+        kickerMotor = new TalonFX(KickerConstants.KICKER_MOTOR_ID, KickerConstants.CAN_BUS_NAME);
         kickerMotor.getConfigurator().apply(config);
     }
 

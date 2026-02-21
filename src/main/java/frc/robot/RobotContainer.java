@@ -45,6 +45,7 @@ import frc.robot.subsystems.Hopper.HopperSim;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.IntakePhys;
 import frc.robot.subsystems.Intake.IntakeSim;
+import frc.robot.subsystems.Intake.IntakeSysid;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Kicker.KickerPhys;
 import frc.robot.subsystems.Kicker.KickerSim;
@@ -77,7 +78,7 @@ public class RobotContainer {
 
     private static Alliance alliance;
 
-    //region Subsystems
+    // region Subsystems
 
     public final PARTsDrivetrain drivetrain = new PARTsDrivetrain(
             TunerConstants.DrivetrainConstants,
@@ -99,25 +100,29 @@ public class RobotContainer {
 
     private final Hopper hopper = Robot.isReal() ? new HopperPhys() : new HopperSim();
 
-    private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
+    //private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
+    
     // private final ShooterSysid shooter = new ShooterSysid(); //for sysid
+    private final IntakeSysid intake  = new IntakeSysid(); //for sysid
 
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
             Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake));
 
-    //endregion End Subsystems
+    // endregion End Subsystems
 
     public RobotContainer() {
         configureDrivetrainBindings();
         configureCandleBindings();
         configureShooterBindings();
+        configureTurretBindings();
         configureAutonomousCommands();
+        configureIntakeBindings();
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
     }
 
-    //region Configs
+    // region Configs
 
     private void configureDrivetrainBindings() {
 
@@ -196,18 +201,35 @@ public class RobotContainer {
 
     }
 
+    private void configureTurretBindings() {
+        //operatorController.a().onTrue(turret.track());
+        //operatorController.b().onTrue(turret.idle());
+    }
+
+    private void configureIntakeBindings() {
+        operatorController.a().and(operatorController.rightBumper())
+                .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        operatorController.b().and(operatorController.rightBumper())
+                .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        operatorController.x().and(operatorController.rightBumper())
+                .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        operatorController.y().and(operatorController.rightBumper())
+                .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    }
+
     public void configureAutonomousCommands() {
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
-    //endregion End Configs
+    // endregion End Configs
 
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
 
-    //region Custom Public Functions
+    // region Custom Public Functions
 
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());

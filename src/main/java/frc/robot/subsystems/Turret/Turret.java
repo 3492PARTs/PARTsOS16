@@ -27,8 +27,8 @@ public abstract class Turret extends PARTsSubsystem {
 
     public Turret(Supplier<Pose2d> robotPoseSupplier) {
         super("Turret", RobotConstants.LOGGING);
-         if (RobotConstants.DEBUGGING) {
-         partsNT.putDouble("Turret Speed", 0);
+        if (RobotConstants.DEBUGGING) {
+            partsNT.putDouble("Turret Speed", 0);
         }
 
         this.robotPoseSupplier = robotPoseSupplier;
@@ -73,14 +73,30 @@ public abstract class Turret extends PARTsSubsystem {
             setSpeed(partsNT.getDouble("Turret Speed"));
         } else {
             double voltage = 0;
-            turretPIDController.setSetpoint(turretState.getAngle());
 
-            double pidCalc = turretPIDController.calculate(getAngle(), turretState.getAngle());
-            double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
+            switch (turretState) {
+                case DISABLED:
+                case IDLE:
+                    setSpeed(0);
+                    break;
+                case TRACKING:
+                    if (Math.abs(getAngleToTarget()) <= 90) {
+                        turretPIDController.setSetpoint(getAngleToTarget());
+                        double pidCalc = turretPIDController.calculate(getAngle(), turretState.getAngle());
+                        double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
 
-            voltage = pidCalc + ffCalc;
+                        voltage = pidCalc + ffCalc;
 
-            setVoltage(voltage);
+                        setVoltage(voltage);
+                    }
+                    else {
+                        setSpeed(0);
+                    }
+                    break;
+                default:
+                    setSpeed(0);
+                    break;
+            }
         }
     }
 
@@ -129,13 +145,15 @@ public abstract class Turret extends PARTsSubsystem {
                         Field.getAllianceHubPose().getX() - robotPoseSupplier.get().getX()) * 180 / Math.PI);
         return angleToTarget;
 
-        /*if (angleToTarget > 180) {
-            return 180 - angleToTarget;
-        } else if (angleToTarget < -180) {
-            return 360 + angleToTarget;
-        } else {
-            return angleToTarget;
-        }*/
+        /*
+         * if (angleToTarget > 180) {
+         * return 180 - angleToTarget;
+         * } else if (angleToTarget < -180) {
+         * return 360 + angleToTarget;
+         * } else {
+         * return angleToTarget;
+         * }
+         */
     }
     // endregion private functions
 }

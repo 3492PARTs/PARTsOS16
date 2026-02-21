@@ -50,11 +50,7 @@ public abstract class Kicker extends PARTsSubsystem {
         } else {
             switch (kickerState) {
                 case ROLLING:
-                    setSpeed(kickerState.getSpeed());
-                    break;
                 case DISABLED:
-                    setSpeed(kickerState.getSpeed());
-                    break;
                 case IDLE:
                     setSpeed(kickerState.getSpeed());
                     break;

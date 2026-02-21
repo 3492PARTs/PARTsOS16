@@ -47,14 +47,8 @@ public abstract class Hopper extends PARTsSubsystem {
         else {
             switch(hopperstate) {
             case DISABLED:
-                setSpeed(hopperstate.getSpeed());
-                break;
             case ROLLING:
-                setSpeed(hopperstate.getSpeed());
-                break;
             case IDLE:
-                setSpeed(hopperstate.getSpeed());
-                break;
             case BACKROLLING:
                 setSpeed(hopperstate.getSpeed());
                 break;

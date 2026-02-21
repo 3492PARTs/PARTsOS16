@@ -19,16 +19,17 @@ import frc.robot.constants.IntakeConstants;
  * WARNING: The pivot arm MUST be in home position when the robot starts.
  */
 public class IntakePhys extends Intake {
-    TalonFX intakeMotor;
-    TalonFX pivotMotor;
+    protected final TalonFX intakeMotor;
+    protected final TalonFX pivotMotor;
 
     public IntakePhys() {
         super();
         TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
-        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
+        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);
         intakeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         intakeMotor.getConfigurator().apply(intakeConfig);
-        pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
+
+        pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);
         TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
         pivotMotor.getConfigurator().apply(pivotConfig);
         pivotMotor.getConfigurator().setPosition(0);
@@ -41,17 +42,17 @@ public class IntakePhys extends Intake {
     }
 
     @Override
-    public void setPivotPosition(PARTsUnit position) {
-        pivotMotor.setPosition(position.to(PARTsUnitType.Rotations));
-    }
-
-    @Override
     public double getIntakeSpeed() {
         return intakeMotor.get();
     }
 
     @Override
-    public PARTsUnit getPivotPosition() {
+    public double getPivotRotationSpeed() {
+        return pivotMotor.getVelocity().getValueAsDouble();
+    }
+
+    @Override
+    public PARTsUnit getPivotAngle() {
         return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO, PARTsUnitType.Rotations);
     }
 
@@ -90,5 +91,10 @@ public class IntakePhys extends Intake {
     @Override
     public void setPivotSpeed(double speed) {
         pivotMotor.set(speed);
+    }
+
+    @Override
+    public void setPivotVoltage(double voltage) {
+        pivotMotor.setVoltage(voltage);
     }
 }
