@@ -9,10 +9,10 @@ public class IntakeConstants {
     public static final double PIVOT_GEAR_RATIO = (12.0/1.0)*(3.0/1.0);
 
     // PID Controller
-    public static final double P = 0;
+    public static final double P = 0.07;
     public static final double I = 0;
     public static final double D = 0;
-    public static final int PID_THRESHOLD = 5;
+    public static final int PID_THRESHOLD = 1;
 
     // Feedforward
     public static final double S = 0;

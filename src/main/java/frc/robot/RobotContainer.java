@@ -36,6 +36,7 @@ import frc.robot.constants.generated.TunerConstants;
 import frc.robot.states.CandleState;
 import frc.robot.subsystems.Candle;
 import frc.robot.subsystems.LimelightVision;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
@@ -103,13 +104,14 @@ public class RobotContainer {
 
     private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
 
+    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret);
+
     // private final ShooterSysid shooter = new ShooterSysid(); //for sysid
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
-    // private final TurretSysid turret = new
-    // TurretSysid(drivetrain.supplierGetPose());
+    // private final TurretSysid turret = new TurretSysid(drivetrain.supplierGetPose());
 
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
-            Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake));
+            Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake, superstructure));
 
     // endregion End Subsystems
 
@@ -121,6 +123,7 @@ public class RobotContainer {
         configureAutonomousCommands();
         configureIntakeBindings();
         configureHopperBindings();
+        configureSuperstructureBindings();
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
@@ -226,7 +229,9 @@ public class RobotContainer {
     }
 
     private void configureIntakeBindings() {
-        driveController.a().onTrue(intake.intake());
+        //driveController.x().onTrue(intake.intake());
+        //driveController.b().onTrue(intake.intakeIdle());
+        //driveController.x().onTrue(intake.home());
 
         /*
          * operatorController.a().and(operatorController.rightBumper())
@@ -239,6 +244,10 @@ public class RobotContainer {
          * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
          */
 
+    }
+
+    private void configureSuperstructureBindings() {
+        //driveController.a().onTrue(superstructure.shoot(driveController.b()::getAsBoolean));
     }
 
     public void configureAutonomousCommands() {

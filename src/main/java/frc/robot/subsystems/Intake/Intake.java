@@ -65,12 +65,15 @@ public abstract class Intake extends PARTsSubsystem {
                 case INTAKING:
                 case OUTTAKING:
                 case SHOOTING:
+                case HOME:
                     setIntakeSpeed(intakeState.getSpeed());
                     intakePIDController.setSetpoint(intakeState.getAngle());
                     double pidCalc = intakePIDController.calculate(getPivotAngle().to(PARTsUnitType.Angle), intakeState.getAngle());
                     double ffCalc = intakeFeedForward.calculate(intakePIDController.getSetpoint());
 
-                    //setPivotVoltage(pidCalc + ffCalc);
+                    partsNT.putBoolean("At goal", intakePIDController.atSetpoint());
+
+                    setPivotVoltage(pidCalc);
                     break;
                 default:
                     setIntakeSpeed(0);
@@ -110,6 +113,18 @@ public abstract class Intake extends PARTsSubsystem {
     public Command intakeShooting() {
         return PARTsCommandUtils.setCommandName("Command IntakeShooting", this.runOnce(() -> {
             intakeState = IntakeState.SHOOTING;
+        }));
+    }
+
+    public Command intakeIdle() {
+        return PARTsCommandUtils.setCommandName("Command IntakeIdle", this.runOnce(() -> {
+            intakeState = IntakeState.IDLE;
+        }));
+    }
+
+    public Command home() {
+        return PARTsCommandUtils.setCommandName("Command IntakeHome", this.runOnce(() -> {
+            intakeState = IntakeState.HOME;
         }));
     }
     //endregion

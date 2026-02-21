@@ -77,9 +77,11 @@ public abstract class Shooter extends PARTsSubsystem {
                 case SHOOTING:
                     double voltage = 0;
                     Targets zone = Hub.getZone(poseSupplier);
-                    shooterPIDController.setSetpoint(shooterState.getZoneRPM(zone));
+                    double zoneRPM = shooterState.getZoneRPM(zone);
+                    double shooterRPM = shooterState.getRPM();
+                    shooterPIDController.setSetpoint(shooterRPM);
 
-                    double pidCalc = shooterPIDController.calculate(getRPM(), shooterState.getZoneRPM(zone));
+                    double pidCalc = shooterPIDController.calculate(getRPM(), shooterRPM);
                     double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
                             * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
 
