@@ -4,15 +4,14 @@
 
 package frc.robot.states;
 
-import frc.robot.constants.ShooterConstants;
 import frc.robot.util.Hub.Targets;
 
 /** The state that the Shooter is in. */
 public enum ShooterState {
     IDLE(0),
     DISABLED(0),
-    CHARGING(ShooterConstants.SHOOTER_RPM),
-    SHOOTING(ShooterConstants.SHOOTER_RPM);
+    CHARGING(3000),
+    SHOOTING(3000);
 
     private final double rpm;
     ShooterState(double rpm) {

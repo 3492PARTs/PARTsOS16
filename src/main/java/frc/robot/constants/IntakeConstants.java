@@ -8,8 +8,6 @@ public class IntakeConstants {
     /** The pivot gear ratio. The total is {@code 36/1}. */
     public static final double PIVOT_GEAR_RATIO = (12.0/1.0)*(3.0/1.0);
 
-    public static final double INTAKE_SPEED = 0.5;
-
     // PID Controller
     public static final double P = 0;
     public static final double I = 0;

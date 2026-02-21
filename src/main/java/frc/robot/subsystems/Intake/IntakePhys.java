@@ -35,26 +35,6 @@ public class IntakePhys extends Intake {
     }
 
     @Override
-    public void setIntakeSpeed(double speed) {
-        intakeMotor.set(speed);
-    }
-
-    @Override
-    public double getIntakeSpeed() {
-        return intakeMotor.get();
-    }
-
-    @Override
-    public double getPivotRotationSpeed() {
-        return pivotMotor.getVelocity().getValueAsDouble();
-    }
-
-    @Override
-    public PARTsUnit getPivotAngle() {
-        return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO, PARTsUnitType.Rotations);
-    }
-
-    @Override
     public void outputTelemetry() {
         super.outputTelemetry();
         partsNT.putDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble());
@@ -94,5 +74,25 @@ public class IntakePhys extends Intake {
     @Override
     public void setPivotVoltage(double voltage) {
         pivotMotor.setVoltage(voltage);
+    }
+
+    @Override
+    public void setIntakeSpeed(double speed) {
+        intakeMotor.set(speed);
+    }
+
+    @Override
+    public double getIntakeSpeed() {
+        return intakeMotor.get();
+    }
+
+    @Override
+    public double getPivotRotationSpeed() {
+        return pivotMotor.getVelocity().getValueAsDouble();
+    }
+
+    @Override
+    public PARTsUnit getPivotAngle() {
+        return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO, PARTsUnitType.Rotations);
     }
 }

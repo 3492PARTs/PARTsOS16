@@ -1,6 +1,5 @@
 package frc.robot.subsystems.Drivetrain;
 
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -24,7 +23,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -37,7 +35,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -45,9 +42,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.networktables.DoubleArrayPublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -161,8 +155,6 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         @Override
         public void outputTelemetry() {
                 partsNT.putBoolean("Fine Grain Drive", fineGrainDrive);
-                Targets zone = Hub.getZone(getPose());
-                partsNT.putString("Zone", zone == null ? "No zone" : zone.toString());
                 partsNT.putDouble("HUB X coordinate",
                                 new PARTsUnit(Field.getAllianceHubPose().getX(), PARTsUnitType.Meter)
                                                 .to(PARTsUnitType.Inch));
@@ -565,7 +557,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         public Supplier<Pose2d> supplierGetPose() {
                 return this::getPose;
         }
-        //endregion
+        
 
         public boolean acceptVisionMeasurement(Pose2d measurement, double timestamp) {
                 if (Math.max(Math.abs(getXAngularVelocity()), Math.abs(getYAngularVelocity())) < 2 * Math.PI) {
@@ -574,6 +566,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 }
                 return false;
         }
+        //endregion
 
         //region Custom Private Functions
         private void alignCommandInitTelemetry(Pose2d holdDist) {

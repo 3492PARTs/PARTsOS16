@@ -31,21 +31,6 @@ public class TurretPhys extends Turret {
     }
 
     @Override
-    protected void setSpeed(double speed) {
-        turretMotor.set(speed);
-    }
-
-    @Override
-    protected void setVoltage(double voltage) {
-        turretMotor.setVoltage(voltage);
-    }
-
-    @Override
-    protected double getVoltage() {
-        return turretMotor.getSupplyCurrent().getValueAsDouble();
-    }
-
-    @Override
     public void periodic() {
         super.periodic();
     }
@@ -61,5 +46,20 @@ public class TurretPhys extends Turret {
     @Override
     protected double getAngle() {
         return turretMotor.getPosition().getValueAsDouble() * 360 / TurretConstants.TURRET_GEAR_RATIO;
+    }
+
+    @Override
+    protected void setSpeed(double speed) {
+        turretMotor.set(speed);
+    }
+
+    @Override
+    protected void setVoltage(double voltage) {
+        turretMotor.setVoltage(voltage);
+    }
+
+    @Override
+    protected double getVoltage() {
+        return turretMotor.getSupplyCurrent().getValueAsDouble();
     }
 }

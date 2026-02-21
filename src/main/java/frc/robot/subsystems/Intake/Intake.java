@@ -32,7 +32,7 @@ public abstract class Intake extends PARTsSubsystem {
         intakePIDController.setTolerance(IntakeConstants.PID_THRESHOLD);
 
     }
-
+    //region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
         partsNT.putDouble("Pivot Position", getPivotAngle().to(PARTsUnitType.Angle));
@@ -86,7 +86,9 @@ public abstract class Intake extends PARTsSubsystem {
         partsLogger.logDouble("Intake Speed", getIntakeSpeed());
         partsLogger.logString("Intake State", intakeState.toString());
     }
+    //endregion
 
+    //region Custom Public Functions
     public abstract void setIntakeSpeed(double speed);
 
     public abstract void setPivotSpeed(double speed);
@@ -110,4 +112,5 @@ public abstract class Intake extends PARTsSubsystem {
             intakeState = IntakeState.SHOOTING;
         }));
     }
+    //endregion
 }

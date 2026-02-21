@@ -61,7 +61,6 @@ public abstract class Turret extends PARTsSubsystem {
     public void log() {
         partsLogger.logString("Turret State", turretState.toString());
     }
-    // endregion
 
     @Override
     public void periodic() {
@@ -79,7 +78,7 @@ public abstract class Turret extends PARTsSubsystem {
                     if (isValidAngle()) {
                         turretPIDController.setSetpoint(getAngleToTarget());
                         double pidCalc = turretPIDController.calculate(getAngle(), getAngleToTarget());
-                        double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
+                        //double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
 
                         partsNT.putDouble("Turret voltage", voltage);
                         partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint());
@@ -98,6 +97,7 @@ public abstract class Turret extends PARTsSubsystem {
             }
         }
     }
+    // endregion
 
     // region Custom Public Functions
     /**

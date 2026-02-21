@@ -41,6 +41,21 @@ public class ShooterPhys extends Shooter {
     }
 
     @Override
+    public void periodic() {
+        super.periodic();
+    }
+
+    @Override
+    public void log() {
+        super.log();
+        partsLogger.logDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble());
+        partsLogger.logDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble());
+
+        partsLogger.logDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble());
+        partsLogger.logDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble());
+    }
+
+    @Override
     protected void setSpeed(double speed) {
         leftMotor.set(speed);
     }
@@ -58,20 +73,5 @@ public class ShooterPhys extends Shooter {
     @Override
     protected double getVoltage() {
         return leftMotor.getSupplyVoltage().getValueAsDouble();
-    }
-
-    @Override
-    public void periodic() {
-        super.periodic();
-    }
-
-    @Override
-    public void log() {
-        super.log();
-        partsLogger.logDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble());
-        partsLogger.logDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble());
-
-        partsLogger.logDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble());
-        partsLogger.logDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble());
     }
 }

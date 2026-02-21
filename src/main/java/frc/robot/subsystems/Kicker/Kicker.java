@@ -39,7 +39,6 @@ public abstract class Kicker extends PARTsSubsystem {
     public void log() {
         partsLogger.logString("Kicker State", kickerState.toString());
     }
-    // endregion
 
     @Override
     public void periodic() {
@@ -58,6 +57,7 @@ public abstract class Kicker extends PARTsSubsystem {
             }
         }
     }
+    //endregion
 
     // region Custom Public Functions
     /**
@@ -82,5 +82,5 @@ public abstract class Kicker extends PARTsSubsystem {
             kickerState = KickerState.IDLE;
         }));
     }
+    //endregion
 }
-// endregion

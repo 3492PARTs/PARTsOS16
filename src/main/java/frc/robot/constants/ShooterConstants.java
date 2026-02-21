@@ -4,7 +4,6 @@ import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 public class ShooterConstants {
-    public static final double SHOOTER_RPM = 3000; 
     public static final int LEFT_MOTOR_ID = 33;
     public static final int RIGHT_MOTOR_ID = 35;
     public static final String CAN_BUS_NAME = "bye";

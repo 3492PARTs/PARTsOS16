@@ -26,11 +26,6 @@ public class HopperPhys extends Hopper {
     }
 
     @Override
-    protected void setSpeed(double speed) {
-        hopperMotor.set(speed);
-    }
-
-    @Override
     public void periodic() {
         super.periodic();
     }
@@ -39,5 +34,10 @@ public class HopperPhys extends Hopper {
     public void log() {
         partsLogger.logDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble());
         partsLogger.logDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble());
+    }
+
+    @Override
+    protected void setSpeed(double speed) {
+        hopperMotor.set(speed);
     }
 }

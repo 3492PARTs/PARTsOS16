@@ -26,11 +26,6 @@ public class KickerPhys extends Kicker {
     }
 
     @Override
-    protected void setSpeed(double speed) {
-        kickerMotor.set(speed);
-    }
-
-    @Override
     public void periodic() {
         super.periodic();
     }
@@ -40,5 +35,10 @@ public class KickerPhys extends Kicker {
         partsLogger.logDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble());
 
         partsLogger.logDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble());
+    }
+
+    @Override
+    protected void setSpeed(double speed) {
+        kickerMotor.set(speed);
     }
 }
