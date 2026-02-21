@@ -2,6 +2,7 @@ package frc.robot.subsystems.Turret;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -20,11 +21,10 @@ public class TurretPhys extends Turret {
     public TurretPhys(Supplier<Pose2d> robotPoseSupplier) {
         super(robotPoseSupplier);
 
-        SparkMaxConfig turretConfig = new SparkMaxConfig();
-        turretConfig.idleMode(IdleMode.kCoast);
-        turretConfig.inverted(true);
-
         turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID);
+        TalonFXConfiguration turretConfig = new TalonFXConfiguration();
+        turretMotor.getConfigurator().apply(turretConfig);
+        turretMotor.setPosition(100);
     }
 
     @Override
@@ -65,6 +65,6 @@ public class TurretPhys extends Turret {
 
     @Override
     protected double getAngle() {
-        return turretMotor.getPosition().getValueAsDouble() * 360 % 360;
+        return turretMotor.getPosition().getValueAsDouble() * 360 / TurretConstants.TURRET_GEAR_RATIO;
     }
 }
