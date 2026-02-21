@@ -9,7 +9,6 @@ import frc.robot.states.ShooterState;
 
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
-import frc.robot.states.ShooterState;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 public abstract class Shooter extends PARTsSubsystem {

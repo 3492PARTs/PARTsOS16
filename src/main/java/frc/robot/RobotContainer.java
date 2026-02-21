@@ -55,6 +55,7 @@ import frc.robot.subsystems.Shooter.ShooterSim;
 import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.Turret.TurretPhys;
 import frc.robot.subsystems.Turret.TurretSim;
+import frc.robot.subsystems.Turret.TurretSysid;
 import frc.robot.util.Field;
 
 import org.parts3492.partslib.input.PARTsButtonBoxController;
@@ -100,10 +101,12 @@ public class RobotContainer {
 
     private final Hopper hopper = Robot.isReal() ? new HopperPhys() : new HopperSim();
 
-    //private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
-    
+    private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
+
     // private final ShooterSysid shooter = new ShooterSysid(); //for sysid
-    private final IntakeSysid intake  = new IntakeSysid(); //for sysid
+    // private final IntakeSysid intake = new IntakeSysid(); //for sysid
+    // private final TurretSysid turret = new
+    // TurretSysid(drivetrain.supplierGetPose());
 
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
             Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake));
@@ -117,6 +120,7 @@ public class RobotContainer {
         configureTurretBindings();
         configureAutonomousCommands();
         configureIntakeBindings();
+        configureHopperBindings();
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
@@ -147,10 +151,10 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
 
-        driveController.x().onTrue(
-                drivetrain.targetPoseCommand(() -> Field.blueHubCenter, () -> driveController.y().getAsBoolean()));
-        driveController.a().onTrue(drivetrain.commandSnapToAngle(90));
-        driveController.b().onTrue(drivetrain.commandAlign(Field.getTag(28).getLocation().toPose2d()));
+        //driveController.x().onTrue(
+                //drivetrain.targetPoseCommand(() -> Field.blueHubCenter, () -> driveController.y().getAsBoolean()));
+        //driveController.a().onTrue(drivetrain.commandSnapToAngle(90));
+        //driveController.b().onTrue(drivetrain.commandAlign(Field.getTag(28).getLocation().toPose2d()));
 
         /*
          * if (RobotConstants.DEBUGGING) {
@@ -201,20 +205,39 @@ public class RobotContainer {
 
     }
 
+    private void configureHopperBindings() {
+        //driveController.a().onTrue(hopper.roll());
+    }
+
     private void configureTurretBindings() {
-        //operatorController.a().onTrue(turret.track());
-        //operatorController.b().onTrue(turret.idle());
+        //driveController.a().onTrue(turret.track());
+        //driveController.b().onTrue(turret.idle());
+
+        /*
+         * operatorController.a().and(operatorController.rightBumper())
+         * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         * operatorController.b().and(operatorController.rightBumper())
+         * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         * operatorController.x().and(operatorController.rightBumper())
+         * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * operatorController.y().and(operatorController.rightBumper())
+         * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         */
     }
 
     private void configureIntakeBindings() {
-        operatorController.a().and(operatorController.rightBumper())
-                .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        operatorController.b().and(operatorController.rightBumper())
-                .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        operatorController.x().and(operatorController.rightBumper())
-                .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        operatorController.y().and(operatorController.rightBumper())
-                .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        driveController.a().onTrue(intake.intake());
+
+        /*
+         * operatorController.a().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         * operatorController.b().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         * operatorController.x().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * operatorController.y().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         */
 
     }
 
@@ -292,6 +315,7 @@ public class RobotContainer {
         setLimelightMainMode();
         setIdleCandleState();
         hubFieldObject2d.setPose(Field.getAllianceHubPose());
+        subsystems.forEach(s -> s.reset());
         CommandScheduler.getInstance().schedule(new WaitCommand(2).andThen(Commands.runOnce(() -> {
             /*
              * if (!RobotContainer.isBlue()) {

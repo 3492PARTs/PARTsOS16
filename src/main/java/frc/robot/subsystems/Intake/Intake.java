@@ -2,14 +2,17 @@ package frc.robot.subsystems.Intake;
 
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.states.IntakeState;
+import frc.robot.states.ShooterState;
 
 public abstract class Intake extends PARTsSubsystem {
 
@@ -69,7 +72,7 @@ public abstract class Intake extends PARTsSubsystem {
                     double pidCalc = intakePIDController.calculate(getPivotAngle().to(PARTsUnitType.Angle), intakeState.getAngle());
                     double ffCalc = intakeFeedForward.calculate(intakePIDController.getSetpoint());
 
-                    setPivotVoltage(pidCalc + ffCalc);
+                    //setPivotVoltage(pidCalc + ffCalc);
                     break;
                 default:
                     setIntakeSpeed(0);
@@ -97,4 +100,10 @@ public abstract class Intake extends PARTsSubsystem {
     public abstract void setPivotVoltage(double voltage);
 
     public abstract double getPivotRotationSpeed();
+
+    public Command intake() {
+        return PARTsCommandUtils.setCommandName("Command Intake", this.runOnce(() -> {
+            intakeState = IntakeState.INTAKING;
+        }));
+    }
 }

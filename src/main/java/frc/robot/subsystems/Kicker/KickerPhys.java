@@ -3,6 +3,7 @@ package frc.robot.subsystems.Kicker;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -21,6 +22,7 @@ public class KickerPhys extends Kicker {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         kickerMotor = new TalonFX(KickerConstants.KICKER_MOTOR_ID, KickerConstants.CAN_BUS_NAME);
         kickerMotor.getConfigurator().apply(config);
+        kickerMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     @Override

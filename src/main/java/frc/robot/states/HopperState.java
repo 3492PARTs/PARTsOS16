@@ -2,7 +2,7 @@ package frc.robot.states;
 
 import frc.robot.constants.HopperConstants;
 
-/* The state the hopepr is in */
+/** The state the Hopper is in */
 public enum HopperState {
     IDLE(0),
     DISABLED(0),

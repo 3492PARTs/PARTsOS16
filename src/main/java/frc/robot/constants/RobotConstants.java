@@ -12,6 +12,6 @@ public class RobotConstants {
                         PARTsUnitType.Inch);
 
         public static boolean LOGGING = true;
-        public static boolean DEBUGGING = true;
+        public static boolean DEBUGGING = false;
         public static boolean ALLOW_AUTO_CONTROLLER_DETECTION = false;
 }

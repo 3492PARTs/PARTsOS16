@@ -2,8 +2,6 @@ package frc.robot.subsystems.Turret;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class TurretSim extends Turret {

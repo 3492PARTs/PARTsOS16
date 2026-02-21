@@ -7,10 +7,10 @@ public class TurretConstants {
     public static final double TURRET_GEAR_RATIO = (200.0/1.0)*(1.0/20.0)*(4.0/1.0);
 
     // PID Controller
-    public static final double P = 0;
+    public static final double P = 0.3;
     public static final double I = 0;
     public static final double D = 0;
-    public static final int PID_THRESHOLD = 0;
+    public static final int PID_THRESHOLD = 1;
 
     // Feedforward
     public static final double S = 0;

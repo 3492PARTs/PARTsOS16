@@ -6,7 +6,7 @@ package frc.robot.states;
 
 import frc.robot.constants.ShooterConstants;
 
-/** The state that the shooter is in. */
+/** The state that the Shooter is in. */
 public enum ShooterState {
     IDLE(0),
     DISABLED(0),

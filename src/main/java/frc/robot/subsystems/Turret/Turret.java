@@ -3,18 +3,14 @@ package frc.robot.subsystems.Turret;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
 import frc.robot.states.TurretState;
 import frc.robot.util.Field;
-import frc.robot.util.Hub;
 
 import java.util.function.Supplier;
 
-import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
@@ -82,10 +78,13 @@ public abstract class Turret extends PARTsSubsystem {
                 case TRACKING:
                     if (Math.abs(getAngleToTarget()) <= 90) {
                         turretPIDController.setSetpoint(getAngleToTarget());
-                        double pidCalc = turretPIDController.calculate(getAngle(), turretState.getAngle());
+                        double pidCalc = turretPIDController.calculate(getAngle(), getAngleToTarget());
                         double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
 
-                        voltage = pidCalc + ffCalc;
+                        partsNT.putDouble("Turret voltage", voltage);
+                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint());
+
+                        voltage = pidCalc; //+ ffCalc;
 
                         setVoltage(voltage);
                     }
@@ -133,27 +132,11 @@ public abstract class Turret extends PARTsSubsystem {
 
     // region private functions
     private double getAngleToTarget() {
-        /*
-         * Pose2d targetPose = Field.getAllianceHubPose();
-         * Pose2d robotPose = robotPoseSupplier.get();
-         * Rotation2d angleToTarget =
-         * targetPose.getTranslation().minus(robotPose.getTranslation()).getAngle();
-         */
         double angleToTarget = edu.wpi.first.math.MathUtil
                 .inputModulus(robotPoseSupplier.get().getRotation().getDegrees(), -180, 180)
                 - (Math.atan2(Field.getAllianceHubPose().getY() - robotPoseSupplier.get().getY(),
                         Field.getAllianceHubPose().getX() - robotPoseSupplier.get().getX()) * 180 / Math.PI);
         return angleToTarget;
-
-        /*
-         * if (angleToTarget > 180) {
-         * return 180 - angleToTarget;
-         * } else if (angleToTarget < -180) {
-         * return 360 + angleToTarget;
-         * } else {
-         * return angleToTarget;
-         * }
-         */
     }
     // endregion private functions
 }

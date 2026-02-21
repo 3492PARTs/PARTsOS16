@@ -575,7 +575,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 return false;
         }
 
-        /*---------------------------------- Custom Private Functions ---------------------------------*/
+        //region Custom Private Functions
         private void alignCommandInitTelemetry(Pose2d holdDist) {
                 partsNT.putDouble("align/holdDistX", new PARTsUnit(holdDist.getX(), PARTsUnitType.Meter)
                                 .to(PARTsUnitType.Inch));

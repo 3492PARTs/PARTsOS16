@@ -4,7 +4,7 @@
 
 package frc.robot.states;
 
-/* The state the Candle is in */
+/** The state the Candle is in */
 public enum CandleState {
     IDLE,
     DISABLED,

@@ -2,7 +2,7 @@ package frc.robot.states;
 
 import frc.robot.constants.KickerConstants;
 
-/** The state that the kicker is in. */
+/** The state that the Kicker is in. */
 public enum KickerState {
     IDLE(0),
     DISABLED(0),
