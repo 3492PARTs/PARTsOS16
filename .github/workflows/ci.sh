@@ -3,6 +3,9 @@
 # Make sure that Gradlew is executable.
 chmod +x gradlew
 
+# Fix ant violations with lib
+./gradlew :PARTsLib:spotlessApply
+
 # Start simulation.
 ./gradlew simulateJavaRelease &
 sim_pid=$!
