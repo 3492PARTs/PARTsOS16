@@ -43,7 +43,7 @@ public class ShooterSysid extends ShooterPhys {
                         (log) -> {
                             log.motor("shootermotor1")
                                     .voltage(appliedVoltage.mut_replace(
-                                            super.leftMotor.getStatorCurrent().getValueAsDouble(), Volts))
+                                            super.leftMotor.getMotorVoltage().getValueAsDouble(), Volts))
                                     .linearPosition(shooterPosition.mut_replace(
                                             super.leftMotor.getPosition().getValueAsDouble() * Math.PI * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Inch) * 2, Inches))
                                     .linearVelocity(shooterVelocity.mut_replace(

@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
@@ -53,6 +54,7 @@ import frc.robot.subsystems.Kicker.KickerSim;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
+import frc.robot.subsystems.Shooter.ShooterSysid;
 import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.Turret.TurretPhys;
 import frc.robot.subsystems.Turret.TurretSim;
@@ -93,7 +95,7 @@ public class RobotContainer {
 
     public final Candle candle = new Candle();
 
-    private final Shooter shooter = Robot.isReal() ? new ShooterPhys(drivetrain.supplierGetPose()) : new ShooterSim(drivetrain.supplierGetPose());
+    //private final Shooter shooter = Robot.isReal() ? new ShooterPhys(drivetrain.supplierGetPose()) : new ShooterSim(drivetrain.supplierGetPose());
 
     private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose())
             : new TurretSim(drivetrain.supplierGetPose());
@@ -104,12 +106,11 @@ public class RobotContainer {
 
     private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
 
-    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret);
-
-    // private final ShooterSysid shooter = new ShooterSysid(); //for sysid
+    private final ShooterSysid shooter = new ShooterSysid(drivetrain.supplierGetPose()); //for sysid
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new TurretSysid(drivetrain.supplierGetPose());
 
+    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret);
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
             Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake, superstructure));
 
@@ -124,6 +125,8 @@ public class RobotContainer {
         configureIntakeBindings();
         configureHopperBindings();
         configureSuperstructureBindings();
+        operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start(), null));
+        operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop(), null));
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
@@ -192,16 +195,15 @@ public class RobotContainer {
         // driveController.a().onTrue(shooter.shoot());
         // driveController.b().onTrue(shooter.idle());
 
-        /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-         */
+        
+         operatorController.a().and(operatorController.rightBumper())
+         .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         operatorController.b().and(operatorController.rightBumper())
+         .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         operatorController.x().and(operatorController.rightBumper())
+         .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         operatorController.y().and(operatorController.rightBumper())
+         .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 
     private void configureCandleBindings() {

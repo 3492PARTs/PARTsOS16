@@ -62,7 +62,7 @@ public class ShooterPhys extends Shooter {
 
     @Override
     protected double getRPM() {
-        return leftMotor.getVelocity().getValueAsDouble() / 60;
+        return leftMotor.getVelocity().getValueAsDouble() * 60;
     }
 
     @Override
