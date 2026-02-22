@@ -4,7 +4,7 @@ package frc.robot.states;
 public enum KickerState {
     IDLE(0),
     DISABLED(0),
-    ROLLING(0.1);
+    ROLLING(0.75);
 
     private final double speed;
 

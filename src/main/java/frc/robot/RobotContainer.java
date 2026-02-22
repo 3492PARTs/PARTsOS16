@@ -95,7 +95,7 @@ public class RobotContainer {
 
     public final Candle candle = new Candle();
 
-    //private final Shooter shooter = Robot.isReal() ? new ShooterPhys(drivetrain.supplierGetPose()) : new ShooterSim(drivetrain.supplierGetPose());
+    private final Shooter shooter = Robot.isReal() ? new ShooterPhys(drivetrain.supplierGetPose()) : new ShooterSim(drivetrain.supplierGetPose());
 
     private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose())
             : new TurretSim(drivetrain.supplierGetPose());
@@ -106,7 +106,7 @@ public class RobotContainer {
 
     private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
 
-    private final ShooterSysid shooter = new ShooterSysid(drivetrain.supplierGetPose()); //for sysid
+    //private final ShooterSysid shooter = new ShooterSysid(drivetrain.supplierGetPose()); //for sysid
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new TurretSysid(drivetrain.supplierGetPose());
 
@@ -125,8 +125,8 @@ public class RobotContainer {
         configureIntakeBindings();
         configureHopperBindings();
         configureSuperstructureBindings();
-        operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start(), null));
-        operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop(), null));
+        operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
+        operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
@@ -192,18 +192,18 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
-        // driveController.a().onTrue(shooter.shoot());
-        // driveController.b().onTrue(shooter.idle());
+        //driveController.a().onTrue(shooter.shoot());
+        //driveController.b().onTrue(shooter.idle());
 
         
-         operatorController.a().and(operatorController.rightBumper())
+         /*operatorController.a().and(operatorController.rightBumper())
          .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
          operatorController.b().and(operatorController.rightBumper())
          .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
          operatorController.x().and(operatorController.rightBumper())
          .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
          operatorController.y().and(operatorController.rightBumper())
-         .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
     }
 
     private void configureCandleBindings() {
@@ -231,7 +231,7 @@ public class RobotContainer {
     }
 
     private void configureIntakeBindings() {
-        //driveController.x().onTrue(intake.intake());
+        driveController.x().onTrue(intake.intake());
         //driveController.b().onTrue(intake.intakeIdle());
         //driveController.x().onTrue(intake.home());
 
@@ -249,7 +249,7 @@ public class RobotContainer {
     }
 
     private void configureSuperstructureBindings() {
-        //driveController.a().onTrue(superstructure.shoot(driveController.b()::getAsBoolean));
+        driveController.a().onTrue(superstructure.shoot(driveController.b()::getAsBoolean));
     }
 
     public void configureAutonomousCommands() {

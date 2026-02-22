@@ -20,7 +20,7 @@ public class ShooterConstants {
     public static final int PID_THRESHOLD = 50;
 
     // Feedforward
-    public static final double S = 0.27506;
-    public static final double V = 0.53757;
-    public static final double A = 0.057542;
+    public static final double S = 0.041561;
+    public static final double V = 0.48125;
+    public static final double A = 0.019433;
 }

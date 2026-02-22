@@ -10,8 +10,8 @@ import frc.robot.util.Hub.Targets;
 public enum ShooterState {
     IDLE(0),
     DISABLED(0),
-    CHARGING(3000),
-    SHOOTING(3000);
+    CHARGING(3500),
+    SHOOTING(3500);
 
     private final double rpm;
     ShooterState(double rpm) {
