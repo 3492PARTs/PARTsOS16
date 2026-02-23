@@ -555,7 +555,9 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         }
         
 
-        public boolean acceptVisionMeasurement(Pose2d measurement, double timestamp) {
+        public boolean acceptVisionMeasurement(Pose2d measurement, double timestamp) {                
+                // accept values rotating less than
+                // 2*pi rad/s = 360 deg/s
                 if (Math.max(Math.abs(getXAngularVelocity()), Math.abs(getYAngularVelocity())) < 2 * Math.PI) {
                         super.addVisionMeasurement(measurement, timestamp);
                         return true;
