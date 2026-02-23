@@ -72,13 +72,13 @@ public abstract class Kicker extends PARTsSubsystem {
     }
 
     public Command roll() {
-        return PARTsCommandUtils.setCommandName("Command Roll", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Kicker.roll", this.runOnce(() -> {
             kickerState = KickerState.ROLLING;
         }));
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Command Idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Kicker.idle", this.runOnce(() -> {
             kickerState = KickerState.IDLE;
         }));
     }

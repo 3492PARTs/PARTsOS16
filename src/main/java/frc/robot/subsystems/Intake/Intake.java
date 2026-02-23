@@ -105,25 +105,25 @@ public abstract class Intake extends PARTsSubsystem {
     public abstract double getPivotRotationSpeed();
 
     public Command intake() {
-        return PARTsCommandUtils.setCommandName("Command Intake", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Intake.intake", this.runOnce(() -> {
             intakeState = IntakeState.INTAKING;
         }));
     }
 
     public Command intakeShooting() {
-        return PARTsCommandUtils.setCommandName("Command IntakeShooting", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Intake.intakeShooting", this.runOnce(() -> {
             intakeState = IntakeState.SHOOTING;
         }));
     }
 
     public Command intakeIdle() {
-        return PARTsCommandUtils.setCommandName("Command IntakeIdle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Intake.intakeIdle", this.runOnce(() -> {
             intakeState = IntakeState.IDLE;
         }));
     }
 
     public Command home() {
-        return PARTsCommandUtils.setCommandName("Command IntakeHome", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Intake.home", this.runOnce(() -> {
             intakeState = IntakeState.HOME;
         }));
     }

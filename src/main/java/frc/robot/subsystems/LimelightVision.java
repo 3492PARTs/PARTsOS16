@@ -100,7 +100,7 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public Command commandMegaTagMode(MegaTagMode mode) {
-        Command c = PARTsCommandUtils.setCommandName("commandMegaTagMode", this.runOnce(() -> setMegaTagMode(mode)));
+        Command c = PARTsCommandUtils.setCommandName("LimelightVision.commandMegaTagMode", this.runOnce(() -> setMegaTagMode(mode)));
         c = c.ignoringDisable(true);
         return c;
     }
@@ -256,7 +256,7 @@ public class LimelightVision extends PARTsSubsystem {
         // throw new UnsupportedOperationException("Unimplemented method 'log'");
     }
 
-    public void resetRobotPose() {
+    /*public void resetRobotPose() {
         setMegaTagMode(MegaTagMode.MEGATAG1);
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
@@ -284,7 +284,7 @@ public class LimelightVision extends PARTsSubsystem {
             }
         }
         setMegaTagMode(MegaTagMode.MEGATAG2);
-    }
+    }*/
 
     public void setPipelineIndex(Pipelines pipeline) {
         partsNT.putString("Pipeline name", pipeline.name());

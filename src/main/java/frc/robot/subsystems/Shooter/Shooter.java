@@ -116,13 +116,13 @@ public abstract class Shooter extends PARTsSubsystem {
     }
 
     public Command shoot() {
-        return PARTsCommandUtils.setCommandName("Command Shoot", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Kicker.shoot", this.runOnce(() -> {
             shooterState = ShooterState.SHOOTING;
         }));
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Command Shooter Idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Kicker.idle", this.runOnce(() -> {
             shooterState = ShooterState.IDLE;
         }));
     }

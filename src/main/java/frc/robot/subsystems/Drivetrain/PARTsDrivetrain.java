@@ -225,7 +225,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         public Command commandJoystickDrive(PARTsCommandController controller) {
                 // Note that X is defined as forward according to WPILib convention,
                 // and Y is defined as to the left according to WPILib convention.
-                return PARTsCommandUtils.setCommandName("commandJoystickDrive", applyRequest(() -> {
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandJoystickDrive", applyRequest(() -> {
                         double limit = MaxSpeed * frc.robot.constants.DrivetrainConstants.SPEED_PERCENT;
                         if (fineGrainDrive)
                                 limit *= 0.25;
@@ -249,18 +249,18 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         }
 
         public Command commandBrake() {
-                return PARTsCommandUtils.setCommandName("commandBrake",
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandBrake",
                                 applyRequest(() -> getBrakeDriveRequest()));
         }
 
         public Command commandPointWheels(PARTsCommandController controller) {
-                return PARTsCommandUtils.setCommandName("commandPointWheels", applyRequest(() -> getPointDriveRequest()
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPointWheels", applyRequest(() -> getPointDriveRequest()
                                 .withModuleDirection(new Rotation2d(-controller.getLeftY(),
                                                 -controller.getLeftX()))));
         }
 
         public Command commandSeedFieldCentric() {
-                return PARTsCommandUtils.setCommandName("commandSeedFieldCentric",
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandSeedFieldCentric",
                                 this.runOnce(() -> super.seedFieldCentric()));
         }
 
@@ -357,8 +357,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                 () -> ((xRangeController.atGoal() &&
                                                 yRangeController.atGoal() &&
                                                 thetaController.atGoal()) || timerElapsed));
-                c.setName("align");
-                return c;
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandAlign", c);
         }
 
         public Pose2d getPose() {
@@ -387,7 +386,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                         .withVelocityY(0)
                                         .withRotationalRate(thetaOutput.getRadians()));
                 }, (Boolean b) -> stop(), () -> thetaController.atGoal(), this);
-                return c.withName("drivetrain.commandSnapToAngle");
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandSnapToAngle", c);
         }
 
         public void setChassisSpeeds(ChassisSpeeds robotSpeeds) {
@@ -428,8 +427,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         Command pathfindingCommand = AutoBuilder.pathfindThenFollowPath(
                                         path,
                                         constraints);
-                        pathfindingCommand.setName("pathFindToPathCommand");
-                        return pathfindingCommand;
+                        return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPath", pathfindingCommand);
 
                 } catch (IOException e) {
                         e.printStackTrace();
@@ -440,7 +438,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                 }
-                return new WaitCommand(0);
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPath.wait", new WaitCommand(0));
         }
 
         public Command commandPathFindToPose(Pose2d pose) {
@@ -456,14 +454,12 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 Command pathfindingCommand = AutoBuilder.pathfindToPose(
                                 Field.conditionallyTransformToOppositeAlliance(pose),
                                 constraints, 0.0); // Goal end velocity in meters/sec
-                pathfindingCommand.setName("pathFindToPoseCommand");
-
-                return pathfindingCommand;
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPose", pathfindingCommand);
         }
 
         public Command commandPathOnTheFly(Pose2d pose) {
 
-                return PARTsCommandUtils.setCommandName("commandPathOnTheFly", Commands.defer(() -> {
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathOnTheFly", Commands.defer(() -> {
                         PathConstraints constraints = new PathConstraints(2, 2, 2 * Math.PI, 4 * Math.PI); // The
                         // constraints
                         // for this path.
@@ -509,7 +505,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
          * @return the command
          */
         public Command controlledRotateCommand(DoubleSupplier angle, BooleanSupplier condition) {
-                return Commands.run(() -> {
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.controlledRotateCommand", Commands.run(() -> {
                         if (!isControlledRotationEnabled) {
                                 thetaController.reset(getPose().getRotation().getRadians());
                         }
@@ -518,7 +514,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                 thetaController.setGoal(angle.getAsDouble() + Math.PI);
                         else
                                 thetaController.setGoal(angle.getAsDouble());
-                }).until(condition).andThen(disableControlledRotation()).withName("drivetrain.controlledRotate");
+                }).until(condition).andThen(disableControlledRotation()));
         }
 
         /**
@@ -529,17 +525,17 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
          * @return the command
          */
         public Command targetPoseCommand(Supplier<Pose2d> targetPose, BooleanSupplier condition) {
-                return controlledRotateCommand(() -> {
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.targetPoseCommand", controlledRotateCommand(() -> {
                         Pose2d target = targetPose.get();
                         Transform2d diff = getPose().minus(target);
                         Rotation2d rot = new Rotation2d(diff.getX(), diff.getY());
                         rot = rot.plus(Rotation2d.kPi);
                         return rot.getRadians();
-                }, condition).withName("drivetrain.targetPose");
+                }, condition));
         }
 
         public Command disableControlledRotation() {
-                return Commands.runOnce(() -> isControlledRotationEnabled = false);
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.disableControlledRotation", Commands.runOnce(() -> isControlledRotationEnabled = false));
         }
 
         public Consumer<Vector<N3>> consumerSetVisionMeasurementStdDevs() {

@@ -69,19 +69,19 @@ public abstract class Hopper extends PARTsSubsystem {
     public HopperState getState() { return hopperstate; }
 
     public Command roll() {
-        return PARTsCommandUtils.setCommandName("Command Roll", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Hopper.roll", this.runOnce(() -> {
             hopperstate = HopperState.ROLLING;
         }));
     }
 
     public Command backRoll() {
-        return PARTsCommandUtils.setCommandName("Command BackRoll", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Hopper.backRoll", this.runOnce(() -> {
             hopperstate = HopperState.BACKROLLING;
         }));
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Command Hopper Idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Hopper.idle", this.runOnce(() -> {
             hopperstate = HopperState.IDLE;
         }));
     }

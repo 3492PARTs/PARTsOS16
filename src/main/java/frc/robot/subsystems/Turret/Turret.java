@@ -122,13 +122,13 @@ public abstract class Turret extends PARTsSubsystem {
     }
 
     public Command track() {
-        return PARTsCommandUtils.setCommandName("Command Track", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Turret.track", this.runOnce(() -> {
             turretState = TurretState.TRACKING;
         }));
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Command Idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Turret.idle", this.runOnce(() -> {
             turretState = TurretState.IDLE;
         }));
     }

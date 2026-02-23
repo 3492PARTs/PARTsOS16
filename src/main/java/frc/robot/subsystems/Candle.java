@@ -37,12 +37,12 @@ public class Candle extends PARTsCandle {
     }
 
     public Command commandAddState(CandleState state) {
-        return PARTsCommandUtils.setCommandName("commandAddState",
+        return PARTsCommandUtils.setCommandName("Candle.commandAddState",
                 Commands.runOnce(() -> addState(state)).ignoringDisable(true));
     }
 
     public Command commandRemoveState(CandleState state) {
-        return PARTsCommandUtils.setCommandName("commandRemoveState",
+        return PARTsCommandUtils.setCommandName("Candle.commandRemoveState",
             Commands.runOnce(() -> removeState(state)).ignoringDisable(true));
     }
 
