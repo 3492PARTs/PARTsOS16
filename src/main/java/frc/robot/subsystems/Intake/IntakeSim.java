@@ -14,17 +14,21 @@ public class IntakeSim extends Intake {
     }
 
     @Override
-    public void setPivotPosition(PARTsUnit position) {
-    }
-
-    @Override
     public double getIntakeSpeed() {
         return 0;
     }
 
     @Override
-    public PARTsUnit getPivotPosition() {
+    public PARTsUnit getPivotAngle() {
         return new PARTsUnit(0, PARTsUnitType.Angle);
     }
-    
+
+    @Override
+    public void setPivotVoltage(double voltage) {
+    }
+
+    @Override
+    public double getPivotRotationSpeed() {
+        return 0;
+    }
 }

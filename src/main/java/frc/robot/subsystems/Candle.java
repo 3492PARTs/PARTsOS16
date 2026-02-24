@@ -20,7 +20,7 @@ public class Candle extends PARTsCandle {
     private Set<CandleState> candleStates = new HashSet<>();
 
     public Candle() {
-        super("Candle", CandleConstants.CAN_ID, CandleConstants.LED_LENGTH);
+        super("Candle", CandleConstants.CAN_ID, CandleConstants.LED_LENGTH, CandleConstants.CAN_BUS_NAME);
     }
 
     /*---------------------------------- Custom Public Functions ----------------------------------*/
@@ -37,12 +37,12 @@ public class Candle extends PARTsCandle {
     }
 
     public Command commandAddState(CandleState state) {
-        return PARTsCommandUtils.setCommandName("commandAddState",
+        return PARTsCommandUtils.setCommandName("Candle.commandAddState",
                 Commands.runOnce(() -> addState(state)).ignoringDisable(true));
     }
 
     public Command commandRemoveState(CandleState state) {
-        return PARTsCommandUtils.setCommandName("commandRemoveState",
+        return PARTsCommandUtils.setCommandName("Candle.commandRemoveState",
             Commands.runOnce(() -> removeState(state)).ignoringDisable(true));
     }
 

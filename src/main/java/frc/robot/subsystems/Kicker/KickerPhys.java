@@ -3,13 +3,7 @@ package frc.robot.subsystems.Kicker;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.constants.KickerConstants;
 
 public class KickerPhys extends Kicker {
@@ -19,8 +13,9 @@ public class KickerPhys extends Kicker {
         super();
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        kickerMotor = new TalonFX(KickerConstants.KICKER_MOTOR_ID);
+        kickerMotor = new TalonFX(KickerConstants.KICKER_MOTOR_ID, KickerConstants.CAN_BUS_NAME);
         kickerMotor.getConfigurator().apply(config);
+        kickerMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     @Override
@@ -28,11 +23,6 @@ public class KickerPhys extends Kicker {
         partsNT.putDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble());
 
         partsNT.putDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble());
-    }
-
-    @Override
-    protected void setSpeed(double speed) {
-        kickerMotor.set(speed);
     }
 
     @Override
@@ -45,5 +35,10 @@ public class KickerPhys extends Kicker {
         partsLogger.logDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble());
 
         partsLogger.logDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble());
+    }
+
+    @Override
+    protected void setSpeed(double speed) {
+        kickerMotor.set(speed);
     }
 }

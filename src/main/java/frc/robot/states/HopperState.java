@@ -1,13 +1,11 @@
 package frc.robot.states;
 
-import frc.robot.constants.HopperConstants;
-
-/* The state the hopepr is in */
+/** The state the Hopper is in */
 public enum HopperState {
     IDLE(0),
     DISABLED(0),
-    ROLLING(HopperConstants.ROLL_SPEED),
-    BACKROLLING(HopperConstants.BACKROLL_SPEED);
+    ROLLING(1),
+    BACKROLLING(-1);
     
     private final double speed;
 

@@ -1,12 +1,10 @@
 package frc.robot.subsystems.Kicker;
 
-import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
-import frc.robot.constants.ShooterConstants;
 import frc.robot.states.KickerState;
 
 public abstract class Kicker extends PARTsSubsystem {
@@ -41,7 +39,6 @@ public abstract class Kicker extends PARTsSubsystem {
     public void log() {
         partsLogger.logString("Kicker State", kickerState.toString());
     }
-    // endregion
 
     @Override
     public void periodic() {
@@ -50,11 +47,7 @@ public abstract class Kicker extends PARTsSubsystem {
         } else {
             switch (kickerState) {
                 case ROLLING:
-                    setSpeed(kickerState.getSpeed());
-                    break;
                 case DISABLED:
-                    setSpeed(kickerState.getSpeed());
-                    break;
                 case IDLE:
                     setSpeed(kickerState.getSpeed());
                     break;
@@ -64,6 +57,7 @@ public abstract class Kicker extends PARTsSubsystem {
             }
         }
     }
+    //endregion
 
     // region Custom Public Functions
     /**
@@ -78,15 +72,15 @@ public abstract class Kicker extends PARTsSubsystem {
     }
 
     public Command roll() {
-        return PARTsCommandUtils.setCommandName("Command Roll", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Kicker.roll", this.runOnce(() -> {
             kickerState = KickerState.ROLLING;
         }));
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Command Idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Kicker.idle", this.runOnce(() -> {
             kickerState = KickerState.IDLE;
         }));
     }
+    //endregion
 }
-// endregion

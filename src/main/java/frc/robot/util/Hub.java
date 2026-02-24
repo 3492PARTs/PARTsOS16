@@ -2,6 +2,7 @@ package frc.robot.util;
 
 import java.util.Optional;
 
+import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.network.PARTsNT;
 
@@ -9,7 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.constants.FieldConstants;
 
 public class Hub {
     private static Pose2d hubPose2d = Field.getAllianceHubPose();
@@ -18,10 +18,10 @@ public class Hub {
     private static PARTsNT partsNT = new PARTsNT("Hub");
 
     public static enum Targets {
-        ZONE1(FieldConstants.ZONE1_RADIUS.to(PARTsUnitType.Meter)),
-        ZONE2(FieldConstants.ZONE2_RADIUS.to(PARTsUnitType.Meter)),
-        ZONE3(FieldConstants.ZONE3_RADIUS.to(PARTsUnitType.Meter)),
-        ZONE4(FieldConstants.ZONE4_RADIUS.to(PARTsUnitType.Meter));
+        ZONE1(new PARTsUnit(4, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE2(new PARTsUnit(6, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE3(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE4(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
 
         private double radius;
 
@@ -34,6 +34,12 @@ public class Hub {
         }
     }
 
+    public static void outputTelemetry() {
+        partsNT.putBoolean("Hub Active", Hub.isHubActive());
+        partsNT.putDouble("Time Left", timer.get() <=25 ? 25 - timer.get() : 0);
+        checkHubActivity();
+    }
+
     public static boolean isInRadius(Pose2d center, Pose2d point, double radius) {
         double centerPoseX = center.getX();
         double centerPoseY = center.getY();
@@ -42,7 +48,6 @@ public class Hub {
         double pointPoseY = point.getY();
 
         double distanceSquared = (Math.pow(centerPoseX - pointPoseX, 2) + Math.pow(centerPoseY - pointPoseY, 2));
-        // System.out.println(Math.sqrt(distanceSquared));
         return distanceSquared <= Math.pow(radius, 2);
     }
 
@@ -130,12 +135,6 @@ public class Hub {
 
     public static void startHubActiveTimer() {
         timer.start();
-    }
-
-    public static void outputTelemetry() {
-        partsNT.putBoolean("Hub Active", Hub.isHubActive());
-        partsNT.putDouble("Time Left", timer.get() <=25 ? 25 - timer.get() : 0);
-        checkHubActivity();
     }
 
     public static void checkHubActivity() {

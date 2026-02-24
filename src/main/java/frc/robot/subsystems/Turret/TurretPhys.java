@@ -2,16 +2,11 @@ package frc.robot.subsystems.Turret;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import frc.robot.constants.TurretConstants;
 
 public class TurretPhys extends Turret {
@@ -20,11 +15,11 @@ public class TurretPhys extends Turret {
     public TurretPhys(Supplier<Pose2d> robotPoseSupplier) {
         super(robotPoseSupplier);
 
-        SparkMaxConfig turretConfig = new SparkMaxConfig();
-        turretConfig.idleMode(IdleMode.kCoast);
-        turretConfig.inverted(true);
-
-        turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID);
+        turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID, TurretConstants.CAN_BUS_NAME);
+        TalonFXConfiguration turretConfig = new TalonFXConfiguration();
+        turretMotor.getConfigurator().apply(turretConfig);
+        turretMotor.getConfigurator().setPosition(0);
+        turretMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     @Override
@@ -33,21 +28,6 @@ public class TurretPhys extends Turret {
         partsNT.putDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble());
 
         partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble());
-    }
-
-    @Override
-    protected void setSpeed(double speed) {
-        turretMotor.set(speed);
-    }
-
-    @Override
-    protected void setVoltage(double voltage) {
-        turretMotor.setVoltage(voltage);
-    }
-
-    @Override
-    protected double getVoltage() {
-        return turretMotor.getSupplyCurrent().getValueAsDouble();
     }
 
     @Override
@@ -65,6 +45,21 @@ public class TurretPhys extends Turret {
 
     @Override
     protected double getAngle() {
-        return turretMotor.getPosition().getValueAsDouble() * 360 % 360;
+        return turretMotor.getPosition().getValueAsDouble() * 360 / TurretConstants.TURRET_GEAR_RATIO;
+    }
+
+    @Override
+    protected void setSpeed(double speed) {
+        turretMotor.set(speed);
+    }
+
+    @Override
+    protected void setVoltage(double voltage) {
+        turretMotor.setVoltage(voltage);
+    }
+
+    @Override
+    protected double getVoltage() {
+        return turretMotor.getSupplyCurrent().getValueAsDouble();
     }
 }
