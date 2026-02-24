@@ -3,6 +3,7 @@ package frc.robot.subsystems.Shooter;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.states.ShooterState;
@@ -20,7 +21,7 @@ public abstract class Shooter extends PARTsSubsystem{
 
     public Shooter() {
         super("Shooter", RobotConstants.LOGGING);
-        if (RobotConstants.DEBUGGING) {
+        if (RobotContainer.debug) {
             partsNT.putDouble("Shooter Speed", 0);
         }
 
@@ -60,7 +61,7 @@ public abstract class Shooter extends PARTsSubsystem{
 
     @Override
     public void periodic() {
-        if (RobotConstants.DEBUGGING) {
+        if (RobotContainer.debug) {
             setSpeed(partsNT.getDouble("Shooter Speed"));
         }
         else {

@@ -86,7 +86,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        if (!RobotConstants.DEBUGGING) {
+        if (!RobotContainer.debug) {
             //PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
         }
         m_robotContainer.runOnEnabled();
@@ -107,7 +107,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        if (!RobotConstants.DEBUGGING) {
+        if (!RobotContainer.debug) {
             //PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
         }
 

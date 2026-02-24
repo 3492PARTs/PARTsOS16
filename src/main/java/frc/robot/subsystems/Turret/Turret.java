@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
 import frc.robot.states.TurretState;
@@ -27,7 +28,7 @@ public abstract class Turret extends PARTsSubsystem {
 
     public Turret(Supplier<Pose2d> robotPoseSupplier) {
         super("Turret", RobotConstants.LOGGING);
-         if (RobotConstants.DEBUGGING) {
+         if (RobotContainer.debug) {
          partsNT.putDouble("Turret Speed", 0);
         }
 
@@ -69,7 +70,7 @@ public abstract class Turret extends PARTsSubsystem {
 
     @Override
     public void periodic() {
-        if (RobotConstants.DEBUGGING) {
+        if (RobotContainer.debug) {
             setSpeed(partsNT.getDouble("Turret Speed"));
         } else {
             double voltage = 0;

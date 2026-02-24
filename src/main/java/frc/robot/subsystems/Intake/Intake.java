@@ -4,6 +4,7 @@ import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
+import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.states.IntakeState;
 
@@ -14,7 +15,7 @@ public abstract class Intake extends PARTsSubsystem {
     public Intake() {
         super("Intake");
 
-        if (RobotConstants.DEBUGGING) {
+        if (RobotContainer.debug) {
             partsNT.putDouble("Intake Speed", 0);
             partsNT.putDouble("Pivot Speed", 0);
         }
@@ -39,7 +40,7 @@ public abstract class Intake extends PARTsSubsystem {
 
     @Override
     public void periodic() {
-        if (RobotConstants.DEBUGGING) {
+        if (RobotContainer.debug) {
             setIntakeSpeed(partsNT.getDouble("Intake Speed"));
             setPivotSpeed(partsNT.getDouble("Pivot Speed"));
         }

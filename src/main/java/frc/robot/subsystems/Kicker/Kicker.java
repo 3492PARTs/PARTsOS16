@@ -5,6 +5,7 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.states.KickerState;
@@ -16,7 +17,7 @@ public abstract class Kicker extends PARTsSubsystem {
     public Kicker() {
         super("Kicker");
 
-        if (RobotConstants.DEBUGGING) {
+        if (RobotContainer.debug) {
             partsNT.putDouble("Kicker Speed", 0);
         }
     }
@@ -45,7 +46,7 @@ public abstract class Kicker extends PARTsSubsystem {
 
     @Override
     public void periodic() {
-        if (RobotConstants.DEBUGGING) {
+        if (RobotContainer.debug) {
             setSpeed(partsNT.getDouble("Kicker Speed"));
         } else {
             switch (kickerState) {
