@@ -20,7 +20,7 @@ public class Candle extends PARTsCandle {
     private Set<CandleState> candleStates = new HashSet<>();
 
     public Candle() {
-        super("Candle", CandleConstants.CAN_ID, CandleConstants.LED_LENGTH);
+        super("Candle", CandleConstants.CAN_ID, CandleConstants.LED_LENGTH, CandleConstants.CAN_BUS_NAME);
     }
 
     /*---------------------------------- Custom Public Functions ----------------------------------*/

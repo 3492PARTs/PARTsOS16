@@ -79,7 +79,7 @@ public class RobotContainer {
 
     public static boolean debug = false;
 
-    private Command toggleDebug = Commands.runOnce(()-> debug = !debug);
+    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
 
     //region Subsystems
 
