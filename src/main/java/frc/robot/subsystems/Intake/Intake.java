@@ -6,7 +6,9 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.RobotConstants;
@@ -16,7 +18,7 @@ public abstract class Intake extends PARTsSubsystem {
 
     IntakeState intakeState = IntakeState.IDLE;
 
-    PIDController intakePIDController;
+    ProfiledPIDController intakePIDController;
     SimpleMotorFeedforward intakeFeedForward;
 
     public Intake() {
@@ -27,12 +29,14 @@ public abstract class Intake extends PARTsSubsystem {
             partsNT.putDouble("Pivot Speed", 0);
         }
 
-        intakePIDController = new PIDController(IntakeConstants.P, IntakeConstants.I, IntakeConstants.D);
+        intakePIDController = new ProfiledPIDController(IntakeConstants.P, IntakeConstants.I, IntakeConstants.D,
+                new TrapezoidProfile.Constraints(IntakeConstants.INTAKE_MAX_VELOCITY, IntakeConstants.INTAKE_MAX_ACCELERATION));
         intakeFeedForward = new SimpleMotorFeedforward(IntakeConstants.S, IntakeConstants.V, IntakeConstants.A);
         intakePIDController.setTolerance(IntakeConstants.PID_THRESHOLD);
 
     }
-    //region Generic Subsystem Functions
+
+    // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
         partsNT.putDouble("Pivot Position", getPivotAngle().to(PARTsUnitType.Angle));
@@ -67,9 +71,10 @@ public abstract class Intake extends PARTsSubsystem {
                 case SHOOTING:
                 case HOME:
                     setIntakeSpeed(intakeState.getSpeed());
-                    intakePIDController.setSetpoint(intakeState.getAngle());
-                    double pidCalc = intakePIDController.calculate(getPivotAngle().to(PARTsUnitType.Angle), intakeState.getAngle());
-                    double ffCalc = intakeFeedForward.calculate(intakePIDController.getSetpoint());
+                    intakePIDController.setGoal(intakeState.getAngle());
+                    double pidCalc = intakePIDController.calculate(getPivotAngle().to(PARTsUnitType.Angle),
+                            intakeState.getAngle());
+                    double ffCalc = intakeFeedForward.calculate(intakePIDController.getSetpoint().velocity);
 
                     partsNT.putBoolean("At goal", intakePIDController.atSetpoint());
 
@@ -89,9 +94,9 @@ public abstract class Intake extends PARTsSubsystem {
         partsLogger.logDouble("Intake Speed", getIntakeSpeed());
         partsLogger.logString("Intake State", intakeState.toString());
     }
-    //endregion
+    // endregion
 
-    //region Custom Public Functions
+    // region Custom Public Functions
     public abstract void setIntakeSpeed(double speed);
 
     public abstract void setPivotSpeed(double speed);
@@ -127,5 +132,5 @@ public abstract class Intake extends PARTsSubsystem {
             intakeState = IntakeState.HOME;
         }));
     }
-    //endregion
+    // endregion
 }

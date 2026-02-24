@@ -65,11 +65,11 @@ public class Candle extends PARTsCandle {
         else if (candleStates.contains(CandleState.HAS_CORAL))
             candleState = CandleState.HAS_CORAL;
         else if (candleStates.contains(CandleState.FINE_GRAIN_DRIVE))
-            candleState = CandleState.FINE_GRAIN_DRIVE;
-        else if (candleStates.contains(CandleState.IDLE))
+            candleState = CandleState.FINE_GRAIN_DRIVE;*/
+        if (candleStates.contains(CandleState.IDLE))
             candleState = CandleState.IDLE;
         else if (candleStates.contains(CandleState.DISABLED))
-            candleState = CandleState.DISABLED; */
+            candleState = CandleState.DISABLED; 
 
         setStateAnimation();
     }
@@ -97,16 +97,13 @@ public class Candle extends PARTsCandle {
                 break;
             case SCORING:
                 runRainbowAnimation();
-                break;
+                break;*/
             case IDLE:
                 runFadeAnimation(Color.BLUE, .75);
                 break;
             case DISABLED:
                 setColor(Color.BLUE);
                 break;
-            case AUTO_ALIGN:
-                runTwinkleAnimation(Color.AQUA, .75, TwinklePercent.Percent76, 0);
-                break; */
             default:
                 break;
         }
