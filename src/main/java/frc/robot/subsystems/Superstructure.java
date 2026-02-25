@@ -37,7 +37,7 @@ public class Superstructure extends PARTsSubsystem {
         //wait till at shooter at speed, kick, stop and wait when shooter not at speed, stop kicker, repeat
         Command kickAtSpeed = Commands.repeatingSequence(new WaitUntilCommand(shooter::isAtSetpoint), kicker.roll(), new WaitUntilCommand(() -> !shooter.isAtSetpoint()), kicker.idle());
         
-        // run all systems and the kick at speed in paralle
+        // run all systems and the kick at speed in parallel
         Command shoot = Commands.parallel(turret.track(), intake.intakeShooting(), hopper.roll(), shooter.shoot(), kickAtSpeed);
         
         //wait till we are at a valid angle, shoot, stop when we are at and angle we can't shoot at, then repeat
