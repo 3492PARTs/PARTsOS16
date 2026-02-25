@@ -32,8 +32,6 @@ public class Superstructure extends PARTsSubsystem {
     }
 
     public Command shoot(BooleanSupplier end) {
-        Command reset = Commands.parallel(turret.idle(), intake.idle(), hopper.idle(), kicker.idle(), shooter.idle());
-
         //wait till at shooter at speed, kick, stop and wait when shooter not at speed, stop kicker, repeat
         Command kickAtSpeed = Commands.repeatingSequence(new WaitUntilCommand(shooter::isAtSetpoint), kicker.roll(), new WaitUntilCommand(() -> !shooter.isAtSetpoint()), kicker.idle());
         
@@ -41,11 +39,15 @@ public class Superstructure extends PARTsSubsystem {
         Command shoot = Commands.parallel(turret.track(), intake.intakeShooting(), hopper.roll(), shooter.shoot(), kickAtSpeed);
         
         //wait till we are at a valid angle, shoot, stop when we are at and angle we can't shoot at, then repeat
-        Command shootAtAngle = Commands.repeatingSequence(new WaitUntilCommand(turret::isValidAngle), shoot.until(() -> !turret.isValidAngle()), reset);
+        Command shootAtAngle = Commands.repeatingSequence(new WaitUntilCommand(turret::isValidAngle), shoot.until(() -> !turret.isValidAngle()), resetSubsystems());
 
         // shoot until interrupted
         return PARTsCommandUtils
-                .setCommandName("Superstructure.shoot", shootAtAngle.until(end).andThen(reset));
+                .setCommandName("Superstructure.shoot", shootAtAngle.until(end).andThen(resetSubsystems()));
+    }
+
+    private Command resetSubsystems() {
+        return Commands.parallel(turret.idle(), intake.idle(), hopper.idle(), kicker.idle(), shooter.idle());
     }
 
     @Override
