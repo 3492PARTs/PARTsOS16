@@ -31,15 +31,13 @@ public class Superstructure extends PARTsSubsystem {
         this.turret = turret;
     }
 
-    /**
-     * lift up pivot arm, roll hopper, roll kicker, shoot. Only happens if turret has valid angle
-     */
     public Command shoot(BooleanSupplier end) {
         Command reset = Commands.parallel(turret.idle(), intake.idle(), hopper.idle(), kicker.idle(), shooter.idle());
 
-        //wait till at speed, kick, stop when shooter not at speed stop, repeat
+        //wait till at shooter at speed, kick, stop and wait when shooter not at speed, stop kicker, repeat
         Command kickAtSpeed = Commands.repeatingSequence(new WaitUntilCommand(shooter::isAtSetpoint), kicker.roll(), new WaitUntilCommand(() -> !shooter.isAtSetpoint()), kicker.idle());
         
+        // run all systems and the kick at speed in paralle
         Command shoot = Commands.parallel(turret.track(), intake.intakeShooting(), hopper.roll(), shooter.shoot(), kickAtSpeed);
         
         //wait till we are at a valid angle, shoot, stop when we are at and angle we can't shoot at, then repeat
