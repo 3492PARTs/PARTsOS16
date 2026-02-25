@@ -10,6 +10,7 @@ import frc.robot.states.ShooterState;
 import frc.robot.util.Hub;
 import frc.robot.util.Hub.Targets;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
@@ -130,6 +131,10 @@ public abstract class Shooter extends PARTsSubsystem {
         return PARTsCommandUtils.setCommandName("Kicker.idle", this.runOnce(() -> {
             shooterState = ShooterState.IDLE;
         }));
+    }
+
+    public BooleanSupplier atSetpoint() {
+        return () -> shooterPIDController.atSetpoint();
     }
     // endregion
 }
