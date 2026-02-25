@@ -116,6 +116,10 @@ public abstract class Shooter extends PARTsSubsystem {
 
     protected abstract double getRPM();
 
+    public boolean isAtSetpoint() {
+        return shooterPIDController.atSetpoint();
+    }
+    
     public ShooterState getState() {
         return shooterState;
     }
