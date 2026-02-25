@@ -35,23 +35,19 @@ public class Superstructure extends PARTsSubsystem {
      * lift up pivot arm, roll hopper, roll kicker, shoot. Only happens if turret has valid angle
      */
     public Command shoot(BooleanSupplier end) {
+        Command reset = Commands.parallel(turret.idle(), intake.idle(), hopper.idle(), kicker.idle(), shooter.idle());
 
-        //kick, stop when shooter not at speed stop, wait till speed up, then repeat
-        Command kickAtSpeed = Commands.repeatingSequence(kicker.roll(), new WaitUntilCommand(() -> !shooter.isAtSetpoint()), kicker.idle(), new WaitUntilCommand(shooter::isAtSetpoint));
+        //wait till at speed, kick, stop when shooter not at speed stop, repeat
+        Command kickAtSpeed = Commands.repeatingSequence(new WaitUntilCommand(shooter::isAtSetpoint), kicker.roll(), new WaitUntilCommand(() -> !shooter.isAtSetpoint()), kicker.idle());
+        
         Command shoot = Commands.parallel(turret.track(), intake.intakeShooting(), hopper.roll(), shooter.shoot(), kickAtSpeed);
-        Command reset = Commands.runOnce(() -> {
-                    turret.reset();
-                    intake.reset();
-                    hopper.reset();
-                    kicker.reset();
-                    shooter.reset();
-                }, hopper, intake, kicker, shooter, turret);
-        //shoot, stop when we are at and angle we can't shoot at, wait till we are at a valid angle, then repeat
-        Command shootAtAngle = Commands.repeatingSequence(shoot.until(() -> !turret.isValidAngle()), reset, new WaitUntilCommand(turret::isValidAngle));
+        
+        //wait till we are at a valid angle, shoot, stop when we are at and angle we can't shoot at, then repeat
+        Command shootAtAngle = Commands.repeatingSequence(new WaitUntilCommand(turret::isValidAngle), shoot.until(() -> !turret.isValidAngle()), reset);
 
         // shoot until interrupted
         return PARTsCommandUtils
-                .setCommandName("Superstructure.shoot", shootAtAngle.until(end));
+                .setCommandName("Superstructure.shoot", shootAtAngle.until(end).andThen(reset));
     }
 
     @Override
