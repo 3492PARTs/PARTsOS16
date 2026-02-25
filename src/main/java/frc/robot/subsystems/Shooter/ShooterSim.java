@@ -4,6 +4,12 @@ import java.util.function.Supplier;
 
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.sim.SparkMaxSim;
@@ -27,50 +33,63 @@ import frc.robot.constants.ShooterConstants;
 public class ShooterSim extends Shooter {
 
     DCMotor maxGearbox;
-    SparkMax max;
-    SparkMaxSim maxSim;
-    SparkRelativeEncoderSim motorEncoder;
+    //SparkMax max;
+    //SparkMaxSim maxSim;
+    TalonFX leftMotor;
+    TalonFX rightMotor;
+    //SparkRelativeEncoderSim motorEncoder;
     FlywheelSim shooterSim;
 
     public ShooterSim(Supplier <Pose2d> poseSupplier) {
         super(poseSupplier);
-        maxGearbox = DCMotor.getNEO(2);
+        maxGearbox = DCMotor.getKrakenX60Foc(2);
 
-        SparkMaxConfig shooterConfig = new SparkMaxConfig();
-        shooterConfig.idleMode(IdleMode.kCoast);
-        shooterConfig.inverted(true);
+        //SparkMaxConfig shooterConfig = new SparkMaxConfig();
+        //shooterConfig.idleMode(IdleMode.kCoast);
+        //shooterConfig.inverted(true);
 
-        max = new SparkMax(ShooterConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
+        leftMotor.getConfigurator().apply(config);
+        rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
 
-        max.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        rightMotor.setControl(new Follower(ShooterConstants.LEFT_MOTOR_ID, MotorAlignmentValue.Opposed));
 
-        maxSim = new SparkMaxSim(max, maxGearbox);
-        motorEncoder = maxSim.getRelativeEncoderSim();
+        leftMotor.setNeutralMode(NeutralModeValue.Coast);
+        rightMotor.setNeutralMode(NeutralModeValue.Coast);
+
+        //max = new SparkMax(ShooterConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
+
+        //max.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        //maxSim = new SparkMaxSim(max, maxGearbox);
+        //motorEncoder = maxSim.getRelativeEncoderSim();
         
         double moi = 0.6 * ShooterConstants.SHOOTER_WEEL_WEIGHT.to(PARTsUnitType.Kilogram) * Math.pow(ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter), 2);
-        LinearSystem<N1, N1, N1> plant = LinearSystemId.createFlywheelSystem(maxGearbox, moi, 1.064);
+        LinearSystem<N1, N1, N1> plant = LinearSystemId.createFlywheelSystem(maxGearbox, moi, 1.0);
 
         shooterSim = new FlywheelSim(plant, maxGearbox, 0.01);
     }
 
     @Override
     protected void setSpeed(double speed) {
-        max.set(speed);
+        leftMotor.set(speed);
     }
 
     @Override
     protected void setVoltage(double voltage) {
-        max.setVoltage(voltage);
+        leftMotor.setVoltage(voltage);
     }
 
     @Override
     protected double getRPM() {
-        return motorEncoder.getVelocity();
+        return leftMotor.getVelocity().getValueAsDouble();
     }
 
     @Override
     protected double getVoltage() {
-        return maxSim.getAppliedOutput() * RoboRioSim.getVInVoltage();
+        return leftMotor.getMotorVoltage(true).getValueAsDouble();
     }
 
     @Override
