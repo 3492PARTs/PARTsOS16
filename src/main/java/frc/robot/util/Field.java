@@ -146,7 +146,7 @@ public interface Field {
     }
 
     public static Pose2d [] getAllianceTrenchPoses() {
-        return RobotContainer.isBlue() ? new Pose2d [] {getTag(23).getLocation().toPose2d(), getTag(38).getLocation().toPose2d()}: new Pose2d [] {getTag(12).getLocation().toPose2d(), getTag(7).getLocation().toPose2d()};
+        return RobotContainer.isBlue() ? new Pose2d [] {getTag(23).getLocation().toPose2d(), getTag(28).getLocation().toPose2d()}: new Pose2d [] {getTag(12).getLocation().toPose2d(), getTag(7).getLocation().toPose2d()};
     }
 
     public static int[] getAllTagIDs() {

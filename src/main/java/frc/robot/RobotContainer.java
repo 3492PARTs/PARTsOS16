@@ -60,6 +60,7 @@ import frc.robot.subsystems.Turret.TurretPhys;
 import frc.robot.subsystems.Turret.TurretSim;
 import frc.robot.subsystems.Turret.TurretSysid;
 import frc.robot.util.Field;
+import frc.robot.util.Trench;
 
 import org.parts3492.partslib.input.PARTsButtonBoxController;
 import org.parts3492.partslib.input.PARTsCommandController;
@@ -250,6 +251,7 @@ public class RobotContainer {
 
     private void configureSuperstructureBindings() {
         driveController.a().onTrue(superstructure.shoot(driveController.b()::getAsBoolean));
+        driveController.b().whileTrue(Trench.parkUnderTrench(drivetrain));
     }
 
     public void configureAutonomousCommands() {

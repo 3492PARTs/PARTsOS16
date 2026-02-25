@@ -1,19 +1,26 @@
 package frc.robot.util;
 
+import java.util.Set;
+
 import org.parts3492.partslib.command.PARTsCommandUtils;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 
 public class Trench {
     private static Pose2d goal;
 
     public static Command parkUnderTrench(PARTsDrivetrain drivetrain) {
-        return PARTsCommandUtils.setCommandName("Trench.parkUnderTrench",
+        return PARTsCommandUtils.setCommandName("Trench.parkUnderTrench", new DeferredCommand(
+                () -> drivetrain
+                        .commandPathFindToPose(getNearestTrench(drivetrain.getPose(), Field.getAllianceTrenchPoses())),
+                Set.of(drivetrain)));
+        /*return PARTsCommandUtils.setCommandName("Trench.parkUnderTrench",
                 Commands.runOnce(() -> goal = getNearestTrench(drivetrain.getPose(), Field.getAllianceTrenchPoses()))
-                        .andThen(drivetrain.commandPathFindToPose(goal)));
+                        .andThen(drivetrain.commandPathFindToPose(goal)));*/
     }
 
     private static Pose2d getNearestTrench(Pose2d current, Pose2d[] poses) {
