@@ -121,7 +121,7 @@ public abstract class Intake extends PARTsSubsystem {
         }));
     }
 
-    public Command intakeIdle() {
+    public Command idle() {
         return PARTsCommandUtils.setCommandName("Intake.intakeIdle", this.runOnce(() -> {
             intakeState = IntakeState.IDLE;
         }));

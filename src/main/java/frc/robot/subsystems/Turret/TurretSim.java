@@ -9,6 +9,7 @@ public class TurretSim extends Turret {
 
     public TurretSim(Supplier<Pose2d> robotPoseSupplier) {
         super(robotPoseSupplier);
+        partsNT.putBoolean("Set Turret Valid Angle", false);
     }
 
     @Override
@@ -27,5 +28,10 @@ public class TurretSim extends Turret {
     @Override
     protected double getAngle() {
         return 0;
+    }
+
+    @Override
+    public boolean isValidAngle() {
+        return partsNT.getBoolean("Set Turret Valid Angle");
     }
 }

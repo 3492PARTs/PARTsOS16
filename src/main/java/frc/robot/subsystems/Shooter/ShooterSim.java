@@ -51,6 +51,8 @@ public class ShooterSim extends Shooter {
         LinearSystem<N1, N1, N1> plant = LinearSystemId.createFlywheelSystem(maxGearbox, moi, 1.064);
 
         shooterSim = new FlywheelSim(plant, maxGearbox, 0.01);
+
+        partsNT.putBoolean("Set Shooter At Setpoint", false);
     }
 
     @Override
@@ -76,6 +78,11 @@ public class ShooterSim extends Shooter {
     @Override
     public void periodic() {
         super.periodic();
+    }
+
+    @Override
+    public boolean isAtSetpoint() {
+        return partsNT.getBoolean("Set Shooter At Setpoint");
     }
 
     @Override
