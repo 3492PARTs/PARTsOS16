@@ -4,8 +4,8 @@ package frc.robot.states;
 public enum HopperState {
     IDLE(0),
     DISABLED(0),
-    ROLLING(1),
-    BACKROLLING(-1);
+    ROLLING(0.75),
+    BACKROLLING(-.75);
     
     private final double speed;
 
