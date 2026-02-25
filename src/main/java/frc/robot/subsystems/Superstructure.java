@@ -40,10 +40,13 @@ public class Superstructure extends PARTsSubsystem {
         
         //wait till we are at a valid angle, shoot, stop when we are at and angle we can't shoot at, then repeat
         Command shootAtAngle = Commands.repeatingSequence(new WaitUntilCommand(turret::isValidAngle), shoot.until(() -> !turret.isValidAngle()), resetSubsystems());
+        
+        Command c = shootAtAngle.until(end).andThen(resetSubsystems());
+        c.addRequirements(this);
 
         // shoot until interrupted
         return PARTsCommandUtils
-                .setCommandName("Superstructure.shoot", shootAtAngle.until(end).andThen(resetSubsystems()));
+                .setCommandName("Superstructure.shoot", c);
     }
 
     private Command resetSubsystems() {
