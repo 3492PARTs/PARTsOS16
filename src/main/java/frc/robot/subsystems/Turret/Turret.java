@@ -114,7 +114,7 @@ public abstract class Turret extends PARTsSubsystem {
     protected abstract double getAngle();
 
     public boolean isValidAngle() {
-        return Math.abs(getAngleToTarget()) <= 90;
+        return Math.abs(getAngleToTarget()) <= 100;
     }
 
     public TurretState getState() {
