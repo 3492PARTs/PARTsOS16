@@ -1563,6 +1563,65 @@
               "data_type": "string",
               "show_submit_button": false
             }
+          },
+          {
+            "title": "State",
+            "x": 600.0,
+            "y": 0.0,
+            "width": 200.0,
+            "height": 200.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Candle/State",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Animation",
+            "x": 600.0,
+            "y": 200.0,
+            "width": 200.0,
+            "height": 200.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Candle/Animation",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Get Angle to Turret",
+            "x": 400.0,
+            "y": 400.0,
+            "width": 200.0,
+            "height": 200.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Turret/Get Angle to Turret",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "At Setpoint",
+            "x": 200.0,
+            "y": 400.0,
+            "width": 200.0,
+            "height": 200.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/PARTs/Shooter/At Setpoint",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
           }
         ]
       }

@@ -74,7 +74,7 @@ public class RobotContainer {
     private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
     private final PARTsCommandController operatorController = new PARTsCommandController(1,
             RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
-    private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
+    // private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
 
     private PARTsNT partsNT = new PARTsNT("RobotContainer");
 
@@ -106,15 +106,15 @@ public class RobotContainer {
 
     private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
 
-    //private final ShooterSysid shooter = new ShooterSysid(drivetrain.supplierGetPose()); //for sysid
+    // private final ShooterSysid shooter = new ShooterSysid(drivetrain.supplierGetPose()); //for sysid
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new TurretSysid(drivetrain.supplierGetPose());
 
-    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret);
+    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle);
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
             Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake, superstructure));
 
-    // endregion End Subsystems
+    // endregion Subsystems
 
     public RobotContainer() {
         configureDrivetrainBindings();
