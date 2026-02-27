@@ -2,41 +2,50 @@ package frc.robot.subsystems.Turret;
 
 import java.util.function.Supplier;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import frc.robot.constants.TurretConstants;
 
 public class TurretPhys extends Turret {
-    protected final SparkMax turretMotor;
-
-    protected final RelativeEncoder turretEncoder;
+    protected final TalonFX turretMotor;
 
     public TurretPhys(Supplier<Pose2d> robotPoseSupplier) {
         super(robotPoseSupplier);
 
-        SparkMaxConfig turretConfig = new SparkMaxConfig();
-        turretConfig.idleMode(IdleMode.kCoast);
-        turretConfig.inverted(true);
-
-        turretMotor = new SparkMax(TurretConstants.TURRET_MOTOR_ID,
-                com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-        turretEncoder = turretMotor.getEncoder();
-        turretMotor.configure(turretConfig, com.revrobotics.ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID, TurretConstants.CAN_BUS_NAME);
+        TalonFXConfiguration turretConfig = new TalonFXConfiguration();
+        turretMotor.getConfigurator().apply(turretConfig);
+        turretMotor.getConfigurator().setPosition(0);
+        turretMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Current/Turret", turretMotor.getOutputCurrent());
+        partsNT.putDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble());
 
-        partsNT.putDouble("Output/Turret", turretMotor.getAppliedOutput());
+        partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble());
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
+    }
+
+    @Override
+    public void log() {
+        super.log();
+        partsLogger.logDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble());
+
+        partsLogger.logDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble());
+    }
+
+    @Override
+    protected double getAngle() {
+        return turretMotor.getPosition().getValueAsDouble() * 360 / TurretConstants.TURRET_GEAR_RATIO;
     }
 
     @Override
@@ -51,24 +60,6 @@ public class TurretPhys extends Turret {
 
     @Override
     protected double getVoltage() {
-        return turretMotor.getBusVoltage();
-    }
-
-    @Override
-    public void periodic() {
-        super.periodic();
-    }
-
-    @Override
-    public void log() {
-        super.log();
-        partsLogger.logDouble("Current/Turret", turretMotor.getOutputCurrent());
-
-        partsLogger.logDouble("Output/Turret", turretMotor.getAppliedOutput());
-    }
-
-    @Override
-    protected double getAngle() {
-        return turretEncoder.getPosition() * 360 % 360;
+        return turretMotor.getSupplyCurrent().getValueAsDouble();
     }
 }

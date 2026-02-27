@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -11,7 +10,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.constants.CameraConstants;
 import frc.robot.constants.CameraConstants.Camera;
@@ -102,7 +100,7 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public Command commandMegaTagMode(MegaTagMode mode) {
-        Command c = PARTsCommandUtils.setCommandName("commandMegaTagMode", this.runOnce(() -> setMegaTagMode(mode)));
+        Command c = PARTsCommandUtils.setCommandName("LimelightVision.commandMegaTagMode", this.runOnce(() -> setMegaTagMode(mode)));
         c = c.ignoringDisable(true);
         return c;
     }
@@ -206,27 +204,29 @@ public class LimelightVision extends PARTsSubsystem {
                     0,
                     0,
                     0);
+            double [] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
+            partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw [0]: -1);
             if (camera.isEnabled()) {
                 PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
 
-                partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX());
-                partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY());
-                partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
+                //partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX());
+                //partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY());
+                //partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
                     boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose, poseEstimate.timestampSeconds);
 
-                    partsNT.putBoolean(camera.getName() + "/Has Data", true);
-                    partsNT.putBoolean(camera.getName() + "/Accepted Data", success);
-                    partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount);
+                    //partsNT.putBoolean(camera.getName() + "/Has Data", true);
+                    //partsNT.putBoolean(camera.getName() + "/Accepted Data", success);
+                    //partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount);
 
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
                 } else {
-                    partsNT.putBoolean(camera.getName() + "/Accepted Data", false);
-                    partsNT.putBoolean(camera.getName() + "/Has Data", false);
-                    partsNT.putNumber(camera.getName() + "/Tag Count", 0);
+                    //partsNT.putBoolean(camera.getName() + "/Accepted Data", false);
+                    //partsNT.putBoolean(camera.getName() + "/Has Data", false);
+                    //partsNT.putNumber(camera.getName() + "/Tag Count", 0);
                 }
             }
         }
@@ -256,7 +256,7 @@ public class LimelightVision extends PARTsSubsystem {
         // throw new UnsupportedOperationException("Unimplemented method 'log'");
     }
 
-    public void resetRobotPose() {
+    /*public void resetRobotPose() {
         setMegaTagMode(MegaTagMode.MEGATAG1);
         for (Camera camera : CameraConstants.LimelightCameras) {
             LimelightHelpers.SetRobotOrientation(
@@ -284,7 +284,7 @@ public class LimelightVision extends PARTsSubsystem {
             }
         }
         setMegaTagMode(MegaTagMode.MEGATAG2);
-    }
+    }*/
 
     public void setPipelineIndex(Pipelines pipeline) {
         partsNT.putString("Pipeline name", pipeline.name());

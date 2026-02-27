@@ -2,13 +2,15 @@ package frc.robot.subsystems.Shooter;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.units.measure.MutLinearVelocity;
-import edu.wpi.first.units.measure.MutVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.ShooterConstants;
@@ -25,8 +27,8 @@ public class ShooterSysid extends ShooterPhys {
     private SysIdRoutine routine;
 
 
-    public ShooterSysid() {
-        super();
+    public ShooterSysid(Supplier <Pose2d> poseSupplier) {
+        super(poseSupplier);
 
         appliedVoltage = Volts.mutable(0);
 
@@ -37,13 +39,13 @@ public class ShooterSysid extends ShooterPhys {
         routine = new SysIdRoutine(
                 new SysIdRoutine.Config(), //ElevatorConstants.kSysIDConfig,
                 new SysIdRoutine.Mechanism(
-                        super.leftMotor::setVoltage,
+                        (Voltage v) -> super.setVoltage(v.in(Volts)),
                         (log) -> {
                             log.motor("shootermotor1")
                                     .voltage(appliedVoltage.mut_replace(
-                                            super.leftMotor.getAppliedOutput() * leftMotor.getBusVoltage(), Volts))
+                                            super.leftMotor.getMotorVoltage().getValueAsDouble(), Volts))
                                     .linearPosition(shooterPosition.mut_replace(
-                                            super.leftEncoder.getPosition() * Math.PI * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Inch) * 2, Inches))
+                                            super.leftMotor.getPosition().getValueAsDouble() * Math.PI * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Inch) * 2, Inches))
                                     .linearVelocity(shooterVelocity.mut_replace(
                                             (super.getRPM() * Math.PI * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Inch) * 2) / 60, InchesPerSecond));
                         },

@@ -3,6 +3,7 @@
 # Make sure that Gradlew is executable.
 chmod +x gradlew
 
+
 # Start simulation.
 ./gradlew simulateJavaRelease &
 sim_pid=$!

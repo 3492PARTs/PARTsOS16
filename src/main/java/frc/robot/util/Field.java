@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.parts3492.partslib.game.AprilTag;
-import org.parts3492.partslib.RobotUtils;
 
 /** This interface stores information about the field elements. */
 public interface Field {
@@ -146,6 +145,10 @@ public interface Field {
         return  RobotContainer.isBlue() ? blueHubCenter : transformToOppositeAlliance(blueHubCenter);
     }
 
+    public static Pose2d [] getAllianceTrenchPoses() {
+        return RobotContainer.isBlue() ? new Pose2d [] {getTag(23).getLocation().toPose2d(), getTag(38).getLocation().toPose2d()}: new Pose2d [] {getTag(12).getLocation().toPose2d(), getTag(7).getLocation().toPose2d()};
+    }
+
     public static int[] getAllTagIDs() {
         int[] ids = new int[APRILTAGS.length];
 
@@ -154,6 +157,10 @@ public interface Field {
         }
 
         return ids;
+    }
+
+    public static boolean isInAllianceZone(Pose2d pose) {
+        return RobotContainer.isBlue() ? pose.getX() < getTag(22).getLocation().getX() : pose.getX() > getTag(1).getLocation().getX();
     }
 
     /* TRANSFORM FUNCTIONS */

@@ -329,27 +329,6 @@
               "inverted": false,
               "orientation": "horizontal"
             }
-          }
-        ]
-      }
-    },
-    {
-      "name": "Autonomous",
-      "grid_layout": {
-        "layouts": [],
-        "containers": [
-          {
-            "title": "Auto Chooser",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 448.0,
-            "height": 128.0,
-            "type": "ComboBox Chooser",
-            "properties": {
-              "topic": "/SmartDashboard/Auto Chooser",
-              "period": 0.06,
-              "sort_options": false
-            }
           },
           {
             "title": "Time Left",
@@ -382,36 +361,6 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
-            }
-          },
-          {
-            "title": "Swerve Drive",
-            "x": 768.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "SwerveDrive",
-            "properties": {
-              "topic": "/SmartDashboard/PARTsDrivetrain/Swerve Drive",
-              "period": 0.06,
-              "show_robot_rotation": true,
-              "rotation_unit": "Radians"
-            }
-          },
-          {
-            "title": "Match Time",
-            "x": 1408.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Match Time",
-            "properties": {
-              "topic": "/PARTs/Robot/Match Time",
-              "period": 0.06,
-              "data_type": "double",
-              "time_display_mode": "Minutes and Seconds",
-              "red_start_time": 20,
-              "yellow_start_time": 30
             }
           }
         ]
@@ -1218,6 +1167,20 @@
               "data_type": "double",
               "show_submit_button": false
             }
+          },
+          {
+            "title": "Shooter Speed",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Shooter/Shooter Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
           }
         ]
       }
@@ -1806,6 +1769,142 @@
             "type": "Text Display",
             "properties": {
               "topic": "/PARTs/LimelightVision/Robot Rotation (deg)",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Debug Kicker",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Kicker Speed",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Kicker/Kicker Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "KickerCurrent",
+            "x": 128.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Kicker/KickerCurrent",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "KickerOutput",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Kicker/KickerOutput",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Debug Hopper",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Hopper Speed",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Hopper/Hopper Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Debug Intake",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "Intake State",
+            "x": 576.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Intake/Intake State",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Pivot Position",
+            "x": 576.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Intake/Pivot Position",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Pivot Speed",
+            "x": 448.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Intake/Pivot Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Intake Speed",
+            "x": 448.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Intake/Intake Speed",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false

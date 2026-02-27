@@ -5,10 +5,11 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 
 public class TurretSim extends Turret {
+    //protected final TalonFX turretMotor;
 
     public TurretSim(Supplier<Pose2d> robotPoseSupplier) {
         super(robotPoseSupplier);
-}
+    }
 
     @Override
     protected void setSpeed(double speed) {

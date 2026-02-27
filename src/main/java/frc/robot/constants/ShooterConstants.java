@@ -4,9 +4,10 @@ import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 public class ShooterConstants {
-    public static final double SHOOTER_RPM = 3000; 
-    public static final int LEFT_MOTOR_ID = 3;
-    public static final int RIGHT_MOTOR_ID = 5;
+    public static final int LEFT_MOTOR_ID = 33;
+    public static final int RIGHT_MOTOR_ID = 35;
+    public static final String CAN_BUS_NAME = "bye";
+    public static final boolean SHOOT_DEBUG = false;
 
 
     public static final PARTsUnit SHOOTER_WHEEL_RADIUS = new PARTsUnit(1.5, PARTsUnitType.Inch);
@@ -20,7 +21,7 @@ public class ShooterConstants {
     public static final int PID_THRESHOLD = 50;
 
     // Feedforward
-    public static final double S = 0.27506;
-    public static final double V = 0.53757;
-    public static final double A = 0.057542;
+    public static final double S = 0.041561;
+    public static final double V = 0.48125;
+    public static final double A = 0.019433;
 }
