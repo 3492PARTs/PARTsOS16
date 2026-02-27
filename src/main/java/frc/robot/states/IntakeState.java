@@ -4,9 +4,9 @@ package frc.robot.states;
 public enum IntakeState {
     IDLE(0, 0),
     DISABLED(0, 0),
-    INTAKING(0.75, 190),
-    OUTTAKING(-0.75, 190),
-    SHOOTING(0.5, 110),
+    INTAKING(1, 185),
+    OUTTAKING(-1, 185),
+    SHOOTING(0.5, 90),
     TRAVELING(0, 160),
     HOME(0, 0);
     private double speed;

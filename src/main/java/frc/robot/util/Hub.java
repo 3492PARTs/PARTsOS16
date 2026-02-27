@@ -20,10 +20,10 @@ public class Hub {
     public static enum Targets {
         DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
         ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE2(new PARTsUnit(12, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE3(new PARTsUnit(14, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE4(new PARTsUnit(16, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE5(new PARTsUnit(18, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
+        ZONE2(new PARTsUnit(11.5, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE3(new PARTsUnit(13, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE4(new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE5(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
 
         private double radius;
 

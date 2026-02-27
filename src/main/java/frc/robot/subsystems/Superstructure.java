@@ -18,11 +18,13 @@ import frc.robot.states.HopperState;
 import frc.robot.states.IntakeState;
 import frc.robot.states.KickerState;
 import frc.robot.states.ShooterState;
+import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Turret.Turret;
+import frc.robot.util.Field;
 
 public class Superstructure extends PARTsSubsystem {
     private final Hopper hopper;
@@ -31,14 +33,16 @@ public class Superstructure extends PARTsSubsystem {
     private final Shooter shooter;
     private final Turret turret;
     private final Candle candle;
+    private final PARTsDrivetrain drivetrain;
 
-    public Superstructure(Hopper hopper, Intake intake, Kicker kicker, Shooter shooter, Turret turret, Candle candle) {
+    public Superstructure(Hopper hopper, Intake intake, Kicker kicker, Shooter shooter, Turret turret, Candle candle, PARTsDrivetrain drivetrain) {
         this.hopper = hopper;
         this.intake = intake;
         this.kicker = kicker;
         this.shooter = shooter;
         this.turret = turret;
         this.candle = candle;
+        this.drivetrain = drivetrain;
     }
 
     /**
@@ -62,14 +66,14 @@ public class Superstructure extends PARTsSubsystem {
                     new ConditionalCommand(
                         shooter.shoot().onlyIf(() -> { return shooter.getState() != ShooterState.SHOOTING; }),
                         shooter.idle().onlyIf(() -> { return shooter.getState() != ShooterState.IDLE; }),
-                        turret::isValidAngle
+                        () -> turret.isValidAngle() && Field.isInAllianceZone(drivetrain.getPose())
                     ),
 
                     // Roll the kicker if the shooter is at its setpoint.
                     new ConditionalCommand(
                         kicker.roll().onlyIf(() -> { return kicker.getState() != KickerState.ROLLING; }),
                         kicker.idle().onlyIf(() -> { return kicker.getState() != KickerState.IDLE; }),
-                        () -> shooter.atSetpoint().getAsBoolean() && (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle()
+                        () -> shooter.atSetpoint().getAsBoolean() && (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle() && Field.isInAllianceZone(drivetrain.getPose())
                     ),
 
                     /*new ConditionalCommand(
