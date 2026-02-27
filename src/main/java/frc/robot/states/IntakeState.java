@@ -2,7 +2,7 @@ package frc.robot.states;
 
 /** The state the Intake is in */
 public enum IntakeState {
-    IDLE(0, 0),
+    IDLE(0, 180),
     DISABLED(0, 0),
     INTAKING(0.75, 190),
     OUTTAKING(-0.75, 190),
