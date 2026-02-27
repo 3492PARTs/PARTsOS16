@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.states.IntakeState;
@@ -115,31 +116,31 @@ public abstract class Intake extends PARTsSubsystem {
     public abstract double getPivotRotationSpeed();
 
     public Command intake() {
-        return PARTsCommandUtils.setCommandName("Intake.intake", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Intake.intake", Commands.runOnce(() -> {
             intakeState = IntakeState.INTAKING;
         }));
     }
 
     public Command intakeShooting() {
-        return PARTsCommandUtils.setCommandName("Intake.intakeShooting", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Intake.intakeShooting", Commands.runOnce(() -> {
             intakeState = IntakeState.SHOOTING;
         }));
     }
 
     public Command intakeIdle() {
-        return PARTsCommandUtils.setCommandName("Intake.intakeIdle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Intake.intakeIdle", Commands.runOnce(() -> {
             intakeState = IntakeState.IDLE;
         }));
     }
 
     public Command home() {
-        return PARTsCommandUtils.setCommandName("Intake.home", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Intake.home", Commands.runOnce(() -> {
             intakeState = IntakeState.HOME;
         }));
     }
 
     public Command travel() {
-        return PARTsCommandUtils.setCommandName("Intake.travel", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Intake.travel", Commands.runOnce(() -> {
             intakeState = IntakeState.TRAVELING;
         }));
     }
