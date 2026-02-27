@@ -36,6 +36,10 @@ public abstract class Intake extends PARTsSubsystem {
 
     }
 
+    public IntakeState getState() {
+        return intakeState;
+    }
+
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
