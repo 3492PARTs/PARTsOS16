@@ -110,7 +110,7 @@ public class RobotContainer {
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new TurretSysid(drivetrain.supplierGetPose());
 
-    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, drivetrain, candle);
+    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle, drivetrain);
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
             Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake, superstructure));
 

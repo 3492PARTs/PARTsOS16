@@ -42,6 +42,7 @@ public class Superstructure extends PARTsSubsystem {
         this.shooter = shooter;
         this.turret = turret;
         this.candle = candle;
+        this.drivetrain = drivetrain;
     }
 
     /**
@@ -65,7 +66,7 @@ public class Superstructure extends PARTsSubsystem {
                     new ConditionalCommand(
                         shooter.shoot().onlyIf(() -> { return shooter.getState() != ShooterState.SHOOTING; }),
                         shooter.idle().onlyIf(() -> { return shooter.getState() != ShooterState.IDLE; }),
-                        turret::isValidAngle
+                        () -> turret.isValidAngle() && Field.isInAllianceZone(drivetrain.getPose())
                     ),
 
                     // Roll the kicker if the shooter is at its setpoint.
