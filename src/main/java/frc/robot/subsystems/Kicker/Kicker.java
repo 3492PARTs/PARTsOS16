@@ -4,8 +4,8 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.KickerConstants.KickerState;
 import frc.robot.constants.RobotConstants;
-import frc.robot.states.KickerState;
 
 public abstract class Kicker extends PARTsSubsystem {
 
@@ -57,7 +57,7 @@ public abstract class Kicker extends PARTsSubsystem {
             }
         }
     }
-    //endregion
+    // endregion
 
     // region Custom Public Functions
     /**
@@ -82,5 +82,5 @@ public abstract class Kicker extends PARTsSubsystem {
             kickerState = KickerState.IDLE;
         }));
     }
-    //endregion
+    // endregion
 }

@@ -4,8 +4,9 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.HopperConstants.HopperState;
 import frc.robot.constants.RobotConstants;
-import frc.robot.states.HopperState;
+
 
 public abstract class Hopper extends PARTsSubsystem {
     private HopperState hopperstate = HopperState.IDLE;

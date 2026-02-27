@@ -11,8 +11,8 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.IntakeConstants;
+import frc.robot.constants.IntakeConstants.IntakeState;
 import frc.robot.constants.RobotConstants;
-import frc.robot.states.IntakeState;
 
 public abstract class Intake extends PARTsSubsystem {
 
@@ -30,7 +30,8 @@ public abstract class Intake extends PARTsSubsystem {
         }
 
         intakePIDController = new ProfiledPIDController(IntakeConstants.P, IntakeConstants.I, IntakeConstants.D,
-                new TrapezoidProfile.Constraints(IntakeConstants.INTAKE_MAX_VELOCITY, IntakeConstants.INTAKE_MAX_ACCELERATION));
+                new TrapezoidProfile.Constraints(IntakeConstants.INTAKE_MAX_VELOCITY,
+                        IntakeConstants.INTAKE_MAX_ACCELERATION));
         intakeFeedForward = new SimpleMotorFeedforward(IntakeConstants.S, IntakeConstants.V, IntakeConstants.A);
         intakePIDController.setTolerance(IntakeConstants.PID_THRESHOLD);
 

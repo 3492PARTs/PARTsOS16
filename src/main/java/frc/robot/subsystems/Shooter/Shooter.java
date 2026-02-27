@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
-import frc.robot.states.ShooterState;
+import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.util.Hub;
 import frc.robot.util.Hub.Targets;
 
@@ -21,9 +21,9 @@ public abstract class Shooter extends PARTsSubsystem {
 
     private PIDController shooterPIDController;
     private SimpleMotorFeedforward shooterFeedforward;
-    private Supplier <Pose2d> poseSupplier;
+    private Supplier<Pose2d> poseSupplier;
 
-    public Shooter(Supplier <Pose2d> poseSupplier) {
+    public Shooter(Supplier<Pose2d> poseSupplier) {
         super("Shooter", RobotConstants.LOGGING);
         this.poseSupplier = poseSupplier;
         if (RobotConstants.DEBUGGING || ShooterConstants.SHOOT_DEBUG) {
@@ -80,7 +80,7 @@ public abstract class Shooter extends PARTsSubsystem {
                     double voltage = 0;
                     Targets zone = Hub.getZone(poseSupplier.get());
                     double shooterRPM = shooterState.getZoneRPM(zone);
-                    //double shooterRPM = shooterState.getRPM();
+                    // double shooterRPM = shooterState.getRPM();
                     if (ShooterConstants.SHOOT_DEBUG) {
                         shooterRPM = partsNT.getDouble("Shooter Speed");
                     }

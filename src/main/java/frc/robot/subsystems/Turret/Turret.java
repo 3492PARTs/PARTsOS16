@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
-import frc.robot.states.TurretState;
+import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.util.Field;
 
 import java.util.function.Supplier;
@@ -78,16 +78,16 @@ public abstract class Turret extends PARTsSubsystem {
                     if (isValidAngle()) {
                         turretPIDController.setSetpoint(getAngleToTarget());
                         double pidCalc = turretPIDController.calculate(getAngle(), getAngleToTarget());
-                        //double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
+                        // double ffCalc =
+                        // turretFeedforward.calculate(turretPIDController.getSetpoint());
 
                         partsNT.putDouble("Turret voltage", voltage);
                         partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint());
 
-                        voltage = pidCalc; //+ ffCalc;
+                        voltage = pidCalc; // + ffCalc;
 
                         setVoltage(voltage);
-                    }
-                    else {
+                    } else {
                         setSpeed(0);
                     }
                     break;
