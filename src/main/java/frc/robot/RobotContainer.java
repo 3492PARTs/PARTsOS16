@@ -330,7 +330,7 @@ public class RobotContainer {
         setIdleCandleState();
         hubFieldObject2d.setPose(Field.getAllianceHubPose());
         subsystems.forEach(s -> s.reset());
-        CommandScheduler.getInstance().schedule(new WaitCommand(2).andThen(Commands.runOnce(() -> {
+        CommandScheduler.getInstance().schedule(new WaitCommand(0).andThen(Commands.runOnce(() -> {
             /*
              * if (!RobotContainer.isBlue()) {
              * drivetrain.resetPose(drivetrain.getPose().rotateBy(new Rotation2d(Math.PI)));

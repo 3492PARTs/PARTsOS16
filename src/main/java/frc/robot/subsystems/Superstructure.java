@@ -72,17 +72,17 @@ public class Superstructure extends PARTsSubsystem {
                         () -> shooter.atSetpoint().getAsBoolean() && (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle()
                     ),
 
-                    new ConditionalCommand(
+                    /*new ConditionalCommand(
                         intake.intakeShooting().onlyIf(() -> { return false && intake.getState() != IntakeState.SHOOTING; }),
                         intake.intakeIdle().onlyIf(() -> { return intake.getState() != IntakeState.IDLE; }),
                         () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()
-                    ),
+                    ),*/
 
-                    new ConditionalCommand(
+                    /*new ConditionalCommand(
                         hopper.roll().onlyIf(() -> { return hopper.getState() != HopperState.ROLLING; }),
                         hopper.idle().onlyIf(() -> { return hopper.getState() != HopperState.IDLE; }),
                         () -> shooter.atSetpoint().getAsBoolean() && (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle()
-                    ),
+                    ),*/
 
                     new ConditionalCommand(
                         candle.commandAddState(CandleState.ACTIVE_SHOOTING)
