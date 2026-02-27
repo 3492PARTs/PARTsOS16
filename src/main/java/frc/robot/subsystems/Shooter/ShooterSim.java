@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.sim.SparkMaxSim;
@@ -25,6 +26,7 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -32,17 +34,21 @@ import frc.robot.constants.ShooterConstants;
 
 public class ShooterSim extends Shooter {
 
-    DCMotor maxGearbox;
+    DCMotor talonGearbox;
     //SparkMax max;
     //SparkMaxSim maxSim;
     TalonFX leftMotor;
     TalonFX rightMotor;
+
+    TalonFXSimState leftSim;
+    TalonFXSimState rightSim;
+
     //SparkRelativeEncoderSim motorEncoder;
     FlywheelSim shooterSim;
 
     public ShooterSim(Supplier <Pose2d> poseSupplier) {
         super(poseSupplier);
-        maxGearbox = DCMotor.getKrakenX60Foc(2);
+        talonGearbox = DCMotor.getKrakenX60Foc(2);
 
         //SparkMaxConfig shooterConfig = new SparkMaxConfig();
         //shooterConfig.idleMode(IdleMode.kCoast);
@@ -52,12 +58,15 @@ public class ShooterSim extends Shooter {
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
         leftMotor.getConfigurator().apply(config);
-        rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
 
+        rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
         rightMotor.setControl(new Follower(ShooterConstants.LEFT_MOTOR_ID, MotorAlignmentValue.Opposed));
 
         leftMotor.setNeutralMode(NeutralModeValue.Coast);
         rightMotor.setNeutralMode(NeutralModeValue.Coast);
+
+        leftSim = leftMotor.getSimState();
+        rightSim = rightMotor.getSimState();
 
         //max = new SparkMax(ShooterConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
 
@@ -67,9 +76,9 @@ public class ShooterSim extends Shooter {
         //motorEncoder = maxSim.getRelativeEncoderSim();
         
         double moi = 0.6 * ShooterConstants.SHOOTER_WEEL_WEIGHT.to(PARTsUnitType.Kilogram) * Math.pow(ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter), 2);
-        LinearSystem<N1, N1, N1> plant = LinearSystemId.createFlywheelSystem(maxGearbox, moi, 1.0);
+        LinearSystem<N1, N1, N1> plant = LinearSystemId.createFlywheelSystem(talonGearbox, moi, 1.0);
 
-        shooterSim = new FlywheelSim(plant, maxGearbox, 0.01);
+        shooterSim = new FlywheelSim(plant, talonGearbox, 0.01);
     }
 
     @Override
@@ -85,11 +94,14 @@ public class ShooterSim extends Shooter {
     @Override
     protected double getRPM() {
         return leftMotor.getVelocity().getValueAsDouble();
+        //return leftSim.
+       // return shooterSim.getAngularVelocityRPM();
     }
 
     @Override
     protected double getVoltage() {
         return leftMotor.getMotorVoltage(true).getValueAsDouble();
+        //return shooterSim.getInputVoltage();
     }
 
     @Override
@@ -99,14 +111,22 @@ public class ShooterSim extends Shooter {
 
     @Override
     public void simulationPeriodic() {
-        shooterSim.setInput(maxSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
+        leftSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+        rightSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-        shooterSim.update(0.02);
-
+        /*
         double velocityRadPerSec = shooterSim.getAngularVelocityRadPerSec();
         double velocityRPM = Units.radiansPerSecondToRotationsPerMinute(velocityRadPerSec);
         maxSim.iterate(velocityRPM, RoboRioSim.getVInVoltage(), 0.02);
+        */
 
-        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(maxSim.getMotorCurrent()));
+        shooterSim.update(0.02);
+        shooterSim.setInput(leftSim.getTorqueCurrent() * RoboRioSim.getVInVoltage());
+        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(leftSim.getTorqueCurrent()));
     }
+
+    @Override
+    public void outputTelemetry() {
+        super.outputTelemetry();
+    } 
 }
