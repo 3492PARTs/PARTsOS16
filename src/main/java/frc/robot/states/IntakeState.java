@@ -6,7 +6,8 @@ public enum IntakeState {
     DISABLED(0, 0),
     INTAKING(0.75, 190),
     OUTTAKING(-0.75, 190),
-    SHOOTING(0, 90),
+    SHOOTING(0.5, 110),
+    TRAVELING(0, 160),
     HOME(0, 0);
     private double speed;
     private double angle;

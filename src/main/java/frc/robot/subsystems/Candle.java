@@ -36,6 +36,10 @@ public class Candle extends PARTsCandle {
         setState();
     }
 
+    public CandleState getState() {
+        return candleState;
+    }
+
     public Command commandAddState(CandleState state) {
         return PARTsCommandUtils.setCommandName("Candle.commandAddState",
                 Commands.runOnce(() -> addState(state)).ignoringDisable(true));
@@ -66,7 +70,11 @@ public class Candle extends PARTsCandle {
             candleState = CandleState.HAS_CORAL;
         else if (candleStates.contains(CandleState.FINE_GRAIN_DRIVE))
             candleState = CandleState.FINE_GRAIN_DRIVE;*/
-        if (candleStates.contains(CandleState.IDLE))
+        if (candleStates.contains(CandleState.ACTIVE_SHOOTING))
+            candleState = CandleState.ACTIVE_SHOOTING;
+        else if (candleStates.contains(CandleState.SHOOTING))
+            candleState = CandleState.SHOOTING;
+        else if (candleStates.contains(CandleState.IDLE))
             candleState = CandleState.IDLE;
         else if (candleStates.contains(CandleState.DISABLED))
             candleState = CandleState.DISABLED; 
@@ -98,6 +106,10 @@ public class Candle extends PARTsCandle {
             case SCORING:
                 runRainbowAnimation();
                 break;*/
+            case SHOOTING:
+                break;
+            case ACTIVE_SHOOTING:
+                break;
             case IDLE:
                 runFadeAnimation(Color.BLUE, .75);
                 break;

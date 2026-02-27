@@ -22,7 +22,8 @@ public class Hub {
         ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
         ZONE2(new PARTsUnit(12, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
         ZONE3(new PARTsUnit(14, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE4(new PARTsUnit(16, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
+        ZONE4(new PARTsUnit(16, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE5(new PARTsUnit(18, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
 
         private double radius;
 
@@ -70,6 +71,10 @@ public class Hub {
 
         else if (isInRadius(hubPose2d, point, Targets.ZONE4.getRadius())) {
             return Targets.ZONE4;
+        }
+
+        else if (isInRadius(hubPose2d, point, Targets.ZONE5.getRadius())) {
+            return Targets.ZONE5;
         }
 
         else {
