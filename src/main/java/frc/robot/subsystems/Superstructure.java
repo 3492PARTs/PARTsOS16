@@ -73,7 +73,7 @@ public class Superstructure extends PARTsSubsystem {
                     new ConditionalCommand(
                         kicker.roll().onlyIf(() -> { return kicker.getState() != KickerState.ROLLING; }),
                         kicker.idle().onlyIf(() -> { return kicker.getState() != KickerState.IDLE; }),
-                        () -> shooter.atSetpoint().getAsBoolean() && (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle()
+                        () -> shooter.atSetpoint().getAsBoolean() && (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle() && Field.isInAllianceZone(drivetrain.getPose())
                     ),
 
                     /*new ConditionalCommand(
