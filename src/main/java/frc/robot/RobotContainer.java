@@ -110,7 +110,7 @@ public class RobotContainer {
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new TurretSysid(drivetrain.supplierGetPose());
 
-    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret);
+    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle);
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
             Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake, superstructure));
 
@@ -264,7 +264,6 @@ public class RobotContainer {
     }
 
     // region Custom Public Functions
-
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());
         partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage());
