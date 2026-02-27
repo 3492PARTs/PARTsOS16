@@ -74,6 +74,7 @@ public abstract class Intake extends PARTsSubsystem {
                 case OUTTAKING:
                 case SHOOTING:
                 case HOME:
+                case TRAVELING:
                     setIntakeSpeed(intakeState.getSpeed());
                     intakePIDController.setGoal(intakeState.getAngle());
                     double pidCalc = intakePIDController.calculate(getPivotAngle().to(PARTsUnitType.Angle),
@@ -134,6 +135,12 @@ public abstract class Intake extends PARTsSubsystem {
     public Command home() {
         return PARTsCommandUtils.setCommandName("Intake.home", this.runOnce(() -> {
             intakeState = IntakeState.HOME;
+        }));
+    }
+
+    public Command travel() {
+        return PARTsCommandUtils.setCommandName("Intake.travel", this.runOnce(() -> {
+            intakeState = IntakeState.TRAVELING;
         }));
     }
     // endregion

@@ -21,6 +21,7 @@ public class HopperPhys extends Hopper {
 
     @Override
     public void outputTelemetry() {
+        super.outputTelemetry();
         partsNT.putDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble());
         partsNT.putDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble());
     }

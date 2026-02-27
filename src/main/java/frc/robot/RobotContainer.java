@@ -71,7 +71,7 @@ import org.parts3492.partslib.command.IPARTsSubsystem;
 public class RobotContainer {
     private FieldObject2d hubFieldObject2d;
 
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
+    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
     private final PARTsCommandController operatorController = new PARTsCommandController(1,
             RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
@@ -231,9 +231,13 @@ public class RobotContainer {
     }
 
     private void configureIntakeBindings() {
-        driveController.x().onTrue(intake.intake());
-        //driveController.b().onTrue(intake.intakeIdle());
-        //driveController.x().onTrue(intake.home());
+        buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
+        buttonBoxController.negative4Trigger().onTrue(intake.intake());
+        buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate()).onTrue(intake.intakeIdle());
+        /*driveController.x().onTrue(intake.intake());
+        driveController.y().onTrue(intake.intakeIdle());
+        driveController.rightTrigger().onTrue(intake.intakeShooting());
+        //driveController.x().onTrue(intake.home());*/
 
         /*
          * operatorController.a().and(operatorController.rightBumper())
@@ -249,7 +253,7 @@ public class RobotContainer {
     }
 
     private void configureSuperstructureBindings() {
-        driveController.a().onTrue(superstructure.shoot(driveController.b()::getAsBoolean));
+        buttonBoxController.handleTrigger().onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
     }
 
     public void configureAutonomousCommands() {

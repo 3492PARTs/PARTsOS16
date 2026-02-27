@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.states.CandleState;
+import frc.robot.states.HopperState;
 import frc.robot.states.IntakeState;
 import frc.robot.states.KickerState;
 import frc.robot.states.ShooterState;
@@ -44,10 +45,7 @@ public class Superstructure extends PARTsSubsystem {
      * lift up pivot arm, roll hopper, roll kicker, shoot. Only happens if turret has valid angle
      */
     public Command shoot(BooleanSupplier end) {
-
-        return PARTsCommandUtils.setCommandName("Superstructure.shoot",
-            
-            Commands.sequence(
+        Command c = Commands.sequence(
                 // Initial startup
                 Commands.parallel(
                     // Start tracking the hub.
@@ -71,13 +69,19 @@ public class Superstructure extends PARTsSubsystem {
                     new ConditionalCommand(
                         kicker.roll().onlyIf(() -> { return kicker.getState() != KickerState.ROLLING; }),
                         kicker.idle().onlyIf(() -> { return kicker.getState() != KickerState.IDLE; }),
-                        shooter.atSetpoint()
+                        () -> shooter.atSetpoint().getAsBoolean() && (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle()
                     ),
 
                     new ConditionalCommand(
-                        intake.intakeShooting().onlyIf(() -> { return intake.getState() != IntakeState.SHOOTING; }),
+                        intake.intakeShooting().onlyIf(() -> { return false && intake.getState() != IntakeState.SHOOTING; }),
                         intake.intakeIdle().onlyIf(() -> { return intake.getState() != IntakeState.IDLE; }),
-                        shooter.atSetpoint()
+                        () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()
+                    ),
+
+                    new ConditionalCommand(
+                        hopper.roll().onlyIf(() -> { return hopper.getState() != HopperState.ROLLING; }),
+                        hopper.idle().onlyIf(() -> { return hopper.getState() != HopperState.IDLE; }),
+                        () -> shooter.atSetpoint().getAsBoolean() && (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle()
                     ),
 
                     new ConditionalCommand(
@@ -86,7 +90,8 @@ public class Superstructure extends PARTsSubsystem {
                         
                         candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)
                             .onlyIf(() -> { return candle.getState() == CandleState.ACTIVE_SHOOTING; }),
-                        shooter.atSetpoint()
+                            
+                        () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()
                     )
                 )
                 .until(end)),
@@ -100,9 +105,12 @@ public class Superstructure extends PARTsSubsystem {
                         kicker.reset();
                         shooter.reset();
                         candle.removeState(CandleState.SHOOTING);
-                    }, hopper, intake, kicker, shooter, turret, candle)
+                    })
                 )
-            )
+            );
+
+            c.addRequirements(this);
+        return PARTsCommandUtils.setCommandName("Superstructure.shoot", c
         );
     }
 
