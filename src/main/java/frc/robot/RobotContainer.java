@@ -71,7 +71,7 @@ import org.parts3492.partslib.command.IPARTsSubsystem;
 public class RobotContainer {
     private FieldObject2d hubFieldObject2d;
 
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
+    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
     private final PARTsCommandController operatorController = new PARTsCommandController(1,
             RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
@@ -110,7 +110,7 @@ public class RobotContainer {
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new TurretSysid(drivetrain.supplierGetPose());
 
-    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, drivetrain);
+    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, drivetrain, candle);
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
             Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake, superstructure));
 
@@ -231,9 +231,13 @@ public class RobotContainer {
     }
 
     private void configureIntakeBindings() {
-        driveController.x().onTrue(intake.intake());
-        //driveController.b().onTrue(intake.intakeIdle());
-        //driveController.x().onTrue(intake.home());
+        buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
+        buttonBoxController.negative4Trigger().onTrue(intake.intake());
+        buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate()).onTrue(intake.intakeIdle());
+        /*driveController.x().onTrue(intake.intake());
+        driveController.y().onTrue(intake.intakeIdle());
+        driveController.rightTrigger().onTrue(intake.intakeShooting());
+        //driveController.x().onTrue(intake.home());*/
 
         /*
          * operatorController.a().and(operatorController.rightBumper())
@@ -249,7 +253,7 @@ public class RobotContainer {
     }
 
     private void configureSuperstructureBindings() {
-        driveController.a().onTrue(superstructure.shoot(driveController.b()::getAsBoolean));
+        buttonBoxController.handleTrigger().onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
     }
 
     public void configureAutonomousCommands() {
@@ -264,7 +268,6 @@ public class RobotContainer {
     }
 
     // region Custom Public Functions
-
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());
         partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage());
@@ -327,7 +330,7 @@ public class RobotContainer {
         setIdleCandleState();
         hubFieldObject2d.setPose(Field.getAllianceHubPose());
         subsystems.forEach(s -> s.reset());
-        CommandScheduler.getInstance().schedule(new WaitCommand(2).andThen(Commands.runOnce(() -> {
+        CommandScheduler.getInstance().schedule(new WaitCommand(0).andThen(Commands.runOnce(() -> {
             /*
              * if (!RobotContainer.isBlue()) {
              * drivetrain.resetPose(drivetrain.getPose().rotateBy(new Rotation2d(Math.PI)));
