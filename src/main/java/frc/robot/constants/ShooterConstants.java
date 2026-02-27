@@ -12,6 +12,7 @@ public class ShooterConstants {
     public static final PARTsUnit SHOOTER_WHEEL_RADIUS = new PARTsUnit(1.5, PARTsUnitType.Inch);
     // TODO: Get actual wheel weight.
     public static final PARTsUnit SHOOTER_WEEL_WEIGHT = new PARTsUnit(4, PARTsUnitType.Pound);
+    public static final double SHOOTER_GEAR_RATIO = 1; // 1:1
 
     // PID Controller
     public static final double P = 0.0005;
