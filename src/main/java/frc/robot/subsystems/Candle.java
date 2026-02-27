@@ -36,6 +36,10 @@ public class Candle extends PARTsCandle {
         setState();
     }
 
+    public CandleState getState() {
+        return candleState;
+    }
+
     public Command commandAddState(CandleState state) {
         return PARTsCommandUtils.setCommandName("Candle.commandAddState",
                 Commands.runOnce(() -> addState(state)).ignoringDisable(true));
@@ -65,11 +69,15 @@ public class Candle extends PARTsCandle {
         else if (candleStates.contains(CandleState.HAS_CORAL))
             candleState = CandleState.HAS_CORAL;
         else if (candleStates.contains(CandleState.FINE_GRAIN_DRIVE))
-            candleState = CandleState.FINE_GRAIN_DRIVE;
+            candleState = CandleState.FINE_GRAIN_DRIVE;*/
+        if (candleStates.contains(CandleState.ACTIVE_SHOOTING))
+            candleState = CandleState.ACTIVE_SHOOTING;
+        else if (candleStates.contains(CandleState.SHOOTING))
+            candleState = CandleState.SHOOTING;
         else if (candleStates.contains(CandleState.IDLE))
             candleState = CandleState.IDLE;
         else if (candleStates.contains(CandleState.DISABLED))
-            candleState = CandleState.DISABLED; */
+            candleState = CandleState.DISABLED; 
 
         setStateAnimation();
     }
@@ -97,6 +105,10 @@ public class Candle extends PARTsCandle {
                 break;
             case SCORING:
                 runRainbowAnimation();
+                break;*/
+            case SHOOTING:
+                break;
+            case ACTIVE_SHOOTING:
                 break;
             case IDLE:
                 runFadeAnimation(Color.BLUE, .75);
@@ -104,9 +116,6 @@ public class Candle extends PARTsCandle {
             case DISABLED:
                 setColor(Color.BLUE);
                 break;
-            case AUTO_ALIGN:
-                runTwinkleAnimation(Color.AQUA, .75, TwinklePercent.Percent76, 0);
-                break; */
             default:
                 break;
         }

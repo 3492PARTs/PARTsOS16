@@ -8,6 +8,8 @@ package frc.robot.states;
 public enum CandleState {
     IDLE,
     DISABLED,
+    SHOOTING,
+    ACTIVE_SHOOTING
     /* 
     ELEVATOR_ERROR,
     CORAL_LASER_EXIT_ERROR,

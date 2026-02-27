@@ -18,10 +18,12 @@ public class Hub {
     private static PARTsNT partsNT = new PARTsNT("Hub");
 
     public static enum Targets {
-        ZONE1(new PARTsUnit(4, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE2(new PARTsUnit(6, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE3(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE4(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
+        DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE2(new PARTsUnit(11.5, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE3(new PARTsUnit(13, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE4(new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
+        ZONE5(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
 
         private double radius;
 
@@ -52,7 +54,10 @@ public class Hub {
     }
 
     public static Targets getZone(Pose2d point) {
-        if (isInRadius(hubPose2d, point, Targets.ZONE1.getRadius())) {
+        if (isInRadius(hubPose2d, point, Targets.DEADZONE.getRadius())) {
+            return null;
+        }
+        else if (isInRadius(hubPose2d, point, Targets.ZONE1.getRadius())) {
             return Targets.ZONE1;
         }
 
@@ -66,6 +71,10 @@ public class Hub {
 
         else if (isInRadius(hubPose2d, point, Targets.ZONE4.getRadius())) {
             return Targets.ZONE4;
+        }
+
+        else if (isInRadius(hubPose2d, point, Targets.ZONE5.getRadius())) {
+            return Targets.ZONE5;
         }
 
         else {

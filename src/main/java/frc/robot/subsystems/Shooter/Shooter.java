@@ -10,6 +10,8 @@ import frc.robot.states.ShooterState;
 import frc.robot.util.Hub;
 import frc.robot.util.Hub.Targets;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
@@ -21,12 +23,12 @@ public abstract class Shooter extends PARTsSubsystem {
 
     private PIDController shooterPIDController;
     private SimpleMotorFeedforward shooterFeedforward;
-    private Pose2d poseSupplier;
+    private Supplier <Pose2d> poseSupplier;
 
     public Shooter(Supplier <Pose2d> poseSupplier) {
         super("Shooter", RobotConstants.LOGGING);
-        this.poseSupplier = poseSupplier.get();
-        if (RobotConstants.DEBUGGING) {
+        this.poseSupplier = poseSupplier;
+        if (RobotConstants.DEBUGGING || ShooterConstants.SHOOT_DEBUG) {
             partsNT.putDouble("Shooter Speed", 0);
         }
 
@@ -46,7 +48,7 @@ public abstract class Shooter extends PARTsSubsystem {
         partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint());
         partsNT.putDouble("Current Error", shooterPIDController.getError());
 
-        Targets zone = Hub.getZone(poseSupplier);
+        Targets zone = Hub.getZone(poseSupplier.get());
         partsNT.putString("Zone", zone == null ? "No zone" : zone.toString());
     }
 
@@ -74,11 +76,16 @@ public abstract class Shooter extends PARTsSubsystem {
                 case CHARGING:
                 case DISABLED:
                 case IDLE:
+                    setSpeed(0);
+                    break;
                 case SHOOTING:
                     double voltage = 0;
-                    Targets zone = Hub.getZone(poseSupplier);
-                    double zoneRPM = shooterState.getZoneRPM(zone);
-                    double shooterRPM = shooterState.getRPM();
+                    Targets zone = Hub.getZone(poseSupplier.get());
+                    double shooterRPM = shooterState.getZoneRPM(zone);
+                    //double shooterRPM = shooterState.getRPM();
+                    if (ShooterConstants.SHOOT_DEBUG) {
+                        shooterRPM = partsNT.getDouble("Shooter Speed");
+                    }
                     shooterPIDController.setSetpoint(shooterRPM);
 
                     double pidCalc = shooterPIDController.calculate(getRPM(), shooterRPM);
@@ -125,6 +132,14 @@ public abstract class Shooter extends PARTsSubsystem {
         return PARTsCommandUtils.setCommandName("Kicker.idle", this.runOnce(() -> {
             shooterState = ShooterState.IDLE;
         }));
+    }
+
+    public BooleanSupplier atSetpoint() {
+        return () -> shooterPIDController.atSetpoint();
+    }
+
+    public DoubleSupplier getSetpoint() {
+        return () -> shooterPIDController.getSetpoint();
     }
     // endregion
 }
