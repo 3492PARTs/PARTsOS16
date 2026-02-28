@@ -29,6 +29,26 @@ public class Trench {
         return poses[index];
     }
 
+    public static boolean isUnderTrench(Pose2d pose) {
+        Pose2d trench = getNearestTrench(pose, Field.getAllianceTrenchPoses());
+        double offset = getDistance(pose, trench);
+
+        // A little bigger than the robot.
+        // Remember that this is in meters, not inches.
+        if (offset < 1) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // TODO: Move something like this to PARTsLib and make it return a PARTsUnit.
+    /**
+     * Gets the distance between a point and a goal.
+     * @param current The origin point. I.e. the drivetrain's position.
+     * @param goal The target point.
+     * @return The distance in meters.
+     */
     private static double getDistance(Pose2d current, Pose2d goal) {
         return Math.sqrt(Math.pow(current.getX() - goal.getX(), 2) + Math.pow(current.getY() - goal.getY(), 2));
     }
