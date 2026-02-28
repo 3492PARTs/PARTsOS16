@@ -21,6 +21,12 @@ import frc.robot.util.LimelightHelpers.PoseEstimate;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
+//camera 21 - 14 inches forward
+//camera 24 - 13 inches side
+//camera 14 inches up
+//camera 45 degrees side to side
+//camera 40 degrees up and down
+
 public class LimelightVision extends PARTsSubsystem {
 
     private final Supplier<Pose2d> poseSupplier;
@@ -55,7 +61,8 @@ public class LimelightVision extends PARTsSubsystem {
     private int imuMode;
     private int maxTagCount;
 
-    public LimelightVision(Supplier<Pose2d> poseSupplier, BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
+    public LimelightVision(Supplier<Pose2d> poseSupplier,
+            BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
             Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer, Consumer<Pose2d> resetPoseConsumer) {
         super("LimelightVision");
         this.poseSupplier = poseSupplier;
@@ -100,7 +107,8 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public Command commandMegaTagMode(MegaTagMode mode) {
-        Command c = PARTsCommandUtils.setCommandName("LimelightVision.commandMegaTagMode", this.runOnce(() -> setMegaTagMode(mode)));
+        Command c = PARTsCommandUtils.setCommandName("LimelightVision.commandMegaTagMode",
+                this.runOnce(() -> setMegaTagMode(mode)));
         c = c.ignoringDisable(true);
         return c;
     }
@@ -204,29 +212,31 @@ public class LimelightVision extends PARTsSubsystem {
                     0,
                     0,
                     0);
-            double [] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
-            partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw [0]: -1);
+            double[] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
+            partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw[0] : -1);
             if (camera.isEnabled()) {
                 PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
 
-                //partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX());
-                //partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY());
-                //partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
+                // partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX());
+                // partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY());
+                // partsNT.putNumber(camera.getName() + "/Rotation (deg)",
+                // poseEstimate.pose.getRotation().getDegrees());
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
-                    boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose, poseEstimate.timestampSeconds);
+                    boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
+                            poseEstimate.timestampSeconds);
 
-                    //partsNT.putBoolean(camera.getName() + "/Has Data", true);
-                    //partsNT.putBoolean(camera.getName() + "/Accepted Data", success);
-                    //partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount);
+                    // partsNT.putBoolean(camera.getName() + "/Has Data", true);
+                    // partsNT.putBoolean(camera.getName() + "/Accepted Data", success);
+                    // partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount);
 
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
                 } else {
-                    //partsNT.putBoolean(camera.getName() + "/Accepted Data", false);
-                    //partsNT.putBoolean(camera.getName() + "/Has Data", false);
-                    //partsNT.putNumber(camera.getName() + "/Tag Count", 0);
+                    // partsNT.putBoolean(camera.getName() + "/Accepted Data", false);
+                    // partsNT.putBoolean(camera.getName() + "/Has Data", false);
+                    // partsNT.putNumber(camera.getName() + "/Tag Count", 0);
                 }
             }
         }
@@ -256,35 +266,37 @@ public class LimelightVision extends PARTsSubsystem {
         // throw new UnsupportedOperationException("Unimplemented method 'log'");
     }
 
-    /*public void resetRobotPose() {
-        setMegaTagMode(MegaTagMode.MEGATAG1);
-        for (Camera camera : CameraConstants.LimelightCameras) {
-            LimelightHelpers.SetRobotOrientation(
-                    camera.getName(),
-                    (poseSupplier.get().getRotation().getDegrees()) % 360,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0);
-            if (camera.isEnabled()) {
-                PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
-                        ? getMegaTag2PoseEstimate(camera.getName())
-                        : getMegaTag1PoseEstimate(camera.getName());
-
-                if (poseEstimate != null && poseEstimate.tagCount > 0) {
-                    resetPoseConsumer.accept(poseEstimate.pose);
-                    partsNT.putBoolean(camera.getName() + "/Has Data", true);
-                    partsNT.putInteger(camera.getName() + "/Tag Count", poseEstimate.tagCount);
-                    maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
-                } else {
-                    partsNT.putBoolean(camera.getName() + "/Has Data", false);
-                    partsNT.putInteger(camera.getName() + "/Tag Count", 0);
-                }
-            }
-        }
-        setMegaTagMode(MegaTagMode.MEGATAG2);
-    }*/
+    /*
+     * public void resetRobotPose() {
+     * setMegaTagMode(MegaTagMode.MEGATAG1);
+     * for (Camera camera : CameraConstants.LimelightCameras) {
+     * LimelightHelpers.SetRobotOrientation(
+     * camera.getName(),
+     * (poseSupplier.get().getRotation().getDegrees()) % 360,
+     * 0,
+     * 0,
+     * 0,
+     * 0,
+     * 0);
+     * if (camera.isEnabled()) {
+     * PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
+     * ? getMegaTag2PoseEstimate(camera.getName())
+     * : getMegaTag1PoseEstimate(camera.getName());
+     * 
+     * if (poseEstimate != null && poseEstimate.tagCount > 0) {
+     * resetPoseConsumer.accept(poseEstimate.pose);
+     * partsNT.putBoolean(camera.getName() + "/Has Data", true);
+     * partsNT.putInteger(camera.getName() + "/Tag Count", poseEstimate.tagCount);
+     * maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
+     * } else {
+     * partsNT.putBoolean(camera.getName() + "/Has Data", false);
+     * partsNT.putInteger(camera.getName() + "/Tag Count", 0);
+     * }
+     * }
+     * }
+     * setMegaTagMode(MegaTagMode.MEGATAG2);
+     * }
+     */
 
     public void setPipelineIndex(Pipelines pipeline) {
         partsNT.putString("Pipeline name", pipeline.name());
