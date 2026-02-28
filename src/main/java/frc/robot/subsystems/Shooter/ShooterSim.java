@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Shooter;
 
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
@@ -53,13 +54,18 @@ public class ShooterSim extends Shooter {
     public ShooterSim(Supplier<Pose2d> poseSupplier) {
         super(poseSupplier);
 
-        double moi = 0.6 * ShooterConstants.SHOOTER_WEEL_WEIGHT.to(PARTsUnitType.Kilogram)
+        double moi = 0.5 * ShooterConstants.SHOOTER_WEEL_WEIGHT.to(PARTsUnitType.Kilogram)
                 * Math.pow(ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter), 2);
 
         talonGearbox = new DCMotorSim(
-                LinearSystemId.createDCMotorSystem(
-                        DCMotor.getKrakenX44Foc(1), moi, ShooterConstants.SHOOTER_GEAR_RATIO),
-                DCMotor.getKrakenX44Foc(1));
+            LinearSystemId.createDCMotorSystem(
+                    DCMotor.getKrakenX44Foc(2),
+                    moi,
+                    ShooterConstants.SHOOTER_GEAR_RATIO
+                ),
+            
+            DCMotor.getKrakenX44Foc(2)
+        );
 
         // SparkMaxConfig shooterConfig = new SparkMaxConfig();
         // shooterConfig.idleMode(IdleMode.kCoast);
@@ -67,17 +73,17 @@ public class ShooterSim extends Shooter {
 
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
         leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
+        leftSim = leftMotor.getSimState();
         leftMotor.getConfigurator().apply(config);
 
         rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
+        rightSim = rightMotor.getSimState();
         rightMotor.setControl(new Follower(ShooterConstants.LEFT_MOTOR_ID, MotorAlignmentValue.Opposed));
 
         leftMotor.setNeutralMode(NeutralModeValue.Coast);
         rightMotor.setNeutralMode(NeutralModeValue.Coast);
-
-        leftSim = leftMotor.getSimState();
-        rightSim = rightMotor.getSimState();
 
         // max = new SparkMax(ShooterConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
 
@@ -97,16 +103,20 @@ public class ShooterSim extends Shooter {
     @Override
     protected void setSpeed(double speed) {
         leftMotor.set(speed);
+        //talonGearbox.setAngularVelocity(speed);
     }
 
     @Override
     protected void setVoltage(double voltage) {
         leftMotor.setVoltage(voltage);
+        //leftSim.setSupplyVoltage(voltage);
+        //talonGearbox.setInputVoltage(voltage);
     }
 
     @Override
     protected double getRPM() {
         return leftMotor.getVelocity().getValueAsDouble();
+        //return talonGearbox.getAngularVelocityRPM();
         // return leftSim.
         // return shooterSim.getAngularVelocityRPM();
     }
@@ -115,6 +125,7 @@ public class ShooterSim extends Shooter {
     protected double getVoltage() {
         return leftMotor.getMotorVoltage(true).getValueAsDouble();
         // return shooterSim.getInputVoltage();
+        //return talonGearbox.getInputVoltage();
     }
 
     @Override
