@@ -5,8 +5,9 @@ import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.constants.HopperConstants.HopperState;
 import frc.robot.constants.RobotConstants;
-import frc.robot.states.HopperState;
+
 
 public abstract class Hopper extends PARTsSubsystem {
     private HopperState hopperstate = HopperState.IDLE;
@@ -48,14 +49,8 @@ public abstract class Hopper extends PARTsSubsystem {
         else {
             switch(hopperstate) {
             case DISABLED:
-                setSpeed(hopperstate.getSpeed());
-                break;
             case ROLLING:
-                setSpeed(hopperstate.getSpeed());
-                break;
             case IDLE:
-                setSpeed(hopperstate.getSpeed());
-                break;
             case BACKROLLING:
                 setSpeed(hopperstate.getSpeed());
                 break;
@@ -76,19 +71,19 @@ public abstract class Hopper extends PARTsSubsystem {
     public HopperState getState() { return hopperstate; }
 
     public Command roll() {
-        return PARTsCommandUtils.setCommandName("Command Roll", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Hopper.roll", this.runOnce(() -> {
             hopperstate = HopperState.ROLLING;
         }));
     }
 
     public Command backRoll() {
-        return PARTsCommandUtils.setCommandName("Command BackRoll", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Hopper.backRoll", this.runOnce(() -> {
             hopperstate = HopperState.BACKROLLING;
         }));
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Command Hopper Idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Hopper.idle", this.runOnce(() -> {
             hopperstate = HopperState.IDLE;
         }));
     }

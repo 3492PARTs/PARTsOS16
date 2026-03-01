@@ -1,50 +1,37 @@
 package frc.robot.subsystems.Intake;
 
-import static edu.wpi.first.units.Units.Rotations;
-
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
-import org.parts3492.partslib.network.PARTsNT;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.constants.IntakeConstants;
 
+/**
+ * The physical intake subsystem.<p>
+ * WARNING: The pivot arm MUST be in home position when the robot starts.
+ */
 public class IntakePhys extends Intake {
-    TalonFX intakeMotor;
-    TalonFX pivotMotor;
+    protected final TalonFX intakeMotor;
+    protected final TalonFX pivotMotor;
 
     public IntakePhys() {
         super();
         TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
-        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
+        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);
         intakeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         intakeMotor.getConfigurator().apply(intakeConfig);
-        pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
-    }
+        intakeMotor.setNeutralMode(NeutralModeValue.Brake);
 
-    @Override
-    public void setIntakeSpeed(double speed) {
-        intakeMotor.set(speed);
-    }
-
-    @Override
-    public void setPivotPosition(PARTsUnit position) {
-        pivotMotor.setPosition(position.to(PARTsUnitType.Rotations));
-    }
-
-    @Override
-    public double getIntakeSpeed() {
-        return intakeMotor.get();
-    }
-
-    @Override
-    public PARTsUnit getPivotPosition() {
-        return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble(), PARTsUnitType.Rotations);
+        pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);
+        TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
+        pivotMotor.getConfigurator().apply(pivotConfig);
+        pivotMotor.getConfigurator().setPosition(0);
+        pivotMotor.setNeutralMode(NeutralModeValue.Brake);
+    
     }
 
     @Override
@@ -82,5 +69,30 @@ public class IntakePhys extends Intake {
     @Override
     public void setPivotSpeed(double speed) {
         pivotMotor.set(speed);
+    }
+
+    @Override
+    public void setPivotVoltage(double voltage) {
+        pivotMotor.setVoltage(voltage);
+    }
+
+    @Override
+    public void setIntakeSpeed(double speed) {
+        intakeMotor.set(speed);
+    }
+
+    @Override
+    public double getIntakeSpeed() {
+        return intakeMotor.get();
+    }
+
+    @Override
+    public double getPivotRotationSpeed() {
+        return pivotMotor.getVelocity().getValueAsDouble();
+    }
+
+    @Override
+    public PARTsUnit getPivotAngle() {
+        return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO, PARTsUnitType.Rotations);
     }
 }

@@ -9,15 +9,11 @@ import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import frc.robot.util.Hub;
-
-import org.parts3492.partslib.network.PARTsDashboard;
-import org.parts3492.partslib.network.PARTsDashboard.DashboardTab;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 
