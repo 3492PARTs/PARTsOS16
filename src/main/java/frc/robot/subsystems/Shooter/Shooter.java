@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
-import frc.robot.states.ShooterState;
+import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.util.Hub;
 import frc.robot.util.Trench;
 import frc.robot.util.Hub.Targets;
@@ -24,9 +24,9 @@ public abstract class Shooter extends PARTsSubsystem {
 
     private PIDController shooterPIDController;
     private SimpleMotorFeedforward shooterFeedforward;
-    private Supplier <Pose2d> poseSupplier;
+    private Supplier<Pose2d> poseSupplier;
 
-    public Shooter(Supplier <Pose2d> poseSupplier) {
+    public Shooter(Supplier<Pose2d> poseSupplier) {
         super("Shooter", RobotConstants.LOGGING);
         this.poseSupplier = poseSupplier;
         if (RobotConstants.DEBUGGING || ShooterConstants.SHOOT_DEBUG) {
