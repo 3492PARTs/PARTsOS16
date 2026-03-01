@@ -159,6 +159,10 @@ public interface Field {
         return ids;
     }
 
+    public static boolean isInAllianceZone(Pose2d pose) {
+        return RobotContainer.isBlue() ? pose.getX() < getTag(22).getLocation().getX() : pose.getX() > getTag(1).getLocation().getX();
+    }
+
     /* TRANSFORM FUNCTIONS */
     
     public static Pose3d transformToOppositeAlliance(Pose3d pose) {

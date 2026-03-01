@@ -20,6 +20,7 @@ public class KickerPhys extends Kicker {
 
     @Override
     public void outputTelemetry() {
+        super.outputTelemetry();
         partsNT.putDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble());
 
         partsNT.putDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble());
