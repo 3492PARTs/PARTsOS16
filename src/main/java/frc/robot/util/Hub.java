@@ -43,38 +43,27 @@ public class Hub {
         checkHubActivity();
     }
 
-    public static boolean isInRadius(Pose2d center, Pose2d point, double radius) {
-        double centerPoseX = center.getX();
-        double centerPoseY = center.getY();
-
-        double pointPoseX = point.getX();
-        double pointPoseY = point.getY();
-
-        double distanceSquared = (Math.pow(centerPoseX - pointPoseX, 2) + Math.pow(centerPoseY - pointPoseY, 2));
-        return distanceSquared <= Math.pow(radius, 2);
-    }
-
     public static Targets getZone(Pose2d point) {
-        if (isInRadius(hubPose2d, point, Targets.DEADZONE.getRadius())) {
+        if (Field.isInRadius(hubPose2d, point, Targets.DEADZONE.getRadius())) {
             return null;
         }
-        else if (isInRadius(hubPose2d, point, Targets.ZONE1.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE1.getRadius())) {
             return Targets.ZONE1;
         }
 
-        else if (isInRadius(hubPose2d, point, Targets.ZONE2.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE2.getRadius())) {
             return Targets.ZONE2;
         }
 
-        else if (isInRadius(hubPose2d, point, Targets.ZONE3.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE3.getRadius())) {
             return Targets.ZONE3;
         }
 
-        else if (isInRadius(hubPose2d, point, Targets.ZONE4.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE4.getRadius())) {
             return Targets.ZONE4;
         }
 
-        else if (isInRadius(hubPose2d, point, Targets.ZONE5.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE5.getRadius())) {
             return Targets.ZONE5;
         }
 
