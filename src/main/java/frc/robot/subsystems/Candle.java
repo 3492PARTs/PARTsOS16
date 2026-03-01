@@ -10,7 +10,7 @@ import java.util.Set;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.CandleConstants;
-import frc.robot.states.CandleState;
+import frc.robot.constants.CandleConstants.CandleState;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.PARTsCandle;
 
@@ -47,7 +47,7 @@ public class Candle extends PARTsCandle {
 
     public Command commandRemoveState(CandleState state) {
         return PARTsCommandUtils.setCommandName("Candle.commandRemoveState",
-            Commands.runOnce(() -> removeState(state)).ignoringDisable(true));
+                Commands.runOnce(() -> removeState(state)).ignoringDisable(true));
     }
 
     /*---------------------------------- Custom Private Functions ---------------------------------*/
@@ -77,7 +77,7 @@ public class Candle extends PARTsCandle {
         else if (candleStates.contains(CandleState.IDLE))
             candleState = CandleState.IDLE;
         else if (candleStates.contains(CandleState.DISABLED))
-            candleState = CandleState.DISABLED; 
+            candleState = CandleState.DISABLED;
 
         setStateAnimation();
     }
