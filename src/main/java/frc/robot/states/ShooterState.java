@@ -31,13 +31,15 @@ public enum ShooterState {
             case ZONE1:
                 return 3000;
             case ZONE2:
-                return 3250;
+                return 3300;
             case ZONE3:
                 return 3400;
             case ZONE4:
                 return 3600;
             case ZONE5:
                 return 3800;
+            case ZONE6:
+                return 4000;
             default:
             return 0;
         }
