@@ -111,7 +111,7 @@ public class Candle extends PARTsCandle {
             case ACTIVE_SHOOTING:
                 break;
             case IDLE:
-                runFadeAnimation(Color.BLUE, .75);
+                runFadeAnimation(Color.BLUE, 100);
                 break;
             case DISABLED:
                 setColor(Color.BLUE);
