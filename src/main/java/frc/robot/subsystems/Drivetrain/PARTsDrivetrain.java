@@ -452,7 +452,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
                 // Since AutoBuilder is configured, we can use it to build pathfinding commands
                 Command pathfindingCommand = AutoBuilder.pathfindToPose(
-                                Field.conditionallyTransformToOppositeAlliance(pose),
+                                pose,
                                 constraints, 0.0); // Goal end velocity in meters/sec
                 return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPose", pathfindingCommand);
         }
