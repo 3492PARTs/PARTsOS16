@@ -228,8 +228,8 @@ public class LimelightVision extends PARTsSubsystem {
                 // poseEstimate.pose.getRotation().getDegrees());
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0
-                        && Field.isInRadius(Field.getTag((int) getTargetId(camera.getName())).getLocation().toPose2d(),
-                                poseSupplier.get(), new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter))) {
+                        && Field.isInRadius(Field.getTag((int) getVisibleTagId(camera.getName())).getLocation().toPose2d(),
+                                poseSupplier.get(), new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter))) {
                     boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
                             poseEstimate.timestampSeconds);
 
@@ -310,15 +310,6 @@ public class LimelightVision extends PARTsSubsystem {
                 LimelightHelpers.setLEDMode_PipelineControl(camera.getName());
                 LimelightHelpers.setPipelineIndex(camera.getName(), pipeline.getIndex());
             }
-        }
-    }
-
-    public double getTargetId(String name) {
-        try {
-            double[] targetArray = LimelightHelpers.getT2DArray(name);
-            return targetArray[9];
-        } catch (ArrayIndexOutOfBoundsException a) {
-            return -1;
         }
     }
 }
