@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.constants.CameraConstants;
 import frc.robot.constants.RobotConstants;
@@ -124,7 +123,19 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public Command commandMegaTagMode(MegaTagMode mode) {
-        Command c = PARTsCommandUtils.setCommandName("commandMegaTagMode", this.runOnce(() -> setMegaTagMode(mode)));
+        Command c = PARTsCommandUtils.setCommandName("LimelightVision.commandMegaTagMode", this.runOnce(() -> setMegaTagMode(mode)));
+        c = c.ignoringDisable(true);
+        return c;
+    }
+
+    public Command commandIMUMode(IMUMode mode) {
+        Command c = PARTsCommandUtils.setCommandName("commandIMUMode", this.runOnce(() -> setIMUMode(mode)));
+        c = c.ignoringDisable(true);
+        return c;
+    }
+
+    public Command commandPipeline(Pipelines mode) {
+        Command c = PARTsCommandUtils.setCommandName("commandPipeline", this.runOnce(() -> setPipelineIndex(mode)));
         c = c.ignoringDisable(true);
         return c;
     }
@@ -244,16 +255,19 @@ public class LimelightVision extends PARTsSubsystem {
                     0,
                     0,
                     0);
+            double [] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
+            partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw [0]: -1);
             if (camera.isEnabled()) {
                 PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
 
-                partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX());
-                partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY());
-                partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
+                //partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX());
+                //partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY());
+                //partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
+                    boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose, poseEstimate.timestampSeconds);
 
                     hasData = true;
                     tagCount = poseEstimate.tagCount;

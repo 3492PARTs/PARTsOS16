@@ -13,8 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
-import org.parts3492.partslib.network.PARTsDashboard;
-import org.parts3492.partslib.network.PARTsDashboard.DashboardTab;
+import frc.robot.util.Hub;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
 
@@ -116,10 +115,12 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
+        Hub.startHubActiveTimer();
     }
 
     @Override
     public void teleopPeriodic() {
+        Hub.outputTelemetry();
     }
 
     @Override
