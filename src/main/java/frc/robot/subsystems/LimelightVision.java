@@ -255,8 +255,6 @@ public class LimelightVision extends PARTsSubsystem {
                 //partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
-                    boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose, poseEstimate.timestampSeconds);
-
                     hasData = true;
                     tagCount = poseEstimate.tagCount;
 
