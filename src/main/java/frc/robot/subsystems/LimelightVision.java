@@ -129,25 +129,13 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public Command commandIMUMode(IMUMode mode) {
-        Command c = PARTsCommandUtils.setCommandName("commandIMUMode", this.runOnce(() -> setIMUMode(mode)));
+        Command c = PARTsCommandUtils.setCommandName("LimelightVision.commandIMUMode", this.runOnce(() -> setIMUMode(mode)));
         c = c.ignoringDisable(true);
         return c;
     }
 
     public Command commandPipeline(Pipelines mode) {
-        Command c = PARTsCommandUtils.setCommandName("commandPipeline", this.runOnce(() -> setPipelineIndex(mode)));
-        c = c.ignoringDisable(true);
-        return c;
-    }
-
-    public Command commandIMUMode(IMUMode mode) {
-        Command c = PARTsCommandUtils.setCommandName("commandIMUMode", this.runOnce(() -> setIMUMode(mode)));
-        c = c.ignoringDisable(true);
-        return c;
-    }
-
-    public Command commandPipeline(Pipelines mode) {
-        Command c = PARTsCommandUtils.setCommandName("commandPipeline", this.runOnce(() -> setPipelineIndex(mode)));
+        Command c = PARTsCommandUtils.setCommandName("LimelightVision.commandPipeline", this.runOnce(() -> setPipelineIndex(mode)));
         c = c.ignoringDisable(true);
         return c;
     }
