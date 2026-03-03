@@ -4,6 +4,7 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.HopperConstants.HopperState;
 import frc.robot.constants.RobotConstants;
@@ -12,18 +13,24 @@ import frc.robot.constants.RobotConstants;
 public abstract class Hopper extends PARTsSubsystem {
     private HopperState hopperstate = HopperState.IDLE;
 
+    private boolean debug = false;
+    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+
     public Hopper () {
         super("Hopper");
 
-        if (RobotContainer.debug) {
+        if (RobotContainer.debug || debug) {
             partsNT.putDouble("Hopper Speed", 0);
         }
+
+        partsNT.putSmartDashboardSendable("Toggle Hopper Debug",toggleDebug);
     }
 
     //region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
         partsNT.putString("Hopper State", hopperstate.toString());
+        partsNT.putBoolean("Hopper Debug Active", debug);
     }
 
     @Override
@@ -43,7 +50,7 @@ public abstract class Hopper extends PARTsSubsystem {
 
     @Override
     public void periodic() {
-        if (RobotContainer.debug) {
+        if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Hopper Speed"));
         }
         else {

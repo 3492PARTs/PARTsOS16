@@ -139,7 +139,7 @@ public class RobotContainer {
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
 
-        partsNT.putSmartDashboardSendable("Toggle Debug",toggleDebug);
+        partsNT.putSmartDashboardSendable("Toggle Complete Debug",toggleDebug);
     }
 
     // region Configs
@@ -285,6 +285,7 @@ public class RobotContainer {
         partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage());
         partsNT.putBoolean("IsBlue", isBlue());
         partsNT.putBoolean("Debugging", RobotContainer.debug);
+        partsNT.putBoolean("Complete Debug Active", debug);
     }
 
     public void stop() {

@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
@@ -26,10 +27,13 @@ public abstract class Shooter extends PARTsSubsystem {
     private SimpleMotorFeedforward shooterFeedforward;
     private Supplier<Pose2d> poseSupplier;
 
+    private boolean debug = false;
+    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+
     public Shooter(Supplier<Pose2d> poseSupplier) {
         super("Shooter", RobotConstants.LOGGING);
         this.poseSupplier = poseSupplier;
-        if (RobotContainer.debug || ShooterConstants.SHOOT_DEBUG) {
+        if (RobotContainer.debug || debug) {
             partsNT.putDouble("Shooter Speed", 0);
         }
 
@@ -37,6 +41,8 @@ public abstract class Shooter extends PARTsSubsystem {
         shooterFeedforward = new SimpleMotorFeedforward(ShooterConstants.S, ShooterConstants.V, ShooterConstants.A);
 
         shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
+
+        partsNT.putSmartDashboardSendable("Toggle Shooter Debug",toggleDebug);
     }
 
     // region Generic Subsystem Functions
@@ -48,6 +54,7 @@ public abstract class Shooter extends PARTsSubsystem {
         partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint());
         partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint());
         partsNT.putDouble("Current Error", shooterPIDController.getError());
+        partsNT.putBoolean("Shooter Debug Active", debug);
 
         Targets zone = Hub.getZone(poseSupplier.get());
         partsNT.putString("Zone", zone == null ? "No zone" : zone.toString());
@@ -70,7 +77,7 @@ public abstract class Shooter extends PARTsSubsystem {
 
     @Override
     public void periodic() {
-        if (RobotContainer.debug) {
+        if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Shooter Speed"));
         } else {
             switch (shooterState) {
@@ -84,7 +91,7 @@ public abstract class Shooter extends PARTsSubsystem {
                     Targets zone = Hub.getZone(poseSupplier.get());
                     double shooterRPM = shooterState.getZoneRPM(zone);
                     // double shooterRPM = shooterState.getRPM();
-                    if (ShooterConstants.SHOOT_DEBUG) {
+                    if (debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed");
                     }
                     shooterPIDController.setSetpoint(shooterRPM);

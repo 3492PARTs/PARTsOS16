@@ -4,6 +4,7 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.KickerConstants.KickerState;
 import frc.robot.constants.RobotConstants;
@@ -12,18 +13,24 @@ public abstract class Kicker extends PARTsSubsystem {
 
     private KickerState kickerState = KickerState.IDLE;
 
+    private boolean debug = false;
+    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+
     public Kicker() {
         super("Kicker");
 
-        if (RobotContainer.debug) {
+        if (RobotContainer.debug || debug) {
             partsNT.putDouble("Kicker Speed", 0);
         }
+
+        partsNT.putSmartDashboardSendable("Toggle Kicker Debug",toggleDebug);
     }
 
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
         partsNT.putString("Kicker State", kickerState.toString());
+        partsNT.putBoolean("Kicker Debug Active", debug);
     }
 
     @Override
@@ -43,7 +50,7 @@ public abstract class Kicker extends PARTsSubsystem {
 
     @Override
     public void periodic() {
-        if (RobotContainer.debug) {
+        if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Kicker Speed"));
         } else {
             switch (kickerState) {

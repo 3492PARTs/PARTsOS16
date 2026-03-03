@@ -6,6 +6,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
@@ -24,9 +25,12 @@ public abstract class Turret extends PARTsSubsystem {
     private SimpleMotorFeedforward turretFeedforward;
     private Supplier<Pose2d> robotPoseSupplier;
 
+    private boolean debug = false;
+    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+
     public Turret(Supplier<Pose2d> robotPoseSupplier) {
         super("Turret", RobotConstants.LOGGING);
-         if (RobotContainer.debug) {
+         if (RobotContainer.debug || debug) {
          partsNT.putDouble("Turret Speed", 0);
         }
 
@@ -36,6 +40,8 @@ public abstract class Turret extends PARTsSubsystem {
         turretFeedforward = new SimpleMotorFeedforward(TurretConstants.S, TurretConstants.V, TurretConstants.A);
 
         turretPIDController.setTolerance(TurretConstants.PID_THRESHOLD);
+
+        partsNT.putSmartDashboardSendable("Toggle Turret Debug",toggleDebug);
     }
 
     // region Generic Subsystem Functions
@@ -48,6 +54,7 @@ public abstract class Turret extends PARTsSubsystem {
         partsNT.putBoolean("At Setpoint", turretPIDController.atSetpoint());
         partsNT.putDouble("Current Error", turretPIDController.getPositionError());
         partsNT.putDouble("Get Angle to Turret", getAngleToTarget());
+        partsNT.putBoolean("Turret Debug Active", debug);
     }
 
     @Override
@@ -67,7 +74,7 @@ public abstract class Turret extends PARTsSubsystem {
 
     @Override
     public void periodic() {
-        if (RobotContainer.debug) {
+        if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Turret Speed"));
         } else {
             double voltage = 0;
