@@ -28,7 +28,7 @@ public interface CameraConstants {
 
     public enum Pipelines {
         MAIN(1),
-        VIEWING (0);
+        VIEWING (1);
 
         private int pipelineIndex;
 
@@ -41,6 +41,11 @@ public interface CameraConstants {
         }
     }
 
+    //camera 21 - 14 inches forward
+    //camera 24 - 13 inches side
+    //camera 14 inches up
+    //camera 45 degrees side to side
+    //camera 40 degrees up and down
     public Camera[] LimelightCameras = new Camera[] {
             new Camera(CameraName.LEFT_FRONT_CAMERA.getCameraName(),
                     new Pose3d(.343, .1905, .22225, // meters
@@ -54,12 +59,12 @@ public interface CameraConstants {
             new Camera(CameraName.RIGHT_FRONT_CAMERA.getCameraName(),
                     new Pose3d(.343, -.1905, .22225, // meters
                             new Rotation3d(0, Units.degreesToRadians(15), 0)),
-                    true),
+                    false),
             new Camera(CameraName.RIGHT_SIDE_CAMERA.getCameraName(),
                     new Pose3d(.22225, -.3302, .22225, // meters
                             new Rotation3d(0, Units.degreesToRadians(15),
                                     Units.degreesToRadians(-90))),        
-                    true),
+                    false),
             new Camera(CameraName.FRONT_CENTER_CAMERA.getCameraName(),
                     new Pose3d(-.265, 0, .545, // meters
                             new Rotation3d(0, 0,

@@ -1,71 +1,43 @@
 package frc.robot.subsystems.Shooter;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import java.util.function.Supplier;
 
-import edu.wpi.first.wpilibj.PowerDistribution;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterPhys extends Shooter {
-    protected final SparkMax rightMotor;
-    protected final SparkMax leftMotor;
+    protected final TalonFX leftMotor;
+    protected final TalonFX rightMotor;
 
-    protected final RelativeEncoder leftEncoder;
-    protected final RelativeEncoder rightEncoder;
+    public ShooterPhys(Supplier <Pose2d> poseSupplier) {
+        super(poseSupplier);
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
+        leftMotor.getConfigurator().apply(config);
+        rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
 
-    public ShooterPhys() {
-        super();
+        rightMotor.setControl(new Follower(ShooterConstants.LEFT_MOTOR_ID, MotorAlignmentValue.Opposed));
 
-        SparkMaxConfig shooterConfig = new SparkMaxConfig();
-        shooterConfig.idleMode(IdleMode.kCoast);
-        shooterConfig.inverted(true);
-
-        // This is the left motor.
-        // It is the leader in the leader-follower configuration.
-        leftMotor = new SparkMax(ShooterConstants.LEFT_MOTOR_ID, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-        leftEncoder = leftMotor.getEncoder();
-        leftMotor.configure(shooterConfig, com.revrobotics.ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
-        
-        // This is the right motor.
-        // It is the follower in the leader-follower configuration.
-        rightMotor = new SparkMax(ShooterConstants.RIGHT_MOTOR_ID, com.revrobotics.spark.SparkLowLevel.MotorType.kBrushless);
-        rightEncoder = rightMotor.getEncoder();
-        rightMotor.configure(shooterConfig.follow(leftMotor, true), com.revrobotics.ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        leftMotor.setNeutralMode(NeutralModeValue.Coast);
+        rightMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Current/Left", leftMotor.getOutputCurrent());
-        partsNT.putDouble("Current/Right", rightMotor.getOutputCurrent());
+        partsNT.putDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble());
+        partsNT.putDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble());
 
-        partsNT.putDouble("Output/Left", leftMotor.getAppliedOutput());
-        partsNT.putDouble("Output/Right", rightMotor.getAppliedOutput());
-    }
-
-    @Override
-    protected void setSpeed(double speed) {
-        leftMotor.set(speed);
-    }
-
-    @Override
-    protected double getRPM() {
-        return leftEncoder.getVelocity();
-    }
-
-    @Override
-    protected void setVoltage(double voltage) {
-        leftMotor.setVoltage(voltage);
-    }
-
-    @Override
-    protected double getVoltage() {
-        return leftMotor.getBusVoltage();
+        partsNT.putDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble());
+        partsNT.putDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble());
     }
 
     @Override
@@ -76,10 +48,30 @@ public class ShooterPhys extends Shooter {
     @Override
     public void log() {
         super.log();
-        partsLogger.logDouble("Current/Left", leftMotor.getOutputCurrent());
-        partsLogger.logDouble("Current/Right", rightMotor.getOutputCurrent());
+        partsLogger.logDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble());
+        partsLogger.logDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble());
 
-        partsLogger.logDouble("Output/Left", leftMotor.getAppliedOutput());
-        partsLogger.logDouble("Output/Right", rightMotor.getAppliedOutput());
+        partsLogger.logDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble());
+        partsLogger.logDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble());
+    }
+
+    @Override
+    protected void setSpeed(double speed) {
+        leftMotor.set(speed);
+    }
+
+    @Override
+    protected double getRPM() {
+        return leftMotor.getVelocity().getValueAsDouble() * 60;
+    }
+
+    @Override
+    protected void setVoltage(double voltage) {
+        leftMotor.setVoltage(voltage);
+    }
+
+    @Override
+    protected double getVoltage() {
+        return leftMotor.getSupplyVoltage().getValueAsDouble();
     }
 }
