@@ -5,6 +5,7 @@ import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
+import frc.robot.RobotContainer;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -19,13 +20,16 @@ public abstract class Intake extends PARTsSubsystem {
 
     IntakeState intakeState = IntakeState.IDLE;
 
+    private boolean debug = false;
+    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+
     ProfiledPIDController intakePIDController;
     SimpleMotorFeedforward intakeFeedForward;
 
     public Intake() {
         super("Intake");
 
-        if (RobotConstants.DEBUGGING) {
+        if (RobotContainer.debug || debug) {
             partsNT.putDouble("Intake Speed", 0);
             partsNT.putDouble("Pivot Speed", 0);
         }
@@ -36,6 +40,7 @@ public abstract class Intake extends PARTsSubsystem {
         intakeFeedForward = new SimpleMotorFeedforward(IntakeConstants.S, IntakeConstants.V, IntakeConstants.A);
         intakePIDController.setTolerance(IntakeConstants.PID_THRESHOLD);
 
+        partsNT.putSmartDashboardSendable("Toggle Intake Debug",toggleDebug);
     }
 
     public IntakeState getState() {
@@ -48,6 +53,7 @@ public abstract class Intake extends PARTsSubsystem {
         partsNT.putDouble("Pivot Position", getPivotAngle().to(PARTsUnitType.Angle));
         partsNT.putDouble("Current Intake Speed", getIntakeSpeed());
         partsNT.putString("Intake State", intakeState.toString());
+        partsNT.putBoolean("Intake Debug Active", debug);
     }
 
     @Override
@@ -62,7 +68,7 @@ public abstract class Intake extends PARTsSubsystem {
 
     @Override
     public void periodic() {
-        if (RobotConstants.DEBUGGING) {
+        if (RobotContainer.debug || debug) {
             setIntakeSpeed(partsNT.getDouble("Intake Speed"));
             setPivotSpeed(partsNT.getDouble("Pivot Speed"));
         } else {
