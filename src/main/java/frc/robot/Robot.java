@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
         partsNT = new PARTsNT(this);
         partsLogger = new PARTsLogger();
-        m_robotContainer.constructDashboard();
+       // m_robotContainer.constructDashboard();
 
         partsLogger.logCommandScheduler();
         //partsLogger.logPathPlanner();
