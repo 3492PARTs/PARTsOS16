@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
         partsLogger.logCommandScheduler();
         partsLogger.logPathPlanner();
 
-        CameraServer.startAutomaticCapture();
+        //CameraServer.startAutomaticCapture();
 
         //m_robotContainer.resetStartPose();
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);

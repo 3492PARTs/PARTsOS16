@@ -39,6 +39,9 @@ import frc.robot.constants.generated.TunerConstants;
 import frc.robot.subsystems.Candle;
 import frc.robot.subsystems.LimelightVision;
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Climber.Climber;
+import frc.robot.subsystems.Climber.ClimberPhys;
+import frc.robot.subsystems.Climber.ClimberSim;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
@@ -72,7 +75,7 @@ import org.parts3492.partslib.command.IPARTsSubsystem;
 public class RobotContainer {
     private FieldObject2d hubFieldObject2d;
 
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
+    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
     private final PARTsCommandController operatorController = new PARTsCommandController(1,
             RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
@@ -112,15 +115,19 @@ public class RobotContainer {
 
     private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
 
+    private final Climber climber = Robot.isReal() ? new ClimberPhys() : new ClimberSim();
+
     // private final ShooterSysid shooter = new
     // ShooterSysid(drivetrain.supplierGetPose()); //for sysid
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new
     // TurretSysid(drivetrain.supplierGetPose());
 
-    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle, drivetrain);
+    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle,
+            drivetrain);
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
-            Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake, superstructure));
+            Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake, superstructure,
+                    climber));
 
     // endregion End Subsystems
 
@@ -132,7 +139,8 @@ public class RobotContainer {
         configureAutonomousCommands();
         configureIntakeBindings();
         configureHopperBindings();
-        configureSuperstructureBindings();
+        configureSuperstructureBindings();                              
+        configureClimberBindings();
         operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
         operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
 
@@ -245,11 +253,14 @@ public class RobotContainer {
     private void configureIntakeBindings() {
         buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
         buttonBoxController.negative4Trigger().onTrue(intake.intake());
-        buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate()).onTrue(intake.intakeIdle());
-        /*driveController.x().onTrue(intake.intake());
-        driveController.y().onTrue(intake.intakeIdle());
-        driveController.rightTrigger().onTrue(intake.intakeShooting());
-        //driveController.x().onTrue(intake.home());*/
+        buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate())
+                .onTrue(intake.intakeIdle());
+        /*
+         * driveController.x().onTrue(intake.intake());
+         * driveController.y().onTrue(intake.intakeIdle());
+         * driveController.rightTrigger().onTrue(intake.intakeShooting());
+         * //driveController.x().onTrue(intake.home());
+         */
 
         /*
          * operatorController.a().and(operatorController.rightBumper())
@@ -265,7 +276,13 @@ public class RobotContainer {
     }
 
     private void configureSuperstructureBindings() {
-        buttonBoxController.handleTrigger().onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
+        buttonBoxController.handleTrigger()
+                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
+    }
+
+    private void configureClimberBindings() {
+        driveController.a().whileTrue(climber.climb()).onFalse(climber.idle());
+        driveController.b().whileTrue(climber.declimb()).onFalse(climber.idle());
     }
 
     public void configureAutonomousCommands() {
