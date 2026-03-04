@@ -308,8 +308,9 @@ public class RobotContainer {
     }
 
     public void constructDashboard() {
-        PARTsDashboard.setSubsystems(subsystems);
-        PARTsDashboard.setCommandScheduler();
+        //TODO come back and make these functions use parts nt
+        //PARTsDashboard.setSubsystems(subsystems);
+        //PARTsDashboard.setCommandScheduler();
     }
 
     public void resetStartPose() {

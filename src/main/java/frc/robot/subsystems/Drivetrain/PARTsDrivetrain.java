@@ -85,7 +85,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         private SwerveModule<TalonFX, TalonFX, CANcoder> backRightModule;
         private SwerveModule<TalonFX, TalonFX, CANcoder> backLeftModule;
 
-        // show robot pose on field dashboard 
+        // show robot pose on field dashboard
         private FieldObject2d robotFieldObject2d;
 
         // parts util classes
@@ -147,11 +147,13 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 configureAutoBuilder();
                 robotFieldObject2d = Field.FIELD2D.getRobotObject();
                 targetFieldObject2d = Field.FIELD2D.getObject("target");
-                telemetryLogger = new Telemetry(MaxSpeed);
-                registerTelemetry(telemetryLogger::telemeterize);
+                if (RobotContainer.debug) {
+                        telemetryLogger = new Telemetry(MaxSpeed);
+                        registerTelemetry(telemetryLogger::telemeterize);
+                }
         }
 
-        //region Generic Subsystem Functions 
+        // region Generic Subsystem Functions
         @Override
         public void outputTelemetry() {
                 partsNT.putBoolean("Fine Grain Drive", fineGrainDrive);
@@ -195,9 +197,9 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 robotFieldObject2d.setPose(getPose());
         }
 
-        //endregion
+        // endregion
 
-        //region Custom Public Functions
+        // region Custom Public Functions
 
         public SwerveRequest.FieldCentric getFieldCentricDriveRequest() {
                 /* Setting up bindings for necessary control of the swerve drive platform */
@@ -254,9 +256,10 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         }
 
         public Command commandPointWheels(PARTsCommandController controller) {
-                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPointWheels", applyRequest(() -> getPointDriveRequest()
-                                .withModuleDirection(new Rotation2d(-controller.getLeftY(),
-                                                -controller.getLeftX()))));
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPointWheels",
+                                applyRequest(() -> getPointDriveRequest()
+                                                .withModuleDirection(new Rotation2d(-controller.getLeftY(),
+                                                                -controller.getLeftX()))));
         }
 
         public Command commandSeedFieldCentric() {
@@ -427,7 +430,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         Command pathfindingCommand = AutoBuilder.pathfindThenFollowPath(
                                         path,
                                         constraints);
-                        return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPath", pathfindingCommand);
+                        return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPath",
+                                        pathfindingCommand);
 
                 } catch (IOException e) {
                         e.printStackTrace();
@@ -438,7 +442,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                 }
-                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPath.wait", new WaitCommand(0));
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPath.wait",
+                                new WaitCommand(0));
         }
 
         public Command commandPathFindToPose(Pose2d pose) {
@@ -525,17 +530,19 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
          * @return the command
          */
         public Command targetPoseCommand(Supplier<Pose2d> targetPose, BooleanSupplier condition) {
-                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.targetPoseCommand", controlledRotateCommand(() -> {
-                        Pose2d target = targetPose.get();
-                        Transform2d diff = getPose().minus(target);
-                        Rotation2d rot = new Rotation2d(diff.getX(), diff.getY());
-                        rot = rot.plus(Rotation2d.kPi);
-                        return rot.getRadians();
-                }, condition));
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.targetPoseCommand",
+                                controlledRotateCommand(() -> {
+                                        Pose2d target = targetPose.get();
+                                        Transform2d diff = getPose().minus(target);
+                                        Rotation2d rot = new Rotation2d(diff.getX(), diff.getY());
+                                        rot = rot.plus(Rotation2d.kPi);
+                                        return rot.getRadians();
+                                }, condition));
         }
 
         public Command disableControlledRotation() {
-                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.disableControlledRotation", Commands.runOnce(() -> isControlledRotationEnabled = false));
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.disableControlledRotation",
+                                Commands.runOnce(() -> isControlledRotationEnabled = false));
         }
 
         public Consumer<Vector<N3>> consumerSetVisionMeasurementStdDevs() {
@@ -553,9 +560,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         public Supplier<Pose2d> supplierGetPose() {
                 return this::getPose;
         }
-        
 
-        public boolean acceptVisionMeasurement(Pose2d measurement, double timestamp) {                
+        public boolean acceptVisionMeasurement(Pose2d measurement, double timestamp) {
                 // accept values rotating less than
                 // 2*pi rad/s = 360 deg/s
                 if (Math.max(Math.abs(getXAngularVelocity()), Math.abs(getYAngularVelocity())) < 2 * Math.PI) {
@@ -564,9 +570,9 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 }
                 return false;
         }
-        //endregion
+        // endregion
 
-        //region Custom Private Functions
+        // region Custom Private Functions
         private void alignCommandInitTelemetry(Pose2d holdDist) {
                 partsNT.putDouble("align/holdDistX", new PARTsUnit(holdDist.getX(), PARTsUnitType.Meter)
                                 .to(PARTsUnitType.Inch));
@@ -725,15 +731,15 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 partsNT = new PARTsNT(this);
                 partsLogger = new PARTsLogger(this, RobotConstants.LOGGING);
         }
-        //endregion
+        // endregion
 
-        //region Override Functions
+        // region Override Functions
         @Override
         public void addVisionMeasurement(Pose2d measurement, double timestamp) {
         }
-        //endregion
+        // endregion
 
-        //region Interface Functions
+        // region Interface Functions
         @Override
         public void initSendable(SendableBuilder builder) {
                 builder.setSmartDashboardType("Subsystem");
@@ -749,9 +755,9 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                 () -> getCurrentCommand() != null ? getCurrentCommand().getName() : "none",
                                 null);
         }
-        //endregion
+        // endregion
 
-        //region AutoBuilder Functions
+        // region AutoBuilder Functions
 
         private void configureAutoBuilder() {
                 try {
@@ -783,5 +789,5 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                         ex.getStackTrace());
                 }
         }
-        //endregion
+        // endregion
 }
