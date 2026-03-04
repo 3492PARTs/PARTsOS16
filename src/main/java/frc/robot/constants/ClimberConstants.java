@@ -4,8 +4,8 @@ public class ClimberConstants {
     public enum ClimberState {
         IDLE(0),
         DISABLED(0),
-        CLIMBING(0.1),
-        DECLIMB(-0.1);
+        CLIMBING(0.5),
+        DECLIMB(-0.5);
 
         private final double speed;
 
@@ -19,6 +19,8 @@ public class ClimberConstants {
     }
 
     public static final int CLIMBER_MOTOR_ID = 32;
-
+    public static final String CAN_BUS_NAME = "hi";
     public static final double CLIMBER_GEAR_RATIO = 4.0/1.0;
+
+
 }

@@ -6,7 +6,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.constants.ClimberConstants;
-import frc.robot.constants.TurretConstants;
 
 public class ClimberPhys extends Climber {
     protected final TalonFX climberMotor;
@@ -16,7 +15,7 @@ public class ClimberPhys extends Climber {
 
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_ID, TurretConstants.CAN_BUS_NAME);
+        climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_ID, ClimberConstants.CAN_BUS_NAME);
         climberMotor.getConfigurator().apply(config);
         climberMotor.setNeutralMode(NeutralModeValue.Brake);
     }
