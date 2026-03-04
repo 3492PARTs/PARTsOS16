@@ -188,11 +188,13 @@ public class LimelightVision extends PARTsSubsystem {
         this.maxTagCount = 0;
 
         updateWhitelistMode();
-        partsNT.putNumber("Robot Rotation (deg)",
-                (poseSupplier.get().getRotation().getDegrees()) % 360);
-
         for (Camera camera : CameraConstants.LimelightCameras) {
-            LimelightHelpers.SetRobotOrientation(
+            
+            //double [] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
+            //partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw [0]: -1);
+
+            if (camera.isEnabled()) {
+                LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
                     // i think this is still needed b/c if we always assume blue on red we start
                     // backwards.
@@ -204,9 +206,7 @@ public class LimelightVision extends PARTsSubsystem {
                     0,
                     0,
                     0);
-            double [] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
-            partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw [0]: -1);
-            if (camera.isEnabled()) {
+
                 PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());

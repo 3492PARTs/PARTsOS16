@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
         partsLogger.logCommandScheduler();
         partsLogger.logPathPlanner();
 
-        CameraServer.startAutomaticCapture();
+        //CameraServer.startAutomaticCapture();
 
         //m_robotContainer.resetStartPose();
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
@@ -60,8 +60,8 @@ public class Robot extends TimedRobot {
         CommandScheduler.getInstance().run();
 
         partsNT.putDouble("Match Time", DriverStation.getMatchTime());
-        m_robotContainer.outputTelemetry();
-        m_robotContainer.log();
+        //m_robotContainer.outputTelemetry();
+        //m_robotContainer.log();
 
         m_robotContainer.getAlliance();
     }
