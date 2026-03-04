@@ -1,12 +1,14 @@
 package frc.robot.subsystems.Climber;
 
+import org.parts3492.partslib.command.PARTsCommandUtils;
+import org.parts3492.partslib.command.PARTsSubsystem;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.states.ClimberState;
-import frc.robot.util.PARTs.Classes.PARTsCommandUtils;
-import frc.robot.util.PARTs.Classes.Abstracts.PARTsSubsystem;
+import frc.robot.constants.ClimberConstants;
+import frc.robot.constants.ClimberConstants.ClimberState;
 
 public abstract class Climber extends PARTsSubsystem {
-    private ClimberState climberState = ClimberState.IDLE;
+    private ClimberConstants.ClimberState climberState = ClimberState.IDLE;
 
     public Climber() {
         super("Climber");
@@ -38,19 +40,19 @@ public abstract class Climber extends PARTsSubsystem {
     public void periodic() {
         switch (climberState) {
             case CLIMBING:
-            setSpeed(climberState.getSpeed());
+                setSpeed(climberState.getSpeed());
                 break;
             case DECLIMB:
-            setSpeed(climberState.getSpeed());
+                setSpeed(climberState.getSpeed());
                 break;
             case DISABLED:
-            setSpeed(climberState.getSpeed());
+                setSpeed(climberState.getSpeed());
                 break;
             case IDLE:
-            setSpeed(climberState.getSpeed());
+                setSpeed(climberState.getSpeed());
                 break;
-            default: 
-            setSpeed(0);
+            default:
+                setSpeed(0);
                 break;
         }
     }
@@ -67,7 +69,6 @@ public abstract class Climber extends PARTsSubsystem {
         return climberState;
     }
 
-
     public Command idle() {
         return PARTsCommandUtils.setCommandName("Command Idle", this.runOnce(() -> {
             climberState = ClimberState.IDLE;
@@ -76,13 +77,13 @@ public abstract class Climber extends PARTsSubsystem {
 
     public Command climb() {
         return PARTsCommandUtils.setCommandName("Command Climb", this.runOnce(() -> {
-            climberState = ClimberState.CLIMBING;
+            climberState = ClimberConstants.ClimberState.CLIMBING;
         }));
     }
 
     public Command declimb() {
         return PARTsCommandUtils.setCommandName("Command Declimb", this.runOnce(() -> {
-            climberState = ClimberState.DECLIMB;
+            climberState = ClimberConstants.ClimberState.DECLIMB;
         }));
     }
     // endregion
