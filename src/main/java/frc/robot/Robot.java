@@ -15,6 +15,7 @@ import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import frc.robot.util.Hub;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import org.parts3492.partslib.PARTsLogger;
@@ -48,22 +49,23 @@ public class Robot extends TimedRobot {
         //m_robotContainer.resetStartPose();
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
 
-        DriverStation.silenceJoystickConnectionWarning(!isReal());
+        DriverStation.silenceJoystickConnectionWarning(!isReal() || RobotContainer.debug);
 
         m_robotContainer.getAlliance();
 
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
+        SignalLogger.stop();
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
 
-        partsNT.putDouble("Match Time", DriverStation.getMatchTime());
+        //partsNT.putDouble("Match Time", DriverStation.getMatchTime());
         //m_robotContainer.outputTelemetry();
         //m_robotContainer.log();
 
-        m_robotContainer.getAlliance();
+        //m_robotContainer.getAlliance();
     }
 
     @Override

@@ -83,7 +83,7 @@ public class RobotContainer {
 
     private static Alliance alliance;
 
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
 

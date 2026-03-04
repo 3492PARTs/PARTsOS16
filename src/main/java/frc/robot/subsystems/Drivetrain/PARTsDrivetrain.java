@@ -147,7 +147,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 configureAutoBuilder();
                 robotFieldObject2d = Field.FIELD2D.getRobotObject();
                 targetFieldObject2d = Field.FIELD2D.getObject("target");
-                if (RobotContainer.debug) {
+                if (RobotContainer.debug && false) {
                         telemetryLogger = new Telemetry(MaxSpeed);
                         registerTelemetry(telemetryLogger::telemeterize);
                 }
