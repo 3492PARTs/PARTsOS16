@@ -8,7 +8,7 @@ import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.ClimberConstants.ClimberState;
 
 public abstract class Climber extends PARTsSubsystem {
-    private ClimberConstants.ClimberState climberState = ClimberState.IDLE;
+    private ClimberState climberState = ClimberState.IDLE;
 
     public Climber() {
         super("Climber");
@@ -22,12 +22,12 @@ public abstract class Climber extends PARTsSubsystem {
 
     @Override
     public void stop() {
-        climberState = climberState.DISABLED;
+        climberState = ClimberState.DISABLED;
     }
 
     @Override
     public void reset() {
-        climberState = climberState.IDLE;
+        climberState = ClimberState.IDLE;
     }
 
     @Override

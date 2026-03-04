@@ -135,7 +135,8 @@ public class RobotContainer {
         configureAutonomousCommands();
         configureIntakeBindings();
         configureHopperBindings();
-        configureSuperstructureBindings();
+        configureSuperstructureBindings();                              
+        configureClimberBindings();
         operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
         operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
 
