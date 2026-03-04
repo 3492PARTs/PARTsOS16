@@ -4,20 +4,29 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.constants.ClimberConstants;
 
 public class ClimberPhys extends Climber {
-    protected final TalonFX climberMotor;
+    protected final SparkMax climberMotor;
+    protected final RelativeEncoder climberEncoder;
 
     public ClimberPhys() {
         super();
 
-        TalonFXConfiguration config = new TalonFXConfiguration();
-        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-        climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_ID, ClimberConstants.CAN_BUS_NAME);
-        climberMotor.getConfigurator().apply(config);
-        climberMotor.setNeutralMode(NeutralModeValue.Brake);
+        SparkMaxConfig climberConfig = new SparkMaxConfig();
+        climberConfig.idleMode(IdleMode.kBrake);
+                
+        climberMotor = new SparkMax(ClimberConstants.CLIMBER_MOTOR_ID, MotorType.kBrushless);
+        climberEncoder = climberMotor.getEncoder();
+        climberMotor.configure(climberConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
@@ -32,13 +41,13 @@ public class ClimberPhys extends Climber {
 
     @Override
     public void outputTelemetry() {
-        partsNT.putDouble("Output", climberMotor.getSupplyCurrent().getValueAsDouble());
-        partsNT.putDouble("Current", climberMotor.getSupplyCurrent().getValueAsDouble());
+        partsNT.putDouble("Output", climberMotor.getOutputCurrent());
+        partsNT.putDouble("Current", climberMotor.getAppliedOutput());
     }
 
     @Override
     public void log() {
-        partsLogger.logDouble("Output", climberMotor.getSupplyCurrent().getValueAsDouble());
-        partsLogger.logDouble("Current", climberMotor.getSupplyCurrent().getValueAsDouble());
+        partsLogger.logDouble("Output", climberMotor.getOutputCurrent());
+        partsLogger.logDouble("Current", climberMotor.getAppliedOutput());
     }
 }
