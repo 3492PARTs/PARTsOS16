@@ -80,7 +80,6 @@ public class LimelightVision extends PARTsSubsystem {
         setWhitelistMode(WhitelistMode.ALL);
         setIMUMode(1);
 
-        // elastic crashes :(
         // super.partsNT.putSmartDashboardSendable("Set MT-1",
         // commandMegaTagMode(MegaTagMode.MEGATAG1));
         // super.partsNT.putSmartDashboardSendable("Set MT-2",
@@ -190,8 +189,8 @@ public class LimelightVision extends PARTsSubsystem {
         updateWhitelistMode();
         for (Camera camera : CameraConstants.LimelightCameras) {
             
-            //double [] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
-            //partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw [0]: -1);
+            // double [] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
+            // partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw [0]: -1); // loop-overrun
 
             if (camera.isEnabled()) {
                 LimelightHelpers.SetRobotOrientation(
@@ -211,22 +210,22 @@ public class LimelightVision extends PARTsSubsystem {
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
 
-                //partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX());
-                //partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY());
-                //partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees());
+                // partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX()); // loop-overrun
+                // partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY()); // loop-overrun
+                // partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees()); // loop-overrun
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0) {
                     boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose, poseEstimate.timestampSeconds);
 
-                    //partsNT.putBoolean(camera.getName() + "/Has Data", true);
-                    //partsNT.putBoolean(camera.getName() + "/Accepted Data", success);
-                    //partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount);
+                    // partsNT.putBoolean(camera.getName() + "/Has Data", true); // loop-overrun
+                    // partsNT.putBoolean(camera.getName() + "/Accepted Data", success); // loop-overrun
+                    // partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount); // loop-overrun
 
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
                 } else {
-                    //partsNT.putBoolean(camera.getName() + "/Accepted Data", false);
-                    //partsNT.putBoolean(camera.getName() + "/Has Data", false);
-                    //partsNT.putNumber(camera.getName() + "/Tag Count", 0);
+                    // partsNT.putBoolean(camera.getName() + "/Accepted Data", false); // loop-overrun
+                    // partsNT.putBoolean(camera.getName() + "/Has Data", false); // loop-overrun
+                    // partsNT.putNumber(camera.getName() + "/Tag Count", 0); // loop-overrun
                 }
             }
         }

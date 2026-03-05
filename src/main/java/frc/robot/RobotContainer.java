@@ -270,7 +270,7 @@ public class RobotContainer {
 
     public void configureAutonomousCommands() {
         autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser);
     }
 
     // endregion End Configs
@@ -308,9 +308,8 @@ public class RobotContainer {
     }
 
     public void constructDashboard() {
-        //TODO come back and make these functions use parts nt
-        //PARTsDashboard.setSubsystems(subsystems);
-        //PARTsDashboard.setCommandScheduler();
+        PARTsDashboard.setSubsystems(subsystems);
+        PARTsDashboard.setCommandScheduler();
     }
 
     public void resetStartPose() {

@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         // This is needed for lasercan, without it causes robot to lag on boot
-        //CanBridge.runTCP();
+        // CanBridge.runTCP();
 
         // Make elastic dashboard file available
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
@@ -39,14 +39,14 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
         partsNT = new PARTsNT(this);
         partsLogger = new PARTsLogger();
-       // m_robotContainer.constructDashboard();
+        // m_robotContainer.constructDashboard(); // loop-overrun
 
         partsLogger.logCommandScheduler();
-        //partsLogger.logPathPlanner();
+        // partsLogger.logPathPlanner(); // loop-overrun
 
-        //CameraServer.startAutomaticCapture();
+        // CameraServer.startAutomaticCapture(); // loop-overrun
 
-        //m_robotContainer.resetStartPose();
+        // m_robotContainer.resetStartPose();
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
 
         DriverStation.silenceJoystickConnectionWarning(!isReal() || RobotContainer.debug);
@@ -54,18 +54,17 @@ public class Robot extends TimedRobot {
         m_robotContainer.getAlliance();
 
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
-        SignalLogger.stop();
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
 
-        //partsNT.putDouble("Match Time", DriverStation.getMatchTime());
-        //m_robotContainer.outputTelemetry();
-        //m_robotContainer.log();
+        // partsNT.putDouble("Match Time", DriverStation.getMatchTime()); // loop-overrun
+        // m_robotContainer.outputTelemetry(); // loop-overrun
+        // m_robotContainer.log(); // loop-overrun
 
-        //m_robotContainer.getAlliance();
+        // m_robotContainer.getAlliance(); // loop-overrun
     }
 
     @Override
