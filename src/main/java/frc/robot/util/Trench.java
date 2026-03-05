@@ -39,7 +39,7 @@ public class Trench {
             return true;
         }
 
-        return false;
+        return Hub.isInRadius(pose, trench, 1);
     }
 
     // TODO: Move something like this to PARTsLib and make it return a PARTsUnit.
@@ -49,7 +49,7 @@ public class Trench {
      * @param goal The target point.
      * @return The distance in meters.
      */
-    private static double getDistance(Pose2d current, Pose2d goal) {
+    public static double getDistance(Pose2d current, Pose2d goal) {
         return Math.sqrt(Math.pow(current.getX() - goal.getX(), 2) + Math.pow(current.getY() - goal.getY(), 2));
     }
 }
