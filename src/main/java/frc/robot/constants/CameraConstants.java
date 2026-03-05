@@ -1,5 +1,7 @@
 package frc.robot.constants;
 
+import org.parts3492.partslib.PARTsUnit;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
@@ -11,9 +13,10 @@ public interface CameraConstants {
     public enum CameraName {
         LEFT_FRONT_CAMERA("limelight-johnny"),
         LEFT_SIDE_CAMERA("limelight-frankie"),
-        RIGHT_FRONT_CAMERA("limelight-ben"),
+        //RIGHT_FRONT_CAMERA("limelight-ben"),
         RIGHT_SIDE_CAMERA("limelight-sue"),
-        FRONT_CENTER_CAMERA("limelight-reed");
+        FRONT_CENTER_CAMERA("limelight-reed"),
+        RIGHT_FRONT_ANGLE_CAMERA("limelight-ben");
 
         private String cameraName = "";
 
@@ -41,11 +44,6 @@ public interface CameraConstants {
         }
     }
 
-    //camera 21 - 14 inches forward
-    //camera 24 - 13 inches side
-    //camera 14 inches up
-    //camera 45 degrees side to side
-    //camera 40 degrees up and down
     public Camera[] LimelightCameras = new Camera[] {
             new Camera(CameraName.LEFT_FRONT_CAMERA.getCameraName(),
                     new Pose3d(.343, .1905, .22225, // meters
@@ -56,10 +54,10 @@ public interface CameraConstants {
                             new Rotation3d(0, Units.degreesToRadians(15),
                                     Units.degreesToRadians(90))),
                     true),
-            new Camera(CameraName.RIGHT_FRONT_CAMERA.getCameraName(),
+            /*new Camera(CameraName.RIGHT_FRONT_CAMERA.getCameraName(),
                     new Pose3d(.343, -.1905, .22225, // meters
                             new Rotation3d(0, Units.degreesToRadians(15), 0)),
-                    false),
+                    false),*/
             new Camera(CameraName.RIGHT_SIDE_CAMERA.getCameraName(),
                     new Pose3d(.22225, -.3302, .22225, // meters
                             new Rotation3d(0, Units.degreesToRadians(15),
@@ -69,7 +67,19 @@ public interface CameraConstants {
                     new Pose3d(-.265, 0, .545, // meters
                             new Rotation3d(0, 0,
                                     Units.degreesToRadians(180))),
-                    false)
+                    false),
+            new Camera(CameraName.RIGHT_FRONT_ANGLE_CAMERA.getCameraName(),
+                    new Pose3d(PARTsUnit.InchesToMeters.apply(21.0 - 14.0), -PARTsUnit.InchesToMeters.apply(24.0 - 13.0), PARTsUnit.InchesToMeters.apply(14.0), // meters
+                            new Rotation3d(0, Units.degreesToRadians(40),
+                                    -Units.degreesToRadians(45))),
+                    true)
+
+                    
+    //camera 21 - 14 inches forward
+    //camera 24 - 13 inches side
+    //camera 14 inches up
+    //camera 45 degrees side to side
+    //camera 40 degrees up and down
     };
 
     public static class Camera {

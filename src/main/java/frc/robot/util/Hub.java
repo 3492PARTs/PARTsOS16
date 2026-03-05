@@ -44,7 +44,7 @@ public class Hub {
     }
 
     public static boolean isInRadius(Pose2d center, Pose2d point, double radius) {
-        double distanceSquared = Math.pow(Trench.getDistance(center, point), 2);
+        double distanceSquared = Math.pow(Trench.getDistance(point, center), 2);
         return distanceSquared <= Math.pow(radius, 2);
     }
 
