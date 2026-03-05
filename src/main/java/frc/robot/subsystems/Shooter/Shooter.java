@@ -10,6 +10,7 @@ import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.util.Hub;
+import frc.robot.util.Trench;
 import frc.robot.util.Hub.Targets;
 
 import java.util.function.BooleanSupplier;
@@ -28,7 +29,7 @@ public abstract class Shooter extends PARTsSubsystem {
     private Supplier<Pose2d> poseSupplier;
 
     private boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
     public Shooter(Supplier<Pose2d> poseSupplier) {
         super("Shooter", RobotConstants.LOGGING);
@@ -42,7 +43,7 @@ public abstract class Shooter extends PARTsSubsystem {
 
         shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
 
-        partsNT.putSmartDashboardSendable("Toggle Shooter Debug",toggleDebug);
+        partsNT.putSmartDashboardSendable("Toggle Shooter Debug", toggleDebug);
     }
 
     // region Generic Subsystem Functions
@@ -56,8 +57,8 @@ public abstract class Shooter extends PARTsSubsystem {
         partsNT.putDouble("Current Error", shooterPIDController.getError());
         partsNT.putBoolean("Shooter Debug Active", debug);
 
-        Targets zone = Hub.getZone(poseSupplier.get());
-        partsNT.putString("Zone", zone == null ? "No zone" : zone.toString());
+        // Targets zone = Hub.getZone(poseSupplier.get());
+        // partsNT.putString("Zone", zone == null ? "No zone" : zone.toString());
     }
 
     @Override
@@ -80,6 +81,15 @@ public abstract class Shooter extends PARTsSubsystem {
         if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Shooter Speed"));
         } else {
+            Targets zone = Hub.getZone(poseSupplier.get());
+            double shooterRPM = shooterState.getZoneRPM(zone);
+
+            boolean inTrench = Trench.isUnderTrench(poseSupplier.get());
+            if (inTrench) {
+                shooterRPM = shooterState.getZoneRPM(Targets.ZONE2);
+            }
+
+            partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString());
             switch (shooterState) {
                 case CHARGING:
                 case DISABLED:
@@ -88,12 +98,11 @@ public abstract class Shooter extends PARTsSubsystem {
                     break;
                 case SHOOTING:
                     double voltage = 0;
-                    Targets zone = Hub.getZone(poseSupplier.get());
-                    double shooterRPM = shooterState.getZoneRPM(zone);
-                    // double shooterRPM = shooterState.getRPM();
-                    if (debug) {
+
+                    if (debug || RobotContainer.debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed");
                     }
+
                     shooterPIDController.setSetpoint(shooterRPM);
 
                     double pidCalc = shooterPIDController.calculate(getRPM(), shooterRPM);
