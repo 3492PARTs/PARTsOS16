@@ -136,6 +136,10 @@ public abstract class Turret extends PARTsSubsystem {
         return Math.abs(getAngleToTarget()) <= 100;
     }
 
+    public boolean atSetpoint() {
+        return turretPIDController.atSetpoint();
+    }
+
     public TurretState getState() {
         return turretState;
     }
