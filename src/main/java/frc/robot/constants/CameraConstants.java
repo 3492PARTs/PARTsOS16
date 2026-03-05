@@ -41,6 +41,11 @@ public interface CameraConstants {
         }
     }
 
+    //camera 21 - 14 inches forward
+    //camera 24 - 13 inches side
+    //camera 14 inches up
+    //camera 45 degrees side to side
+    //camera 40 degrees up and down
     public Camera[] LimelightCameras = new Camera[] {
             new Camera(CameraName.LEFT_FRONT_CAMERA.getCameraName(),
                     new Pose3d(.343, .1905, .22225, // meters

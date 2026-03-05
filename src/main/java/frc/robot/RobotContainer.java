@@ -83,7 +83,11 @@ public class RobotContainer {
 
     private static Alliance alliance;
 
-    // region Subsystems
+    public static boolean debug = false;
+
+    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+
+    //region Subsystems
 
     public final PARTsDrivetrain drivetrain = new PARTsDrivetrain(
             TunerConstants.DrivetrainConstants,
@@ -134,6 +138,8 @@ public class RobotContainer {
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
+
+        partsNT.putSmartDashboardSendable("Toggle Complete Debug",toggleDebug);
     }
 
     // region Configs
@@ -168,7 +174,7 @@ public class RobotContainer {
         // driveController.b().onTrue(drivetrain.commandAlign(Field.getTag(28).getLocation().toPose2d()));
 
         /*
-         * if (RobotConstants.DEBUGGING) {
+         * if (RobotConstants.DEBUGGING) { //If uncommented remember to switch to new debugging variable
          * 
          * //driveController.rightTrigger()
          * // .whileTrue(drivetrain.commandPathOnTheFly(
@@ -278,6 +284,8 @@ public class RobotContainer {
         subsystems.forEach(s -> s.outputTelemetry());
         partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage());
         partsNT.putBoolean("IsBlue", isBlue());
+        partsNT.putBoolean("Debugging", RobotContainer.debug);
+        partsNT.putBoolean("Complete Debug Active", debug);
     }
 
     public void stop() {
