@@ -16,7 +16,7 @@ public class HopperPhys extends Hopper {
         TalonFXConfiguration hopperConfig = new TalonFXConfiguration();
         hopperConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        hopperConfig.CurrentLimits.SupplyCurrentLimit = 70;
+        hopperConfig.CurrentLimits.SupplyCurrentLimit = 40;
         hopperConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         hopperMotor = new TalonFX(HopperConstants.HOPPER_MOTOR_ID, HopperConstants.CAN_BUS_NAME);
