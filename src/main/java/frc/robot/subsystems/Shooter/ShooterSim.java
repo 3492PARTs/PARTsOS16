@@ -4,15 +4,6 @@ import java.util.function.Supplier;
 
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
-import com.revrobotics.sim.SparkMaxSim;
-import com.revrobotics.sim.SparkRelativeEncoderSim;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.LinearSystem;
@@ -20,37 +11,47 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterSim extends Shooter {
 
-    DCMotor maxGearbox;
-    SparkMax max;
-    SparkMaxSim maxSim;
-    SparkRelativeEncoderSim motorEncoder;
+    DCMotorSim talonGearbox;
+    // SparkMax max;
+    // SparkMaxSim maxSim;
+    // SparkRelativeEncoderSim motorEncoder;
     FlywheelSim shooterSim;
 
-    public ShooterSim(Supplier <Pose2d> poseSupplier) {
+    public ShooterSim(Supplier<Pose2d> poseSupplier) {
         super(poseSupplier);
-        maxGearbox = DCMotor.getNEO(2);
 
-        SparkMaxConfig shooterConfig = new SparkMaxConfig();
-        shooterConfig.idleMode(IdleMode.kCoast);
-        shooterConfig.inverted(true);
+        // 
+        double moi = 1.0 * ShooterConstants.SHOOTER_WEEL_WEIGHT.to(PARTsUnitType.Kilogram)
+                * Math.pow(ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter), 2);
 
-        max = new SparkMax(ShooterConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
+        talonGearbox = new DCMotorSim(
+                LinearSystemId.createDCMotorSystem(
+                        DCMotor.getKrakenX60Foc(2), 0.001, ShooterConstants.SHOOTER_GEAR_RATIO),
+                DCMotor.getKrakenX60Foc(1));
 
-        max.configure(shooterConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        // SparkMaxConfig shooterConfig = new SparkMaxConfig();
+        // shooterConfig.idleMode(IdleMode.kCoast);
+        // shooterConfig.inverted(true);
 
-        maxSim = new SparkMaxSim(max, maxGearbox);
-        motorEncoder = maxSim.getRelativeEncoderSim();
+        // max = new SparkMax(ShooterConstants.LEFT_MOTOR_ID, MotorType.kBrushless);
+
+        // max.configure(shooterConfig, ResetMode.kResetSafeParameters,
+        // PersistMode.kPersistParameters);
+
+        // maxSim = new SparkMaxSim(max, maxGearbox);
+        // motorEncoder = maxSim.getRelativeEncoderSim();
+
         
-        double moi = 0.6 * ShooterConstants.SHOOTER_WEEL_WEIGHT.to(PARTsUnitType.Kilogram) * Math.pow(ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter), 2);
-        LinearSystem<N1, N1, N1> plant = LinearSystemId.createFlywheelSystem(maxGearbox, moi, 1.064);
+        LinearSystem<N1, N1, N1> plant = LinearSystemId.createFlywheelSystem(talonGearbox, moi, 1.064);
 
-        shooterSim = new FlywheelSim(plant, maxGearbox, 0.01);
+        // shooterSim = new FlywheelSim(plant, maxGearbox, 0.01);
     }
 
     @Override
