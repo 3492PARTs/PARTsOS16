@@ -35,9 +35,9 @@ public class KickerPhys extends Kicker {
 
     @Override
     public void log() {
-        partsLogger.logDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble());
+        partsLogger.logDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
 
-        partsLogger.logDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble());
+        partsLogger.logDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override

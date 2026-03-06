@@ -68,7 +68,7 @@ public class RobotContainer {
 
     private static Alliance alliance;
 
-    public static boolean debug = false && !RobotConstants.COMPETITION;
+    public static boolean debug = false;
 
     private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
 
@@ -110,6 +110,7 @@ public class RobotContainer {
     // endregion End Subsystems
 
     public RobotContainer() {
+        if (RobotConstants.COMPETITION) debug = false;
         configureDrivetrainBindings();
         configureCandleBindings();
         configureShooterBindings();
@@ -125,6 +126,8 @@ public class RobotContainer {
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
 
         partsNT.putSmartDashboardSendable("Toggle Complete Debug", toggleDebug, !RobotConstants.COMPETITION);
+
+        partsNT.putBoolean("Comp Mode", RobotConstants.COMPETITION, true);
     }
 
     // region Configs

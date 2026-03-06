@@ -33,6 +33,8 @@ public abstract class Shooter extends PARTsSubsystem {
 
     public Shooter(Supplier<Pose2d> poseSupplier) {
         super("Shooter", RobotConstants.LOGGING);
+        if (RobotConstants.COMPETITION) debug = false;
+        
         this.poseSupplier = poseSupplier;
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Shooter Speed", 0, true);
@@ -70,7 +72,7 @@ public abstract class Shooter extends PARTsSubsystem {
 
     @Override
     public void log() {
-        partsLogger.logString("Shooter State", shooterState.toString());
+        partsLogger.logString("Shooter State", shooterState.toString(), !RobotConstants.COMPETITION);
     }
 
     @Override

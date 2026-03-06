@@ -67,11 +67,11 @@ public class IntakePhys extends Intake {
     @Override
     public void log() {
         super.log();
-        partsLogger.logDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble());
-        partsLogger.logDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble());
+        partsLogger.logDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
         
-        partsLogger.logDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble());
-        partsLogger.logDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble());
+        partsLogger.logDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override

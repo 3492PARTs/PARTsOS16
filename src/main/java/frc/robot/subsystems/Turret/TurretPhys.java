@@ -43,9 +43,9 @@ public class TurretPhys extends Turret {
     @Override
     public void log() {
         super.log();
-        partsLogger.logDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble());
+        partsLogger.logDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
 
-        partsLogger.logDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble());
+        partsLogger.logDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override

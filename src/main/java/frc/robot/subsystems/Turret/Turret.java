@@ -29,7 +29,9 @@ public abstract class Turret extends PARTsSubsystem {
 
     public Turret(Supplier<Pose2d> robotPoseSupplier) {
         super("Turret", RobotConstants.LOGGING);
-         if (RobotContainer.debug || debug) {
+        if (RobotConstants.COMPETITION) debug = false;
+
+        if (RobotContainer.debug || debug) {
          partsNT.putDouble("Turret Speed", 0, true);
          partsNT.putDouble("Turret Angle", 0, true);
         }
@@ -47,7 +49,7 @@ public abstract class Turret extends PARTsSubsystem {
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Turret State", turretState.toString(), RobotContainer.debug || debug);
+        partsNT.putString("Turret State", turretState.toString(), !RobotConstants.COMPETITION);
         partsNT.putDouble("Angle", getAngle(), RobotContainer.debug || debug);
         partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Setpoint", turretPIDController.getSetpoint().position, RobotContainer.debug || debug);
@@ -69,7 +71,7 @@ public abstract class Turret extends PARTsSubsystem {
 
     @Override
     public void log() {
-        partsLogger.logString("Turret State", turretState.toString());
+        partsLogger.logString("Turret State", turretState.toString(), RobotContainer.debug || debug);
     }
 
     @Override

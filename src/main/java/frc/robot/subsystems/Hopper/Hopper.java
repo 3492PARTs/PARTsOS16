@@ -18,6 +18,7 @@ public abstract class Hopper extends PARTsSubsystem {
 
     public Hopper () {
         super("Hopper");
+        if (RobotConstants.COMPETITION) debug = false;
 
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Hopper Speed", 0, true);
@@ -29,7 +30,7 @@ public abstract class Hopper extends PARTsSubsystem {
     //region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Hopper State", hopperstate.toString(), RobotContainer.debug || debug);
+        partsNT.putString("Hopper State", hopperstate.toString(), !RobotConstants.COMPETITION);
         partsNT.putBoolean("Hopper Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
@@ -45,7 +46,7 @@ public abstract class Hopper extends PARTsSubsystem {
 
     @Override
     public void log() {
-        partsLogger.logString("Hopper State", hopperstate.toString());
+        partsLogger.logString("Hopper State", hopperstate.toString(), RobotContainer.debug || debug);
     }
 
     @Override

@@ -18,6 +18,7 @@ public abstract class Kicker extends PARTsSubsystem {
 
     public Kicker() {
         super("Kicker");
+        if (RobotConstants.COMPETITION) debug = false;
 
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Kicker Speed", 0, true);
@@ -29,7 +30,7 @@ public abstract class Kicker extends PARTsSubsystem {
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Kicker State", kickerState.toString(), RobotContainer.debug || debug);
+        partsNT.putString("Kicker State", kickerState.toString(), !RobotConstants.COMPETITION);
         partsNT.putBoolean("Kicker Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
@@ -45,7 +46,7 @@ public abstract class Kicker extends PARTsSubsystem {
 
     @Override
     public void log() {
-        partsLogger.logString("Kicker State", kickerState.toString());
+        partsLogger.logString("Kicker State", kickerState.toString(), RobotContainer.debug || debug);
     }
 
     @Override

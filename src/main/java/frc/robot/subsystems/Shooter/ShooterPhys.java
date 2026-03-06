@@ -2,7 +2,6 @@ package frc.robot.subsystems.Shooter;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -56,11 +55,11 @@ public class ShooterPhys extends Shooter {
     @Override
     public void log() {
         super.log();
-        partsLogger.logDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble());
-        partsLogger.logDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble());
+        partsLogger.logDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
 
-        partsLogger.logDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble());
-        partsLogger.logDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble());
+        partsLogger.logDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override

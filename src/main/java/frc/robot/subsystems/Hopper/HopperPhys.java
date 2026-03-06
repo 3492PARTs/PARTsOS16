@@ -38,8 +38,8 @@ public class HopperPhys extends Hopper {
 
     @Override
     public void log() {
-        partsLogger.logDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble());
-        partsLogger.logDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble());
+        partsLogger.logDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override

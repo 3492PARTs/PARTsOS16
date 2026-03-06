@@ -27,6 +27,7 @@ public abstract class Intake extends PARTsSubsystem {
 
     public Intake() {
         super("Intake");
+        if (RobotConstants.COMPETITION) debug = false;
 
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Intake Speed", 0, true);
@@ -51,7 +52,7 @@ public abstract class Intake extends PARTsSubsystem {
     public void outputTelemetry() {
         partsNT.putDouble("Pivot Position", getPivotAngle().to(PARTsUnitType.Angle), RobotContainer.debug || debug);
         partsNT.putDouble("Current Intake Speed", getIntakeSpeed(), RobotContainer.debug || debug);
-        partsNT.putString("Intake State", intakeState.toString(), RobotContainer.debug || debug);
+        partsNT.putString("Intake State", intakeState.toString(), !RobotConstants.COMPETITION);
         partsNT.putBoolean("Intake Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
@@ -102,9 +103,9 @@ public abstract class Intake extends PARTsSubsystem {
 
     @Override
     public void log() {
-        partsLogger.logDouble("Pivot Position", getPivotAngle().to(PARTsUnitType.Angle));
-        partsLogger.logDouble("Intake Speed", getIntakeSpeed());
-        partsLogger.logString("Intake State", intakeState.toString());
+        partsLogger.logDouble("Pivot Position", getPivotAngle().to(PARTsUnitType.Angle), RobotContainer.debug || debug);
+        partsLogger.logDouble("Intake Speed", getIntakeSpeed(), RobotContainer.debug || debug);
+        partsLogger.logString("Intake State", intakeState.toString(), RobotContainer.debug || debug);
     }
     // endregion
 

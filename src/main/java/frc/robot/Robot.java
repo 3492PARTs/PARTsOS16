@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
         partsLogger = new PARTsLogger();
         // m_robotContainer.constructDashboard(); // loop-overrun
 
-        partsLogger.logCommandScheduler();
+        partsLogger.logCommandScheduler(true);
         // partsLogger.logPathPlanner(); // loop-overrun
 
         // CameraServer.startAutomaticCapture(); // loop-overrun
