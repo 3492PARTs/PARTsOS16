@@ -31,14 +31,6 @@ public class Trench {
 
     public static boolean isUnderTrench(Pose2d pose) {
         Pose2d trench = getNearestTrench(pose, Field.getAllianceTrenchPoses());
-        double offset = getDistance(pose, trench);
-
-        // A little bigger than the robot.
-        // Remember that this is in meters, not inches.
-        if (offset < 1) {
-            return true;
-        }
-
         return Hub.isInRadius(pose, trench, 1);
     }
 

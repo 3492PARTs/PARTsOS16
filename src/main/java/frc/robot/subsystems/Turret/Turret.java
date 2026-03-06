@@ -32,6 +32,7 @@ public abstract class Turret extends PARTsSubsystem {
         super("Turret", RobotConstants.LOGGING);
          if (RobotContainer.debug || debug) {
          partsNT.putDouble("Turret Speed", 0);
+         partsNT.putDouble("Turret Angle", 0);
         }
 
         this.robotPoseSupplier = robotPoseSupplier;
@@ -76,6 +77,14 @@ public abstract class Turret extends PARTsSubsystem {
     public void periodic() {
         if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Turret Speed"));
+            turretPIDController.setGoal(partsNT.getDouble("Turret Angle"));
+            double pidCalc = turretPIDController.calculate(getAngle(), partsNT.getDouble("Turret Angle"));
+            // double ffCalc =
+            // turretFeedforward.calculate(turretPIDController.getSetpoint());
+
+            double voltage = pidCalc; // + ffCalc;
+
+            setVoltage(voltage);
         } else {
             double voltage = 0;
 
@@ -125,6 +134,10 @@ public abstract class Turret extends PARTsSubsystem {
 
     public boolean isValidAngle() {
         return Math.abs(getAngleToTarget()) <= 100;
+    }
+
+    public boolean atSetpoint() {
+        return turretPIDController.atSetpoint();
     }
 
     public TurretState getState() {
