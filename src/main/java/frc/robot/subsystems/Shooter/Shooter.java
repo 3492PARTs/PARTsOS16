@@ -10,6 +10,7 @@ import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.util.Hub;
+import frc.robot.util.Trench;
 import frc.robot.util.Hub.Targets;
 
 import java.util.function.BooleanSupplier;
@@ -77,6 +78,15 @@ public abstract class Shooter extends PARTsSubsystem {
         if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Shooter Speed", true));
         } else {
+            Targets zone = Hub.getZone(poseSupplier.get());
+            double shooterRPM = shooterState.getZoneRPM(zone);
+
+            boolean inTrench = Trench.isUnderTrench(poseSupplier.get());
+            if (inTrench) {
+                shooterRPM = shooterState.getZoneRPM(Targets.ZONE2);
+            }
+
+            partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString());
             switch (shooterState) {
                 case CHARGING:
                 case DISABLED:
@@ -85,12 +95,11 @@ public abstract class Shooter extends PARTsSubsystem {
                     break;
                 case SHOOTING:
                     double voltage = 0;
-                    Targets zone = Hub.getZone(poseSupplier.get());
-                    double shooterRPM = shooterState.getZoneRPM(zone);
-                    // double shooterRPM = shooterState.getRPM();
-                    if (debug) {
+
+                    if (debug || RobotContainer.debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed", true);
                     }
+
                     shooterPIDController.setSetpoint(shooterRPM);
 
                     double pidCalc = shooterPIDController.calculate(getRPM(), shooterRPM);

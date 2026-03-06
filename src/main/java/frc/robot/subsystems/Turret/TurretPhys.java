@@ -18,6 +18,10 @@ public class TurretPhys extends Turret {
 
         turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID, TurretConstants.CAN_BUS_NAME);
         TalonFXConfiguration turretConfig = new TalonFXConfiguration();
+
+        turretConfig.CurrentLimits.SupplyCurrentLimit = 70;
+        turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
         turretMotor.getConfigurator().apply(turretConfig);
         turretMotor.getConfigurator().setPosition(0);
         turretMotor.setNeutralMode(NeutralModeValue.Brake);
