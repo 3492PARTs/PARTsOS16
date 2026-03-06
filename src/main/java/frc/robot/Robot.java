@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
         partsNT = new PARTsNT(this);
         partsLogger = new PARTsLogger();
-        // m_robotContainer.constructDashboard(); // loop-overrun
+        m_robotContainer.constructDashboard(); // loop-overrun
 
         partsLogger.logCommandScheduler(true);
         // partsLogger.logPathPlanner(); // loop-overrun
@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
 
         partsNT.putDouble("Match Time", DriverStation.getMatchTime(), true); // loop-overrun
         m_robotContainer.outputTelemetry(); // loop-overrun
-        // m_robotContainer.log(); // loop-overrun
+        m_robotContainer.log(); // loop-overrun
 
         // m_robotContainer.getAlliance(); // loop-overrun
     }
