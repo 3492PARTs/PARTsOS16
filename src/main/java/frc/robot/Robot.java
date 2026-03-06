@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void autonomousInit() {
+    public void autonomousInit() {      
         if (!RobotContainer.debug) {
             //PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
         }

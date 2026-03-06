@@ -327,6 +327,7 @@ public class RobotContainer {
     }
 
     public void runOnEnabled() {
+        getAlliance(); // ensure we have the alliance
         setLimelightMainMode();
         setIdleCandleState();
         hubFieldObject2d.setPose(Field.getAllianceHubPose());
