@@ -81,10 +81,8 @@ public class LimelightVision extends PARTsSubsystem {
         setWhitelistMode(WhitelistMode.ALL);
         setIMUMode(1);
 
-        // super.partsNT.putSmartDashboardSendable("Set MT-1",
-        // commandMegaTagMode(MegaTagMode.MEGATAG1));
-        // super.partsNT.putSmartDashboardSendable("Set MT-2",
-        // commandMegaTagMode(MegaTagMode.MEGATAG2));
+        super.partsNT.putSmartDashboardSendable("Set MT-1", commandMegaTagMode(MegaTagMode.MEGATAG1), true);
+        super.partsNT.putSmartDashboardSendable("Set MT-2", commandMegaTagMode(MegaTagMode.MEGATAG2), true);
     }
 
     public void setMegaTagMode(MegaTagMode mode) {
