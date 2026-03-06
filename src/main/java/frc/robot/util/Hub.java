@@ -173,6 +173,7 @@ public class Hub {
 
 
     public static void putZonesOnField() {
+        Targets.DEADZONE.setFieldObject2d();
         Targets.ZONE1.setFieldObject2d();
         Targets.ZONE2.setFieldObject2d();
         Targets.ZONE3.setFieldObject2d();
