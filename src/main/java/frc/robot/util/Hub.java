@@ -38,8 +38,8 @@ public class Hub {
     }
 
     public static void outputTelemetry() {
-        partsNT.putBoolean("Hub Active", Hub.isHubActive());
-        partsNT.putDouble("Time Left", timer.get() <=25 ? 25 - timer.get() : 0);
+        partsNT.putBoolean("Hub Active", Hub.isHubActive(), true);
+        partsNT.putDouble("Time Left", timer.get() <=25 ? 25 - timer.get() : 0, true);
         checkHubActivity();
     }
 

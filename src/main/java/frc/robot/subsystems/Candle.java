@@ -9,6 +9,7 @@ import java.util.Set;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.constants.CandleConstants;
 import frc.robot.constants.CandleConstants.CandleState;
 import org.parts3492.partslib.command.PARTsCommandUtils;
@@ -126,6 +127,6 @@ public class Candle extends PARTsCandle {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        super.partsNT.putString("State", candleState.toString());
+        super.partsNT.putString("State", candleState.toString(), RobotContainer.debug);
     }
 }

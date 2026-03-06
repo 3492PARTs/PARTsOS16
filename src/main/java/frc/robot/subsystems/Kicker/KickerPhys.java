@@ -4,6 +4,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import frc.robot.RobotContainer;
 import frc.robot.constants.KickerConstants;
 
 public class KickerPhys extends Kicker {
@@ -21,9 +23,9 @@ public class KickerPhys extends Kicker {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble());
+        partsNT.putDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
 
-        partsNT.putDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble());
+        partsNT.putDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override

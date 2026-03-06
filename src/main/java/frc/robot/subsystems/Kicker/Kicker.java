@@ -13,24 +13,24 @@ public abstract class Kicker extends PARTsSubsystem {
 
     private KickerState kickerState = KickerState.IDLE;
 
-    private boolean debug = false;
+    protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
 
     public Kicker() {
         super("Kicker");
 
         if (RobotContainer.debug || debug) {
-            partsNT.putDouble("Kicker Speed", 0);
+            partsNT.putDouble("Kicker Speed", 0, true);
         }
 
-        partsNT.putSmartDashboardSendable("Toggle Kicker Debug",toggleDebug);
+        partsNT.putSmartDashboardSendable("Toggle Kicker Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
 
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Kicker State", kickerState.toString());
-        partsNT.putBoolean("Kicker Debug Active", debug);
+        partsNT.putString("Kicker State", kickerState.toString(), RobotContainer.debug || debug);
+        partsNT.putBoolean("Kicker Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
     @Override
@@ -51,7 +51,7 @@ public abstract class Kicker extends PARTsSubsystem {
     @Override
     public void periodic() {
         if (RobotContainer.debug || debug) {
-            setSpeed(partsNT.getDouble("Kicker Speed"));
+            setSpeed(partsNT.getDouble("Kicker Speed", true));
         } else {
             switch (kickerState) {
                 case ROLLING:

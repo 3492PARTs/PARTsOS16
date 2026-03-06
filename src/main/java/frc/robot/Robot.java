@@ -4,18 +4,15 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import frc.robot.util.Hub;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import org.parts3492.partslib.PARTsLogger;
@@ -60,8 +57,8 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
 
-        // partsNT.putDouble("Match Time", DriverStation.getMatchTime()); // loop-overrun
-        // m_robotContainer.outputTelemetry(); // loop-overrun
+        partsNT.putDouble("Match Time", DriverStation.getMatchTime(), true); // loop-overrun
+        m_robotContainer.outputTelemetry(); // loop-overrun
         // m_robotContainer.log(); // loop-overrun
 
         // m_robotContainer.getAlliance(); // loop-overrun

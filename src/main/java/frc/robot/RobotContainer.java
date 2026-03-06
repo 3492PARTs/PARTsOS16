@@ -4,33 +4,22 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.function.BooleanSupplier;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RuntimeType;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.CandleConstants.CandleState;
@@ -40,7 +29,6 @@ import frc.robot.subsystems.Candle;
 import frc.robot.subsystems.LimelightVision;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
-import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Hopper.HopperPhys;
@@ -48,18 +36,15 @@ import frc.robot.subsystems.Hopper.HopperSim;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.IntakePhys;
 import frc.robot.subsystems.Intake.IntakeSim;
-import frc.robot.subsystems.Intake.IntakeSysid;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Kicker.KickerPhys;
 import frc.robot.subsystems.Kicker.KickerSim;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
-import frc.robot.subsystems.Shooter.ShooterSysid;
 import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.Turret.TurretPhys;
 import frc.robot.subsystems.Turret.TurretSim;
-import frc.robot.subsystems.Turret.TurretSysid;
 import frc.robot.util.Field;
 
 import org.parts3492.partslib.input.PARTsButtonBoxController;
@@ -83,7 +68,7 @@ public class RobotContainer {
 
     private static Alliance alliance;
 
-    public static boolean debug = true;
+    public static boolean debug = false && !RobotConstants.COMPETITION;
 
     private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
 
@@ -136,10 +121,10 @@ public class RobotContainer {
         operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
         operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
 
-        partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
+        partsNT.putSmartDashboardSendable("field", Field.FIELD2D, true);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
 
-        partsNT.putSmartDashboardSendable("Toggle Complete Debug",toggleDebug);
+        partsNT.putSmartDashboardSendable("Toggle Complete Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
 
     // region Configs
@@ -270,7 +255,7 @@ public class RobotContainer {
 
     public void configureAutonomousCommands() {
         autoChooser = AutoBuilder.buildAutoChooser();
-        partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser);
+        partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);
     }
 
     // endregion End Configs
@@ -282,10 +267,9 @@ public class RobotContainer {
     // region Custom Public Functions
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());
-        partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage());
-        partsNT.putBoolean("IsBlue", isBlue());
-        partsNT.putBoolean("Debugging", RobotContainer.debug);
-        partsNT.putBoolean("Complete Debug Active", debug);
+        partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage(), true);
+        partsNT.putBoolean("IsBlue", isBlue(), RobotContainer.debug);
+        partsNT.putBoolean("Debugging", RobotContainer.debug, RobotConstants.COMPETITION);
     }
 
     public void stop() {
@@ -308,8 +292,8 @@ public class RobotContainer {
     }
 
     public void constructDashboard() {
-        PARTsDashboard.setSubsystems(subsystems);
-        PARTsDashboard.setCommandScheduler();
+        PARTsDashboard.setSubsystems(subsystems, RobotContainer.debug);
+        PARTsDashboard.setCommandScheduler(RobotContainer.debug);
     }
 
     public void resetStartPose() {

@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.RobotContainer;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterPhys extends Shooter {
@@ -33,11 +34,11 @@ public class ShooterPhys extends Shooter {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble());
-        partsNT.putDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble());
+        partsNT.putDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
 
-        partsNT.putDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble());
-        partsNT.putDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble());
+        partsNT.putDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override

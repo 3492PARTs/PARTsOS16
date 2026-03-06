@@ -57,9 +57,6 @@ import frc.robot.Telemetry;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.generated.TunerConstants;
-import frc.robot.util.Hub;
-import frc.robot.util.Hub.Targets;
-
 import frc.robot.util.Field;
 import org.parts3492.partslib.input.PARTsCommandController;
 import org.parts3492.partslib.command.PARTsCommandUtils;
@@ -147,7 +144,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 configureAutoBuilder();
                 robotFieldObject2d = Field.FIELD2D.getRobotObject();
                 targetFieldObject2d = Field.FIELD2D.getObject("target");
-                if (RobotContainer.debug && false) {
+                if (RobotContainer.debug) {
                         telemetryLogger = new Telemetry(MaxSpeed);
                         registerTelemetry(telemetryLogger::telemeterize);
                 }
@@ -156,19 +153,15 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         // region Generic Subsystem Functions
         @Override
         public void outputTelemetry() {
-                partsNT.putBoolean("Fine Grain Drive", fineGrainDrive);
-                partsNT.putDouble("HUB X coordinate",
-                                new PARTsUnit(Field.getAllianceHubPose().getX(), PARTsUnitType.Meter)
-                                                .to(PARTsUnitType.Inch));
-                partsNT.putDouble("HUB Y coordinate",
-                                new PARTsUnit(Field.getAllianceHubPose().getY(), PARTsUnitType.Meter)
-                                                .to(PARTsUnitType.Inch));
+                partsNT.putBoolean("Fine Grain Drive", fineGrainDrive, RobotContainer.debug);
 
                 partsNT.putDouble("X coordinate",
-                                new PARTsUnit(getPose().getX(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
+                                new PARTsUnit(getPose().getX(), PARTsUnitType.Meter).to(PARTsUnitType.Inch), RobotContainer.debug);
                 partsNT.putDouble("Y coordinate",
-                                new PARTsUnit(getPose().getY(), PARTsUnitType.Meter).to(PARTsUnitType.Inch));
-                partsNT.putBoolean("Controlled Rotation Enabled", isControlledRotationEnabled);
+                                new PARTsUnit(getPose().getY(), PARTsUnitType.Meter).to(PARTsUnitType.Inch), RobotContainer.debug);
+                                partsNT.putDouble("Rotation",
+                                new PARTsUnit(getPose().getRotation().getDegrees(), PARTsUnitType.Angle).getValue(), RobotContainer.debug);
+                partsNT.putBoolean("Controlled Rotation Enabled", isControlledRotationEnabled, RobotContainer.debug);
         }
 
         @Override
@@ -181,14 +174,10 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         @Override
         public void reset() {
-                // TODO Auto-generated method stub
-                // throw new UnsupportedOperationException("Unimplemented method 'reset'");
         }
 
         @Override
         public void log() {
-                // TODO Auto-generated method stub
-                // throw new UnsupportedOperationException("Unimplemented method 'log'");
         }
 
         @Override
@@ -436,10 +425,10 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 } catch (IOException e) {
                         e.printStackTrace();
                 } catch (FileVersionException e) {
-                        // TODO Auto-generated catch block
+                        // Auto-generated catch block
                         e.printStackTrace();
                 } catch (ParseException e) {
-                        // TODO Auto-generated catch block
+                        // Auto-generated catch block
                         e.printStackTrace();
                 }
                 return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPath.wait",
@@ -575,17 +564,17 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         // region Custom Private Functions
         private void alignCommandInitTelemetry(Pose2d holdDist) {
                 partsNT.putDouble("align/holdDistX", new PARTsUnit(holdDist.getX(), PARTsUnitType.Meter)
-                                .to(PARTsUnitType.Inch));
+                                .to(PARTsUnitType.Inch), RobotContainer.debug);
                 partsNT.putDouble("align/holdDistY", new PARTsUnit(holdDist.getY(), PARTsUnitType.Meter)
-                                .to(PARTsUnitType.Inch));
+                                .to(PARTsUnitType.Inch), RobotContainer.debug);
                 partsNT.putDouble("align/holdDistRot",
                                 new PARTsUnit(holdDist.getRotation().getRadians(), PARTsUnitType.Radian)
-                                                .to(PARTsUnitType.Angle));
+                                                .to(PARTsUnitType.Angle), RobotContainer.debug);
 
                 partsLogger.logDouble("align/thetaControllerSetpoint",
                                 thetaController.getSetpoint().position);
                 partsNT.putDouble("align/thetaControllerSetpoint",
-                                thetaController.getSetpoint().position);
+                                thetaController.getSetpoint().position, RobotContainer.debug);
 
         }
 
@@ -602,21 +591,21 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
                 partsNT.putDouble("align/rPoseX",
                                 new PARTsUnit(getPose().getX(), PARTsUnitType.Meter)
-                                                .to(PARTsUnitType.Inch));
+                                                .to(PARTsUnitType.Inch), RobotContainer.debug);
                 partsNT.putDouble("align/rPoseY",
                                 new PARTsUnit(getPose().getY(), PARTsUnitType.Meter)
-                                                .to(PARTsUnitType.Inch));
+                                                .to(PARTsUnitType.Inch), RobotContainer.debug);
                 partsNT.putDouble("align/rPoseRot",
                                 new PARTsUnit(getPose().getRotation().getRadians(),
-                                                PARTsUnitType.Radian).to(PARTsUnitType.Angle));
+                                                PARTsUnitType.Radian).to(PARTsUnitType.Angle), RobotContainer.debug);
 
                 partsLogger.logDouble("align/Output/thetaController", thetaOutput.getDegrees());
                 partsLogger.logDouble("align/Output/rangeControllerX", rangeOutput.getX());
                 partsLogger.logDouble("align/Output/rangeControllerY", rangeOutput.getY());
 
-                partsNT.putDouble("align/Output/thetaController", thetaOutput.getDegrees());
-                partsNT.putDouble("align/Output/rangeControllerX", rangeOutput.getX());
-                partsNT.putDouble("align/Output/rangeControllerY", rangeOutput.getY());
+                partsNT.putDouble("align/Output/thetaController", thetaOutput.getDegrees(), RobotContainer.debug);
+                partsNT.putDouble("align/Output/rangeControllerX", rangeOutput.getX(), RobotContainer.debug);
+                partsNT.putDouble("align/Output/rangeControllerY", rangeOutput.getY(), RobotContainer.debug);
 
                 partsLogger.logBoolean("align/Goal/thetaAtGoal", thetaController.atGoal());
                 partsLogger.logBoolean("align/Goal/rangeXAtGoal",
@@ -624,13 +613,13 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 partsLogger.logBoolean("align/Goal/rangeYAtGoal",
                                 yRangeController.atGoal());
 
-                partsNT.putDouble("align/Goal/x setpoint", xRangeController.getSetpoint().position);
-                partsNT.putDouble("align/Goal/y setpoint", yRangeController.getSetpoint().position);
-                partsNT.putDouble("align/Goal/x setpoint", thetaController.getSetpoint().position);
+                partsNT.putDouble("align/Goal/x setpoint", xRangeController.getSetpoint().position, RobotContainer.debug);
+                partsNT.putDouble("align/Goal/y setpoint", yRangeController.getSetpoint().position, RobotContainer.debug);
+                partsNT.putDouble("align/Goal/x setpoint", thetaController.getSetpoint().position, RobotContainer.debug);
 
-                partsNT.putBoolean("align/Goal/thetaAtGoal", thetaController.atGoal());
-                partsNT.putBoolean("align/Goal/rangeXAtGoal", xRangeController.atGoal());
-                partsNT.putBoolean("align/Goal/rangeYAtGoal", yRangeController.atGoal());
+                partsNT.putBoolean("align/Goal/thetaAtGoal", thetaController.atGoal(), RobotContainer.debug);
+                partsNT.putBoolean("align/Goal/rangeXAtGoal", xRangeController.atGoal(), RobotContainer.debug);
+                partsNT.putBoolean("align/Goal/rangeYAtGoal", yRangeController.atGoal(), RobotContainer.debug);
 
                 partsLogger.logDouble("align/Output/PosErrorX",
                                 xRangeController.getPositionError());
@@ -647,25 +636,25 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                 thetaController.getVelocityError());
 
                 partsNT.putDouble("align/Output/PosErrorX",
-                                xRangeController.getPositionError());
+                                xRangeController.getPositionError(), RobotContainer.debug);
                 partsNT.putDouble("align/Output/PosErrorY",
-                                yRangeController.getPositionError());
+                                yRangeController.getPositionError(), RobotContainer.debug);
                 partsNT.putDouble("align/Output/thetaPosError",
-                                thetaController.getPositionError());
+                                thetaController.getPositionError(), RobotContainer.debug);
 
                 partsNT.putDouble("align/Output/velocityErrorX",
-                                xRangeController.getVelocityError());
+                                xRangeController.getVelocityError(), RobotContainer.debug);
                 partsNT.putDouble("align/Output/velocityErrorY",
-                                yRangeController.getVelocityError());
+                                yRangeController.getVelocityError(), RobotContainer.debug);
                 partsNT.putDouble("align/Output/thetaVelocityError",
-                                thetaController.getVelocityError());
+                                thetaController.getVelocityError(), RobotContainer.debug);
 
-                partsNT.putDouble("align/timer", alignTimer.get());
-                partsNT.putBoolean("align/timerHasElapsed", timerElapsed);
+                partsNT.putDouble("align/timer", alignTimer.get(), RobotContainer.debug);
+                partsNT.putBoolean("align/timerHasElapsed", timerElapsed, RobotContainer.debug);
 
-                partsNT.putDouble("align/pigeonMovementX", drivetrainVelocityX.getValue());
-                partsNT.putDouble("align/pigeonMovementY", drivetrainVelocityY.getValue());
-                partsNT.putDouble("align/goalPoseError", Math.abs(diff.getTranslation().getNorm()));
+                partsNT.putDouble("align/pigeonMovementX", drivetrainVelocityX.getValue(), RobotContainer.debug);
+                partsNT.putDouble("align/pigeonMovementY", drivetrainVelocityY.getValue(), RobotContainer.debug);
+                partsNT.putDouble("align/goalPoseError", Math.abs(diff.getTranslation().getNorm()), RobotContainer.debug);
         }
 
         private void sendToDashboard() {
@@ -703,7 +692,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                                                 .to(PARTsUnitType.Radian),
                                                 null);
                         }
-                });
+                }, RobotContainer.debug);
         }
 
         private void initializeControllers() {

@@ -6,7 +6,6 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import frc.robot.RobotContainer;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -20,7 +19,7 @@ public abstract class Intake extends PARTsSubsystem {
 
     IntakeState intakeState = IntakeState.IDLE;
 
-    private boolean debug = false;
+    protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
 
     ProfiledPIDController intakePIDController;
@@ -30,8 +29,8 @@ public abstract class Intake extends PARTsSubsystem {
         super("Intake");
 
         if (RobotContainer.debug || debug) {
-            partsNT.putDouble("Intake Speed", 0);
-            partsNT.putDouble("Pivot Speed", 0);
+            partsNT.putDouble("Intake Speed", 0, true);
+            partsNT.putDouble("Pivot Speed", 0, true);
         }
 
         intakePIDController = new ProfiledPIDController(IntakeConstants.P, IntakeConstants.I, IntakeConstants.D,
@@ -40,7 +39,7 @@ public abstract class Intake extends PARTsSubsystem {
         intakeFeedForward = new SimpleMotorFeedforward(IntakeConstants.S, IntakeConstants.V, IntakeConstants.A);
         intakePIDController.setTolerance(IntakeConstants.PID_THRESHOLD);
 
-        partsNT.putSmartDashboardSendable("Toggle Intake Debug",toggleDebug);
+        partsNT.putSmartDashboardSendable("Toggle Intake Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
 
     public IntakeState getState() {
@@ -50,10 +49,10 @@ public abstract class Intake extends PARTsSubsystem {
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putDouble("Pivot Position", getPivotAngle().to(PARTsUnitType.Angle));
-        partsNT.putDouble("Current Intake Speed", getIntakeSpeed());
-        partsNT.putString("Intake State", intakeState.toString());
-        partsNT.putBoolean("Intake Debug Active", debug);
+        partsNT.putDouble("Pivot Position", getPivotAngle().to(PARTsUnitType.Angle), RobotContainer.debug || debug);
+        partsNT.putDouble("Current Intake Speed", getIntakeSpeed(), RobotContainer.debug || debug);
+        partsNT.putString("Intake State", intakeState.toString(), RobotContainer.debug || debug);
+        partsNT.putBoolean("Intake Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
     @Override
@@ -69,8 +68,8 @@ public abstract class Intake extends PARTsSubsystem {
     @Override
     public void periodic() {
         if (RobotContainer.debug || debug) {
-            setIntakeSpeed(partsNT.getDouble("Intake Speed"));
-            setPivotSpeed(partsNT.getDouble("Pivot Speed"));
+            setIntakeSpeed(partsNT.getDouble("Intake Speed", true));
+            setPivotSpeed(partsNT.getDouble("Pivot Speed", true));
         } else {
             switch (intakeState) {
                 case DISABLED:
@@ -89,7 +88,7 @@ public abstract class Intake extends PARTsSubsystem {
                             intakeState.getAngle());
                     double ffCalc = intakeFeedForward.calculate(intakePIDController.getSetpoint().velocity);
 
-                    partsNT.putBoolean("At goal", intakePIDController.atSetpoint());
+                    partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), true);
 
                     setPivotVoltage(pidCalc);
                     break;

@@ -233,9 +233,9 @@ public class LimelightVision extends PARTsSubsystem {
 
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Megatag Mode", getMTmode().toString());
-        partsNT.putString("Whitelist Mode", getWhitelistMode().toString());
-        partsNT.putNumber("IMU Mode", imuMode);
+        partsNT.putString("Megatag Mode", getMTmode().toString(), RobotContainer.debug);
+        partsNT.putString("Whitelist Mode", getWhitelistMode().toString(), RobotContainer.debug);
+        partsNT.putNumber("IMU Mode", imuMode, RobotContainer.debug);
     }
 
     @Override
@@ -245,14 +245,10 @@ public class LimelightVision extends PARTsSubsystem {
 
     @Override
     public void reset() {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'reset'");
     }
 
     @Override
     public void log() {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'log'");
     }
 
     /*public void resetRobotPose() {
@@ -286,7 +282,7 @@ public class LimelightVision extends PARTsSubsystem {
     }*/
 
     public void setPipelineIndex(Pipelines pipeline) {
-        partsNT.putString("Pipeline name", pipeline.name());
+        partsNT.putString("Pipeline name", pipeline.name(), true);
         for (Camera camera : CameraConstants.LimelightCameras) {
             if (camera.isEnabled()) {
                 LimelightHelpers.setLEDMode_PipelineControl(camera.getName());

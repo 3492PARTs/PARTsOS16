@@ -3,9 +3,9 @@ package frc.robot.constants;
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
-import frc.robot.RobotContainer;
 
 public class RobotConstants {
+        public static final boolean COMPETITION = true;
         public static final PARTsUnit HALF_ROBOT_WIDTH = new PARTsUnit(13.5, PARTsUnitType.Inch);
         public static final PARTsUnit BUMPER_WIDTH = new PARTsUnit(4, PARTsUnitType.Inch);
         public static final PARTsUnit ROBOT_VISION_OFFSET = new PARTsUnit(

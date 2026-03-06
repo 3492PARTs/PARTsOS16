@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.RobotContainer;
 import frc.robot.constants.TurretConstants;
 
 public class TurretPhys extends Turret {
@@ -25,9 +26,9 @@ public class TurretPhys extends Turret {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble());
+        partsNT.putDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
 
-        partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble());
+        partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override
