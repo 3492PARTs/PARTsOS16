@@ -4,7 +4,9 @@ public class TurretConstants {
     public enum TurretState {
         DISABLED(0),
         IDLE(0),
-        TRACKING(-1);
+        TRACKING(-1),
+        LEFT_CORNER(45),
+        RIGHT_CORNER(-45);
 
         private final double angle;
 

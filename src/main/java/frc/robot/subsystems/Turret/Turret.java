@@ -13,6 +13,7 @@ import frc.robot.constants.TurretConstants;
 import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.util.Field;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import org.parts3492.partslib.command.PARTsCommandUtils;
@@ -101,6 +102,22 @@ public abstract class Turret extends PARTsSubsystem {
                         setSpeed(0);
                     }
                     break;
+                
+                    case LEFT_CORNER:
+                    case RIGHT_CORNER:
+                        turretPIDController.setGoal(turretState.getAngle());
+                        double pidCalc = turretPIDController.calculate(getAngle(), turretState.getAngle());
+                        // double ffCalc =
+                        // turretFeedforward.calculate(turretPIDController.getSetpoint());
+
+                        partsNT.putDouble("Turret voltage", voltage);
+                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint());
+
+                        voltage = pidCalc; // + ffCalc;
+
+                        setVoltage(voltage);
+                    break;
+                
                 default:
                     setSpeed(0);
                     break;
@@ -137,10 +154,26 @@ public abstract class Turret extends PARTsSubsystem {
         }));
     }
 
+    public Command rightCorner() {
+        return PARTsCommandUtils.setCommandName("Turret.track", this.runOnce(() -> {
+            turretState = TurretState.RIGHT_CORNER;
+        }));
+    }
+
+    public Command leftCorner() {
+        return PARTsCommandUtils.setCommandName("Turret.track", this.runOnce(() -> {
+            turretState = TurretState.LEFT_CORNER;
+        }));
+    }
+
     public Command idle() {
         return PARTsCommandUtils.setCommandName("Turret.idle", this.runOnce(() -> {
             turretState = TurretState.IDLE;
         }));
+    }
+
+    public BooleanSupplier atSetpoint() {
+        return () -> turretPIDController.atSetpoint();
     }
     // endregion
 

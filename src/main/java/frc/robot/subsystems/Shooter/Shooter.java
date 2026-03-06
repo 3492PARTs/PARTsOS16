@@ -87,9 +87,10 @@ public abstract class Shooter extends PARTsSubsystem {
                     setSpeed(0);
                     break;
                 case SHOOTING:
+                case MANUAL:
                     double voltage = 0;
                     Targets zone = Hub.getZone(poseSupplier.get());
-                    double shooterRPM = shooterState.getZoneRPM(zone);
+                    double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM() : ShooterState.getZoneRPM(zone);
                     // double shooterRPM = shooterState.getRPM();
                     if (debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed");
@@ -131,14 +132,20 @@ public abstract class Shooter extends PARTsSubsystem {
     }
 
     public Command shoot() {
-        return PARTsCommandUtils.setCommandName("Kicker.shoot", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Shooter.shoot", this.runOnce(() -> {
             shooterState = ShooterState.SHOOTING;
         }));
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Kicker.idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Shooter.idle", this.runOnce(() -> {
             shooterState = ShooterState.IDLE;
+        }));
+    }
+
+    public Command manualShoot() {
+        return PARTsCommandUtils.setCommandName("Shooter.manualShoot", this.runOnce(() -> {
+            shooterState = ShooterState.MANUAL;
         }));
     }
 
