@@ -86,7 +86,8 @@ public abstract class Shooter extends PARTsSubsystem {
                 shooterRPM = shooterState.getZoneRPM(Targets.ZONE2);
             }
 
-            partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString());
+            partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);
+            
             switch (shooterState) {
                 case CHARGING:
                 case DISABLED:
