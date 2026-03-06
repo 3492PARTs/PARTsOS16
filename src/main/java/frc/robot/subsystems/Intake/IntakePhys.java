@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import frc.robot.RobotContainer;
 import frc.robot.constants.IntakeConstants;
 
 /**
@@ -44,11 +45,11 @@ public class IntakePhys extends Intake {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble());
-        partsNT.putDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble());
+        partsNT.putDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
 
-        partsNT.putDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble());
-        partsNT.putDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble());
+        partsNT.putDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -66,11 +67,11 @@ public class IntakePhys extends Intake {
     @Override
     public void log() {
         super.log();
-        partsLogger.logDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble());
-        partsLogger.logDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble());
+        partsLogger.logDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
         
-        partsLogger.logDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble());
-        partsLogger.logDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble());
+        partsLogger.logDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import frc.robot.RobotContainer;
 import frc.robot.constants.HopperConstants;
 
 public class HopperPhys extends Hopper {
@@ -26,8 +27,8 @@ public class HopperPhys extends Hopper {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble());
-        partsNT.putDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble());
+        partsNT.putDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -37,8 +38,8 @@ public class HopperPhys extends Hopper {
 
     @Override
     public void log() {
-        partsLogger.logDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble());
-        partsLogger.logDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble());
+        partsLogger.logDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override
