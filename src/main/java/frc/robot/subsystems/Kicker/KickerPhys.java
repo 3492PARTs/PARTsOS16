@@ -15,6 +15,10 @@ public class KickerPhys extends Kicker {
         super();
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        config.CurrentLimits.SupplyCurrentLimit = 40;
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+
         kickerMotor = new TalonFX(KickerConstants.KICKER_MOTOR_ID, KickerConstants.CAN_BUS_NAME);
         kickerMotor.getConfigurator().apply(config);
         kickerMotor.setNeutralMode(NeutralModeValue.Coast);
