@@ -235,6 +235,7 @@ public class RobotContainer {
         buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
         buttonBoxController.negative4Trigger().onTrue(intake.intake());
         buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate()).onTrue(intake.intakeIdle());
+        buttonBoxController.enterTrigger().onTrue(intake.home());
         /*driveController.x().onTrue(intake.intake());
         driveController.y().onTrue(intake.intakeIdle());
         driveController.rightTrigger().onTrue(intake.intakeShooting());

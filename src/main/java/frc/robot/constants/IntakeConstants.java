@@ -40,8 +40,8 @@ public class IntakeConstants {
     public static final double D = 0;
     public static final int PID_THRESHOLD = 1;
 
-    public static final double INTAKE_MAX_VELOCITY = 200;
-    public static final double INTAKE_MAX_ACCELERATION = 400;
+    public static final double INTAKE_MAX_VELOCITY = 800;
+    public static final double INTAKE_MAX_ACCELERATION = 1000;
 
     // Feedforward
     public static final double S = 0;
