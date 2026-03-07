@@ -50,8 +50,11 @@ public class ShooterConstants {
     public static final String CAN_BUS_NAME = "bye";
     //public static final boolean SHOOT_DEBUG = false;
 
-    public static final PARTsUnit SHOOTER_WHEEL_RADIUS = new PARTsUnit(2, PARTsUnitType.Inch);
-    public static final PARTsUnit SHOOTER_WEEL_WEIGHT = new PARTsUnit(0.70625, PARTsUnitType.Pound);
+    /** The outer radius of the shooter wheel. */
+    public static final PARTsUnit SHOOTER_WHEEL_RADIUS = new PARTsUnit(2.0, PARTsUnitType.Inch);
+    public static final PARTsUnit SHOOTER_WHEEL_INNER_RADIUS = new PARTsUnit(0.5, PARTsUnitType.Inch);
+    public static final PARTsUnit SHOOTER_WHEEL_WEIGHT = new PARTsUnit(0.70625, PARTsUnitType.Pound);
+    public static final PARTsUnit SHOOTER_WHEEL_THICKNESS = new PARTsUnit(1.0, PARTsUnitType.Inch);
     public static final double SHOOTER_GEAR_RATIO = 1.0;
 
     // PID Controller
