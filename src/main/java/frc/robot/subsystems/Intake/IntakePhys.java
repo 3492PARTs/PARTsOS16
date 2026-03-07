@@ -99,11 +99,11 @@ public class IntakePhys extends Intake {
 
     @Override
     public double getPivotRotationSpeed() {
-        return pivotMotor.getVelocity().getValueAsDouble();
+        return pivotMotor.getVelocity().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO;
     }
 
     @Override
-    public PARTsUnit getPivotAngle() {
+    public PARTsUnit getPivotRotations() {
         return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO, PARTsUnitType.Rotations);
     }
 }

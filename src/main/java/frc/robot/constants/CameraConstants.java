@@ -72,7 +72,7 @@ public interface CameraConstants {
                     new Pose3d(PARTsUnit.InchesToMeters.apply(21.0 - 14.0), -PARTsUnit.InchesToMeters.apply(24.0 - 13.0), PARTsUnit.InchesToMeters.apply(14.0), // meters
                             new Rotation3d(0, Units.degreesToRadians(40),
                                     -Units.degreesToRadians(45))),
-                    true)
+                    false)
 
                     
     //camera 21 - 14 inches forward

@@ -50,12 +50,12 @@ public abstract class Turret extends PARTsSubsystem {
     @Override
     public void outputTelemetry() {
         partsNT.putString("Turret State", turretState.toString(), !RobotConstants.COMPETITION);
-        partsNT.putDouble("Angle", getAngle(), RobotContainer.debug || debug);
+        partsNT.putDouble("Angle", getAngle(), true);
         partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Setpoint", turretPIDController.getSetpoint().position, RobotContainer.debug || debug);
-        partsNT.putBoolean("At Setpoint", turretPIDController.atSetpoint(), RobotContainer.debug || debug);
+        partsNT.putBoolean("At Setpoint", turretPIDController.atSetpoint(), true);
         partsNT.putDouble("Current Error", turretPIDController.getPositionError(), RobotContainer.debug || debug);
-        partsNT.putDouble("Get Angle to Turret", getAngleToTarget(), RobotContainer.debug || debug);
+        partsNT.putDouble("Get Angle to target", getAngleToTarget(), true);
         partsNT.putBoolean("Turret Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
@@ -155,6 +155,10 @@ public abstract class Turret extends PARTsSubsystem {
         return PARTsCommandUtils.setCommandName("Turret.idle", this.runOnce(() -> {
             turretState = TurretState.IDLE;
         }));
+    }
+
+    public boolean withinSetpointRange() {
+        return Math.abs(turretPIDController.getSetpoint().position - getAngle()) < 5;
     }
     // endregion
 
