@@ -24,7 +24,7 @@ public class IntakePhys extends Intake {
         TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
         intakeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        intakeConfig.CurrentLimits.SupplyCurrentLimit = 35;
+        intakeConfig.CurrentLimits.SupplyCurrentLimit = 30;
         intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         intakeConfig.CurrentLimits.SupplyCurrentLowerTime = 0;
 
@@ -33,11 +33,11 @@ public class IntakePhys extends Intake {
 
         TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
 
-        pivotConfig.CurrentLimits.SupplyCurrentLimit = 35;
+        pivotConfig.CurrentLimits.SupplyCurrentLimit = 30;
         pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         pivotConfig.CurrentLimits.SupplyCurrentLowerTime = 0;
 
-        pivotConfig.CurrentLimits.StatorCurrentLimit = 120;
+        pivotConfig.CurrentLimits.StatorCurrentLimit = 100;
         pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);

@@ -16,12 +16,12 @@ public class KickerPhys extends Kicker {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        config.CurrentLimits.SupplyCurrentLimit = 70;
+        config.CurrentLimits.SupplyCurrentLimit = 60;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        config.CurrentLimits.SupplyCurrentLowerLimit = 40;
+        config.CurrentLimits.SupplyCurrentLowerLimit = 30;
         config.CurrentLimits.SupplyCurrentLowerTime = 1.0;
 
-        config.CurrentLimits.StatorCurrentLimit = 120;
+        config.CurrentLimits.StatorCurrentLimit = 100;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         kickerMotor = new TalonFX(KickerConstants.KICKER_MOTOR_ID, KickerConstants.CAN_BUS_NAME);
