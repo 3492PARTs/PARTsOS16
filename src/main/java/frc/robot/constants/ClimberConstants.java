@@ -18,7 +18,7 @@ public class ClimberConstants {
         }
     }
 
-    public static final int CLIMBER_MOTOR_ID = 5;
+    public static final int CLIMBER_MOTOR_ID = 4;
     public static final String CAN_BUS_NAME = "hi";
     public static final double CLIMBER_GEAR_RATIO = 4.0/1.0;
 
