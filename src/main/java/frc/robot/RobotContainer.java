@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import com.ctre.phoenix6.SignalLogger;
@@ -24,6 +23,7 @@ import frc.robot.constants.RobotConstants;
 import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.CandleConstants.CandleState;
 import frc.robot.constants.generated.TunerConstants;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.robot.subsystems.Candle;
 import frc.robot.subsystems.LimelightVision;
@@ -36,12 +36,14 @@ import frc.robot.subsystems.Hopper.HopperSim;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.IntakePhys;
 import frc.robot.subsystems.Intake.IntakeSim;
+import frc.robot.subsystems.Intake.IntakeSysid;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Kicker.KickerPhys;
 import frc.robot.subsystems.Kicker.KickerSim;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
+import frc.robot.subsystems.Shooter.ShooterSysid;
 import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.Turret.TurretPhys;
 import frc.robot.subsystems.Turret.TurretSim;
@@ -71,9 +73,9 @@ public class RobotContainer {
 
     public static boolean debug = false;
 
-    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
-    //region Subsystems
+    // region Subsystems
 
     public final PARTsDrivetrain drivetrain = new PARTsDrivetrain(
             TunerConstants.DrivetrainConstants,
@@ -99,19 +101,21 @@ public class RobotContainer {
     private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
 
     // private final ShooterSysid shooter = new
-    // ShooterSysid(drivetrain.supplierGetPose()); //for sysid
+    // ShooterSysid(drivetrain.supplierGetPose()); // for sysid
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new
     // TurretSysid(drivetrain.supplierGetPose());
 
-    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle, drivetrain);
+    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle,
+            drivetrain);
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
             Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake, superstructure));
 
     // endregion End Subsystems
 
     public RobotContainer() {
-        if (RobotConstants.COMPETITION) debug = false;
+        if (RobotConstants.COMPETITION)
+            debug = false;
         configureDrivetrainBindings();
         configureCandleBindings();
         configureShooterBindings();
@@ -163,7 +167,8 @@ public class RobotContainer {
         // driveController.b().onTrue(drivetrain.commandAlign(Field.getTag(28).getLocation().toPose2d()));
 
         /*
-         * if (RobotConstants.DEBUGGING) { //If uncommented remember to switch to new debugging variable
+         * if (RobotConstants.DEBUGGING) { //If uncommented remember to switch to new
+         * debugging variable
          * 
          * //driveController.rightTrigger()
          * // .whileTrue(drivetrain.commandPathOnTheFly(
@@ -205,6 +210,7 @@ public class RobotContainer {
          * operatorController.y().and(operatorController.rightBumper())
          * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
          */
+
     }
 
     private void configureCandleBindings() {
@@ -234,28 +240,34 @@ public class RobotContainer {
     private void configureIntakeBindings() {
         buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
         buttonBoxController.negative4Trigger().onTrue(intake.intake());
-        buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate()).onTrue(intake.intakeIdle());
+        buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate())
+                .onTrue(intake.idle());
         buttonBoxController.enterTrigger().onTrue(intake.home());
-        /*driveController.x().onTrue(intake.intake());
-        driveController.y().onTrue(intake.intakeIdle());
-        driveController.rightTrigger().onTrue(intake.intakeShooting());
-        //driveController.x().onTrue(intake.home());*/
-
+        buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
+        buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
         /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         * driveController.x().onTrue(intake.intake());
+         * driveController.y().onTrue(intake.intakeIdle());
+         * driveController.rightTrigger().onTrue(intake.intakeShooting());
+         * //driveController.x().onTrue(intake.home());
          */
+
+        
+        /*operatorController.a().and(operatorController.rightBumper())
+          .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+          operatorController.b().and(operatorController.rightBumper())
+          .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+          operatorController.x().and(operatorController.rightBumper())
+         .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+          operatorController.y().and(operatorController.rightBumper())
+          .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
+         
 
     }
 
     private void configureSuperstructureBindings() {
-        buttonBoxController.handleTrigger().onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
+        buttonBoxController.handleTrigger()
+                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
     }
 
     public void configureAutonomousCommands() {

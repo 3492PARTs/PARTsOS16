@@ -19,7 +19,7 @@ public class IntakeSim extends Intake {
     }
 
     @Override
-    public PARTsUnit getPivotAngle() {
+    public PARTsUnit getPivotRotations() {
         return new PARTsUnit(0, PARTsUnitType.Angle);
     }
 

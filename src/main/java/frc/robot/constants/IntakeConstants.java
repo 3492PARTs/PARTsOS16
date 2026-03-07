@@ -1,19 +1,23 @@
 package frc.robot.constants;
 
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+
 public class IntakeConstants {
     public enum IntakeState {
-        IDLE(0, 0),
-        DISABLED(0, 0),
-        INTAKING(1, 190),
-        OUTTAKING(-1, 190),
-        SHOOTING(0.5, 90),
-        TRAVELING(0, 160),
-        HOME(0, 0);
+        IDLE(0, new PARTsUnit(0, PARTsUnitType.Angle)),
+        DISABLED(0, new PARTsUnit(0, PARTsUnitType.Angle)),
+        INTAKING(1, new PARTsUnit(190, PARTsUnitType.Angle)),
+        OUTTAKING(-1, new PARTsUnit(190, PARTsUnitType.Angle)),
+        SHOOTING(0.5, new PARTsUnit(90, PARTsUnitType.Angle)),
+        TRAVELING(0, new PARTsUnit(160, PARTsUnitType.Angle)),
+        HOME(0, new PARTsUnit(0, PARTsUnitType.Angle)),
+        MANUALPIVOT(0, new PARTsUnit(0, PARTsUnitType.Angle));
 
         private double speed;
-        private double angle;
+        private PARTsUnit angle;
 
-        private IntakeState(double speed, double angle) {
+        private IntakeState(double speed, PARTsUnit angle) {
             this.speed = speed;
             this.angle = angle;
         }
@@ -22,8 +26,12 @@ public class IntakeConstants {
             return speed;
         }
 
-        public double getAngle() {
+        public PARTsUnit getAngle() {
             return angle;
+        }
+
+        public void setAngle(PARTsUnit angle) {
+            this.angle = angle;
         }
     }
 
@@ -44,7 +52,7 @@ public class IntakeConstants {
     public static final double INTAKE_MAX_ACCELERATION = 1000;
 
     // Feedforward
-    public static final double S = 0;
-    public static final double V = 0;
-    public static final double A = 0;
+    public static final double S = 1.2398;
+    public static final double V = 1.1537;
+    public static final double A = 0.27146;
 }

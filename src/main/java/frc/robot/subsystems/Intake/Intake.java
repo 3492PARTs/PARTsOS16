@@ -4,8 +4,10 @@ import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
+import org.parts3492.partslib.input.PARTsButtonBoxController;
 
 import frc.robot.RobotContainer;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -23,7 +25,7 @@ public abstract class Intake extends PARTsSubsystem {
     private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
 
     ProfiledPIDController intakePIDController;
-    SimpleMotorFeedforward intakeFeedForward;
+    ArmFeedforward intakeFeedForward;
 
     public Intake() {
         super("Intake");
@@ -37,7 +39,7 @@ public abstract class Intake extends PARTsSubsystem {
         intakePIDController = new ProfiledPIDController(IntakeConstants.P, IntakeConstants.I, IntakeConstants.D,
                 new TrapezoidProfile.Constraints(IntakeConstants.INTAKE_MAX_VELOCITY,
                         IntakeConstants.INTAKE_MAX_ACCELERATION));
-        intakeFeedForward = new SimpleMotorFeedforward(IntakeConstants.S, IntakeConstants.V, IntakeConstants.A);
+        intakeFeedForward = new ArmFeedforward(IntakeConstants.S, IntakeConstants.V, IntakeConstants.A);
         intakePIDController.setTolerance(IntakeConstants.PID_THRESHOLD);
 
         partsNT.putSmartDashboardSendable("Toggle Intake Debug", toggleDebug, !RobotConstants.COMPETITION);
@@ -50,7 +52,7 @@ public abstract class Intake extends PARTsSubsystem {
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putDouble("Pivot Position", getPivotAngle().to(PARTsUnitType.Angle), RobotContainer.debug || debug);
+        partsNT.putDouble("Pivot Angle", getPivotRotations().to(PARTsUnitType.Angle), true);
         partsNT.putDouble("Current Intake Speed", getIntakeSpeed(), RobotContainer.debug || debug);
         partsNT.putString("Intake State", intakeState.toString(), !RobotConstants.COMPETITION);
         partsNT.putBoolean("Intake Debug Active", debug, !RobotConstants.COMPETITION);
@@ -74,9 +76,13 @@ public abstract class Intake extends PARTsSubsystem {
         } else {
             switch (intakeState) {
                 case DISABLED:
-                case IDLE:
                     setIntakeSpeed(intakeState.getSpeed());
                     setPivotSpeed(0);
+                    break;
+                case IDLE:
+                    setIntakeSpeed(intakeState.getSpeed());
+                    setPivotVoltage(intakeFeedForward.calculate(intakeState.getAngle().to(PARTsUnitType.Radian), 0));
+                    partsNT.putDouble("state angle", intakeState.getAngle().getValue(), true);
                     break;
                 case INTAKING:
                 case OUTTAKING:
@@ -84,15 +90,17 @@ public abstract class Intake extends PARTsSubsystem {
                 case HOME:
                 case TRAVELING:
                     setIntakeSpeed(intakeState.getSpeed());
-                    intakePIDController.setGoal(intakeState.getAngle());
-                    double pidCalc = intakePIDController.calculate(getPivotAngle().to(PARTsUnitType.Angle),
-                            intakeState.getAngle());
-                    double ffCalc = intakeFeedForward.calculate(intakePIDController.getSetpoint().velocity);
+                    intakePIDController.setGoal(intakeState.getAngle().getValue());
+                    double pidCalc = intakePIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
+                            intakeState.getAngle().getValue());
+                    double ffCalc = intakeFeedForward.calculate(intakeState.getAngle().to(PARTsUnitType.Radian), intakePIDController.getSetpoint().velocity);
 
                     partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), true);
 
-                    setPivotVoltage(pidCalc);
+                    setPivotVoltage(pidCalc + ffCalc);
                     break;
+                case MANUALPIVOT:
+                break;
                 default:
                     setIntakeSpeed(0);
                     setPivotSpeed(0);
@@ -103,7 +111,7 @@ public abstract class Intake extends PARTsSubsystem {
 
     @Override
     public void log() {
-        partsLogger.logDouble("Pivot Position", getPivotAngle().to(PARTsUnitType.Angle), RobotContainer.debug || debug);
+        partsLogger.logDouble("Pivot Position", getPivotRotations().to(PARTsUnitType.Angle), RobotContainer.debug || debug);
         partsLogger.logDouble("Intake Speed", getIntakeSpeed(), RobotContainer.debug || debug);
         partsLogger.logString("Intake State", intakeState.toString(), RobotContainer.debug || debug);
     }
@@ -116,7 +124,7 @@ public abstract class Intake extends PARTsSubsystem {
 
     public abstract double getIntakeSpeed();
 
-    public abstract PARTsUnit getPivotAngle();
+    public abstract PARTsUnit getPivotRotations();
 
     public abstract void setPivotVoltage(double voltage);
 
@@ -134,8 +142,9 @@ public abstract class Intake extends PARTsSubsystem {
         }));
     }
 
-    public Command intakeIdle() {
+    public Command idle() {
         return PARTsCommandUtils.setCommandName("Intake.intakeIdle", Commands.runOnce(() -> {
+            IntakeState.IDLE.setAngle(getPivotRotations().toPARTsUnit(PARTsUnitType.Angle));
             intakeState = IntakeState.IDLE;
         }));
     }
@@ -149,6 +158,13 @@ public abstract class Intake extends PARTsSubsystem {
     public Command travel() {
         return PARTsCommandUtils.setCommandName("Intake.travel", Commands.runOnce(() -> {
             intakeState = IntakeState.TRAVELING;
+        }));
+    }
+
+    public Command manualPivot(double speed) {
+        return PARTsCommandUtils.setCommandName("Intake.manualPivot", this.runOnce(() -> {
+            intakeState = IntakeState.MANUALPIVOT;
+            setPivotSpeed(speed);
         }));
     }
     // endregion

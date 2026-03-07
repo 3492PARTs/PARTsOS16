@@ -52,10 +52,10 @@ public abstract class Shooter extends PARTsSubsystem {
     @Override
     public void outputTelemetry() {
         partsNT.putString("Shooter State", shooterState.toString(), RobotContainer.debug || debug);
-        partsNT.putDouble("RPM", getRPM(), RobotContainer.debug || debug);
+        partsNT.putDouble("RPM", getRPM(), true);
         partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint(), RobotContainer.debug || debug);
-        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), RobotContainer.debug || debug);
+        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), true);
         partsNT.putDouble("Current Error", shooterPIDController.getError(), RobotContainer.debug || debug);
         partsNT.putBoolean("Shooter Debug Active", debug, !RobotConstants.COMPETITION);
     }
@@ -157,6 +157,10 @@ public abstract class Shooter extends PARTsSubsystem {
 
     public DoubleSupplier getSetpoint() {
         return () -> shooterPIDController.getSetpoint();
+    }
+
+    public boolean withinSetpointRange() {
+        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 100;
     }
     // endregion
 }
