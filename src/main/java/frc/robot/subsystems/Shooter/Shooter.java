@@ -10,6 +10,7 @@ import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.util.Hub;
+import frc.robot.util.Trench;
 import frc.robot.util.Hub.Targets;
 
 import java.util.function.BooleanSupplier;
@@ -27,14 +28,16 @@ public abstract class Shooter extends PARTsSubsystem {
     private SimpleMotorFeedforward shooterFeedforward;
     private Supplier<Pose2d> poseSupplier;
 
-    private boolean debug = false;
+    protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
 
     public Shooter(Supplier<Pose2d> poseSupplier) {
         super("Shooter", RobotConstants.LOGGING);
+        if (RobotConstants.COMPETITION) debug = false;
+        
         this.poseSupplier = poseSupplier;
         if (RobotContainer.debug || debug) {
-            partsNT.putDouble("Shooter Speed", 0);
+            partsNT.putDouble("Shooter Speed", 0, true);
         }
 
         shooterPIDController = new PIDController(ShooterConstants.P, ShooterConstants.I, ShooterConstants.D);
@@ -42,22 +45,19 @@ public abstract class Shooter extends PARTsSubsystem {
 
         shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
 
-        partsNT.putSmartDashboardSendable("Toggle Shooter Debug",toggleDebug);
+        partsNT.putSmartDashboardSendable("Toggle Shooter Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
 
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Shooter State", shooterState.toString());
-        partsNT.putDouble("RPM", getRPM());
-        partsNT.putDouble("Voltage", getVoltage());
-        partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint());
-        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint());
-        partsNT.putDouble("Current Error", shooterPIDController.getError());
-        partsNT.putBoolean("Shooter Debug Active", debug);
-
-        Targets zone = Hub.getZone(poseSupplier.get());
-        partsNT.putString("Zone", zone == null ? "No zone" : zone.toString());
+        partsNT.putString("Shooter State", shooterState.toString(), RobotContainer.debug || debug);
+        partsNT.putDouble("RPM", getRPM(), RobotContainer.debug || debug);
+        partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
+        partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint(), RobotContainer.debug || debug);
+        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), RobotContainer.debug || debug);
+        partsNT.putDouble("Current Error", shooterPIDController.getError(), RobotContainer.debug || debug);
+        partsNT.putBoolean("Shooter Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
     @Override
@@ -72,14 +72,24 @@ public abstract class Shooter extends PARTsSubsystem {
 
     @Override
     public void log() {
-        partsLogger.logString("Shooter State", shooterState.toString());
+        partsLogger.logString("Shooter State", shooterState.toString(), !RobotConstants.COMPETITION);
     }
 
     @Override
     public void periodic() {
         if (RobotContainer.debug || debug) {
-            setSpeed(partsNT.getDouble("Shooter Speed"));
+            setSpeed(partsNT.getDouble("Shooter Speed", true));
         } else {
+            Targets zone = Hub.getZone(poseSupplier.get());
+            double shooterRPM = shooterState.getZoneRPM(zone);
+
+            boolean inTrench = Trench.isUnderTrench(poseSupplier.get());
+            if (inTrench) {
+                shooterRPM = shooterState.getZoneRPM(Targets.ZONE2);
+            }
+
+            partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);
+            
             switch (shooterState) {
                 case CHARGING:
                 case DISABLED:
@@ -95,6 +105,7 @@ public abstract class Shooter extends PARTsSubsystem {
                     if (debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed");
                     }
+
                     shooterPIDController.setSetpoint(shooterRPM);
 
                     double pidCalc = shooterPIDController.calculate(getRPM(), shooterRPM);
