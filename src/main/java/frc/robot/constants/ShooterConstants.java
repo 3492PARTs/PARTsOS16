@@ -10,7 +10,8 @@ public class ShooterConstants {
         IDLE(0),
         DISABLED(0),
         CHARGING(3500),
-        SHOOTING(3500);
+        SHOOTING(3500),
+        MANUAL(getZoneRPM(Targets.ZONE6));
 
         private final double rpm;
 
@@ -22,7 +23,7 @@ public class ShooterConstants {
             return rpm;
         }
 
-        public double getZoneRPM(Targets zone) {
+        public static double getZoneRPM(Targets zone) {
             if (zone == null) {
                 return 0;
             }

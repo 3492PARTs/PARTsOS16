@@ -268,6 +268,8 @@ public class RobotContainer {
     private void configureSuperstructureBindings() {
         buttonBoxController.handleTrigger()
                 .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
+        buttonBoxController.wipeTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
+        buttonBoxController.mapTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
     }
 
     public void configureAutonomousCommands() {
