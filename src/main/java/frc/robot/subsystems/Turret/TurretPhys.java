@@ -23,7 +23,7 @@ public class TurretPhys extends Turret {
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
         config.CurrentLimits.SupplyCurrentLowerTime = 0;
 
-        config.CurrentLimits.StatorCurrentLimit = 120;
+        config.CurrentLimits.StatorCurrentLimit = 100;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         turretMotor.getConfigurator().apply(config);
