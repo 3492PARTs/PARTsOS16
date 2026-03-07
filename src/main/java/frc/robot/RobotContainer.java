@@ -268,7 +268,7 @@ public class RobotContainer {
 
     private void configureSuperstructureBindings() {
         buttonBoxController.handleTrigger()
-                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean, TurretState.TRACKING));
+                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean, TurretState.TRACKING_HUB));
         buttonBoxController.handleTrigger()
                 .onTrue(superstructure.shoot(buttonBoxController.flashTrigger()::getAsBoolean, TurretState.TRACKING_CORNER));
         buttonBoxController.wipeTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));

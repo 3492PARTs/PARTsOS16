@@ -97,7 +97,7 @@ public abstract class Turret extends PARTsSubsystem {
                 case IDLE:
                     setSpeed(0);
                     break;
-                case TRACKING:
+                case TRACKING_HUB:
                 case TRACKING_CORNER:
                     Pose2d target = getTargetPose();
                     if (isValidAngle()) {
@@ -168,7 +168,7 @@ public abstract class Turret extends PARTsSubsystem {
 
     public Command track() {
         return PARTsCommandUtils.setCommandName("Turret.track", this.runOnce(() -> {
-            turretState = TurretState.TRACKING;
+            turretState = TurretState.TRACKING_HUB;
         }));
     }
 
@@ -201,7 +201,7 @@ public abstract class Turret extends PARTsSubsystem {
     }
 
     public Pose2d getTargetPose() {
-        return turretState == TurretState.TRACKING ? Field.getAllianceHubPose() : Field.getNearestAllianceCorner(robotPoseSupplier.get());
+        return turretState == TurretState.TRACKING_HUB ? Field.getAllianceHubPose() : Field.getNearestAllianceCorner(robotPoseSupplier.get());
 
     }
     // endregion
