@@ -1,6 +1,8 @@
 package frc.robot.subsystems.Intake;
 
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -42,13 +44,18 @@ public class IntakeSysid extends IntakePhys {
                             log.motor("pivotarm")
                                     .voltage(
                                             appliedVoltage.mut_replace(
-                                                    super.pivotMotor.getStatorCurrent().getValueAsDouble(), Volts))
+                                                    super.pivotMotor.getMotorVoltage().getValueAsDouble(), Volts))
                                     .angularPosition(pivotAngle.mut_replace(
-                                            getPivotAngle().toPARTsUnit(PARTsUnitType.Angle).to(PARTsUnitType.Radian), Radians))
+                                            -getPivotRotations().getValue(), Rotations))
                                     .angularVelocity(
                                             pivotVelocity.mut_replace(getPivotRotationSpeed(), RotationsPerSecond));
                         },
                         this));
+    }
+
+    @Override
+    public void periodic() {
+        //dummy to stop super periodic from running
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

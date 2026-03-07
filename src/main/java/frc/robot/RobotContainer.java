@@ -4,15 +4,9 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.function.BooleanSupplier;
-
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,24 +17,20 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RuntimeType;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.CameraConstants.Pipelines;
+import frc.robot.constants.CandleConstants.CandleState;
 import frc.robot.constants.generated.TunerConstants;
-import frc.robot.states.CandleState;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 import frc.robot.subsystems.Candle;
 import frc.robot.subsystems.LimelightVision;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
-import frc.robot.subsystems.Drivetrain.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Hopper.HopperPhys;
@@ -59,8 +49,8 @@ import frc.robot.subsystems.Shooter.ShooterSysid;
 import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.Turret.TurretPhys;
 import frc.robot.subsystems.Turret.TurretSim;
-import frc.robot.subsystems.Turret.TurretSysid;
 import frc.robot.util.Field;
+import frc.robot.util.Hub;
 
 import org.parts3492.partslib.input.PARTsButtonBoxController;
 import org.parts3492.partslib.input.PARTsCommandController;
@@ -72,7 +62,7 @@ import org.parts3492.partslib.command.IPARTsSubsystem;
 public class RobotContainer {
     private FieldObject2d hubFieldObject2d;
 
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
+    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
     private final PARTsCommandController operatorController = new PARTsCommandController(1,
             RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
@@ -82,6 +72,10 @@ public class RobotContainer {
     private SendableChooser<Command> autoChooser;
 
     private static Alliance alliance;
+
+    public static boolean debug = false;
+
+    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
     // region Subsystems
 
@@ -122,6 +116,8 @@ public class RobotContainer {
     // endregion End Subsystems
 
     public RobotContainer() {
+        if (RobotConstants.COMPETITION)
+            debug = false;
         configureDrivetrainBindings();
         configureCandleBindings();
         configureShooterBindings();
@@ -133,8 +129,12 @@ public class RobotContainer {
         operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
         operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
 
-        partsNT.putSmartDashboardSendable("field", Field.FIELD2D);
+        partsNT.putSmartDashboardSendable("field", Field.FIELD2D, true);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
+
+        partsNT.putSmartDashboardSendable("Toggle Complete Debug", toggleDebug, !RobotConstants.COMPETITION);
+
+        partsNT.putBoolean("Comp Mode", RobotConstants.COMPETITION, true);
     }
 
     // region Configs
@@ -169,7 +169,8 @@ public class RobotContainer {
         // driveController.b().onTrue(drivetrain.commandAlign(Field.getTag(28).getLocation().toPose2d()));
 
         /*
-         * if (RobotConstants.DEBUGGING) {
+         * if (RobotConstants.DEBUGGING) { //If uncommented remember to switch to new
+         * debugging variable
          * 
          * //driveController.rightTrigger()
          * // .whileTrue(drivetrain.commandPathOnTheFly(
@@ -207,6 +208,8 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
+        // driveController.a().onTrue(shooter.shoot());
+        // driveController.b().onTrue(shooter.idle());
         // driveController.a().onTrue(shooter.shoot());
         // driveController.b().onTrue(shooter.idle());
 
@@ -250,35 +253,44 @@ public class RobotContainer {
         buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
         buttonBoxController.negative4Trigger().onTrue(intake.intake());
         buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate())
-                .onTrue(intake.intakeIdle());
+                
+                .onTrue(intake.idle());
+        buttonBoxController.enterTrigger().onTrue(intake.home());
+        buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
+        buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
         /*
+         * 
          * driveController.x().onTrue(intake.intake());
-         * driveController.y().onTrue(intake.intakeIdle());
-         * driveController.rightTrigger().onTrue(intake.intakeShooting());
-         * //driveController.x().onTrue(intake.home());
+         *  * driveController.y().onTrue(intake.intakeIdle());
+         *  * driveController.rightTrigger().onTrue(intake.intakeShooting());
+         *  * //driveController.x().onTrue(intake.home());
+         
          */
 
-        /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-         */
+        
+        /*operatorController.a().and(operatorController.rightBumper())
+          .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+          operatorController.b().and(operatorController.rightBumper())
+          .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+          operatorController.x().and(operatorController.rightBumper())
+         .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+          operatorController.y().and(operatorController.rightBumper())
+          .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
+         
 
     }
 
     private void configureSuperstructureBindings() {
         buttonBoxController.handleTrigger()
+                
                 .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
+        buttonBoxController.wipeTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
+        buttonBoxController.mapTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
     }
 
     public void configureAutonomousCommands() {
         autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);
     }
 
     // endregion End Configs
@@ -290,8 +302,9 @@ public class RobotContainer {
     // region Custom Public Functions
     public void outputTelemetry() {
         subsystems.forEach(s -> s.outputTelemetry());
-        partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage());
-        partsNT.putBoolean("IsBlue", isBlue());
+        partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage(), true);
+        partsNT.putBoolean("IsBlue", isBlue(), RobotContainer.debug);
+        partsNT.putBoolean("Debugging", RobotContainer.debug, RobotConstants.COMPETITION);
     }
 
     public void stop() {
@@ -314,8 +327,8 @@ public class RobotContainer {
     }
 
     public void constructDashboard() {
-        PARTsDashboard.setSubsystems(subsystems);
-        PARTsDashboard.setCommandScheduler();
+        PARTsDashboard.setSubsystems(subsystems, RobotContainer.debug);
+        PARTsDashboard.setCommandScheduler(RobotContainer.debug);
     }
 
     public void resetStartPose() {
@@ -346,6 +359,8 @@ public class RobotContainer {
     }
 
     public void runOnEnabled() {
+        getAlliance(); // ensure we have the alliance
+        Hub.putZonesOnField();
         setLimelightMainMode();
         setIdleCandleState();
         hubFieldObject2d.setPose(Field.getAllianceHubPose());

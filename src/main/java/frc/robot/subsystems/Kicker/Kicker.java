@@ -4,25 +4,34 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
+import frc.robot.constants.KickerConstants.KickerState;
 import frc.robot.constants.RobotConstants;
-import frc.robot.states.KickerState;
 
 public abstract class Kicker extends PARTsSubsystem {
 
     private KickerState kickerState = KickerState.IDLE;
 
+    protected boolean debug = false;
+    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+
     public Kicker() {
         super("Kicker");
+        if (RobotConstants.COMPETITION) debug = false;
 
-        if (RobotConstants.DEBUGGING) {
-            partsNT.putDouble("Kicker Speed", 0);
+        if (RobotContainer.debug || debug) {
+            partsNT.putDouble("Kicker Speed", 0, true);
         }
+
+        partsNT.putSmartDashboardSendable("Toggle Kicker Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
 
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Kicker State", kickerState.toString());
+        partsNT.putString("Kicker State", kickerState.toString(), !RobotConstants.COMPETITION);
+        partsNT.putBoolean("Kicker Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
     @Override
@@ -37,13 +46,13 @@ public abstract class Kicker extends PARTsSubsystem {
 
     @Override
     public void log() {
-        partsLogger.logString("Kicker State", kickerState.toString());
+        partsLogger.logString("Kicker State", kickerState.toString(), RobotContainer.debug || debug);
     }
 
     @Override
     public void periodic() {
-        if (RobotConstants.DEBUGGING) {
-            setSpeed(partsNT.getDouble("Kicker Speed"));
+        if (RobotContainer.debug || debug) {
+            setSpeed(partsNT.getDouble("Kicker Speed", true));
         } else {
             switch (kickerState) {
                 case ROLLING:
@@ -57,7 +66,7 @@ public abstract class Kicker extends PARTsSubsystem {
             }
         }
     }
-    //endregion
+    // endregion
 
     // region Custom Public Functions
     /**
@@ -82,5 +91,5 @@ public abstract class Kicker extends PARTsSubsystem {
             kickerState = KickerState.IDLE;
         }));
     }
-    //endregion
+    // endregion
 }

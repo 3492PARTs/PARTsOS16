@@ -9,8 +9,9 @@ import java.util.Set;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.constants.CandleConstants;
-import frc.robot.states.CandleState;
+import frc.robot.constants.CandleConstants.CandleState;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.PARTsCandle;
 
@@ -47,7 +48,7 @@ public class Candle extends PARTsCandle {
 
     public Command commandRemoveState(CandleState state) {
         return PARTsCommandUtils.setCommandName("Candle.commandRemoveState",
-            Commands.runOnce(() -> removeState(state)).ignoringDisable(true));
+                Commands.runOnce(() -> removeState(state)).ignoringDisable(true));
     }
 
     /*---------------------------------- Custom Private Functions ---------------------------------*/
@@ -77,7 +78,7 @@ public class Candle extends PARTsCandle {
         else if (candleStates.contains(CandleState.IDLE))
             candleState = CandleState.IDLE;
         else if (candleStates.contains(CandleState.DISABLED))
-            candleState = CandleState.DISABLED; 
+            candleState = CandleState.DISABLED;
 
         setStateAnimation();
     }
@@ -111,7 +112,7 @@ public class Candle extends PARTsCandle {
             case ACTIVE_SHOOTING:
                 break;
             case IDLE:
-                runFadeAnimation(Color.BLUE, .75);
+                runFadeAnimation(Color.BLUE, 100);
                 break;
             case DISABLED:
                 setColor(Color.BLUE);
@@ -126,6 +127,6 @@ public class Candle extends PARTsCandle {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        super.partsNT.putString("State", candleState.toString());
+        super.partsNT.putString("State", candleState.toString(), RobotContainer.debug);
     }
 }

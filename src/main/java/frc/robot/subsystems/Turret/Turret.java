@@ -1,17 +1,18 @@
 package frc.robot.subsystems.Turret;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.IntakeConstants;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
-import frc.robot.states.TurretState;
+import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.util.Field;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import org.parts3492.partslib.command.PARTsCommandUtils;
@@ -24,10 +25,16 @@ public abstract class Turret extends PARTsSubsystem {
     private SimpleMotorFeedforward turretFeedforward;
     private Supplier<Pose2d> robotPoseSupplier;
 
+    protected boolean debug = false;
+    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+
     public Turret(Supplier<Pose2d> robotPoseSupplier) {
         super("Turret", RobotConstants.LOGGING);
-        if (RobotConstants.DEBUGGING) {
-            partsNT.putDouble("Turret Speed", 0);
+        if (RobotConstants.COMPETITION) debug = false;
+
+        if (RobotContainer.debug || debug) {
+         partsNT.putDouble("Turret Speed", 0, true);
+         partsNT.putDouble("Turret Angle", 0, true);
         }
 
         this.robotPoseSupplier = robotPoseSupplier;
@@ -36,18 +43,21 @@ public abstract class Turret extends PARTsSubsystem {
         turretFeedforward = new SimpleMotorFeedforward(TurretConstants.S, TurretConstants.V, TurretConstants.A);
 
         turretPIDController.setTolerance(TurretConstants.PID_THRESHOLD);
+
+        partsNT.putSmartDashboardSendable("Toggle Turret Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
 
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Turret State", turretState.toString());
-        partsNT.putDouble("Angle", getAngle());
-        partsNT.putDouble("Voltage", getVoltage());
-        partsNT.putDouble("Get Setpoint", turretPIDController.getSetpoint().position);
-        partsNT.putBoolean("At Setpoint", turretPIDController.atSetpoint());
-        partsNT.putDouble("Current Error", turretPIDController.getPositionError());
-        partsNT.putDouble("Get Angle to Turret", getAngleToTarget());
+        partsNT.putString("Turret State", turretState.toString(), !RobotConstants.COMPETITION);
+        partsNT.putDouble("Angle", getAngle(), true);
+        partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
+        partsNT.putDouble("Get Setpoint", turretPIDController.getSetpoint().position, RobotContainer.debug || debug);
+        partsNT.putBoolean("At Setpoint", turretPIDController.atSetpoint(), true);
+        partsNT.putDouble("Current Error", turretPIDController.getPositionError(), RobotContainer.debug || debug);
+        partsNT.putDouble("Get Angle to target", getAngleToTarget(), true);
+        partsNT.putBoolean("Turret Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
     @Override
@@ -62,13 +72,21 @@ public abstract class Turret extends PARTsSubsystem {
 
     @Override
     public void log() {
-        partsLogger.logString("Turret State", turretState.toString());
+        partsLogger.logString("Turret State", turretState.toString(), RobotContainer.debug || debug);
     }
 
     @Override
     public void periodic() {
-        if (RobotConstants.DEBUGGING) {
-            setSpeed(partsNT.getDouble("Turret Speed"));
+        if (RobotContainer.debug || debug) {
+            setSpeed(partsNT.getDouble("Turret Speed", true));
+            turretPIDController.setGoal(partsNT.getDouble("Turret Angle", true));
+            double pidCalc = turretPIDController.calculate(getAngle(), partsNT.getDouble("Turret Angle", true));
+            // double ffCalc =
+            // turretFeedforward.calculate(turretPIDController.getSetpoint());
+
+            double voltage = pidCalc; // + ffCalc;
+
+            setVoltage(voltage);
         } else {
             double voltage = 0;
 
@@ -81,19 +99,35 @@ public abstract class Turret extends PARTsSubsystem {
                     if (isValidAngle()) {
                         turretPIDController.setGoal(getAngleToTarget());
                         double pidCalc = turretPIDController.calculate(getAngle(), getAngleToTarget());
-                        //double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
+                        // double ffCalc =
+                        // turretFeedforward.calculate(turretPIDController.getSetpoint());
 
-                        partsNT.putDouble("Turret voltage", voltage);
-                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint());
+                        partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
+                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(), RobotContainer.debug || debug);
 
-                        voltage = pidCalc; //+ ffCalc;
+                        voltage = pidCalc; // + ffCalc;
 
                         setVoltage(voltage);
-                    }
-                    else {
+                    } else {
                         setSpeed(0);
                     }
                     break;
+                
+                    case LEFT_CORNER:
+                    case RIGHT_CORNER:
+                        turretPIDController.setGoal(turretState.getAngle());
+                        double pidCalc = turretPIDController.calculate(getAngle(), turretState.getAngle());
+                        // double ffCalc =
+                        // turretFeedforward.calculate(turretPIDController.getSetpoint());
+
+                        partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
+                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(), RobotContainer.debug || debug);
+
+                        voltage = pidCalc; // + ffCalc;
+
+                        setVoltage(voltage);
+                    break;
+                
                 default:
                     setSpeed(0);
                     break;
@@ -120,6 +154,10 @@ public abstract class Turret extends PARTsSubsystem {
         return Math.abs(getAngleToTarget()) <= 100;
     }
 
+    public boolean atSetpoint() {
+        return turretPIDController.atSetpoint();
+    }
+
     public TurretState getState() {
         return turretState;
     }
@@ -130,10 +168,26 @@ public abstract class Turret extends PARTsSubsystem {
         }));
     }
 
+    public Command rightCorner() {
+        return PARTsCommandUtils.setCommandName("Turret.track", this.runOnce(() -> {
+            turretState = TurretState.RIGHT_CORNER;
+        }));
+    }
+
+    public Command leftCorner() {
+        return PARTsCommandUtils.setCommandName("Turret.track", this.runOnce(() -> {
+            turretState = TurretState.LEFT_CORNER;
+        }));
+    }
+
     public Command idle() {
         return PARTsCommandUtils.setCommandName("Turret.idle", this.runOnce(() -> {
             turretState = TurretState.IDLE;
         }));
+    }
+
+    public boolean withinSetpointRange() {
+        return Math.abs(turretPIDController.getSetpoint().position - getAngle()) < 5;
     }
     // endregion
 

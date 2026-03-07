@@ -4,14 +4,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import frc.robot.util.Hub;
 
@@ -30,7 +28,7 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         // This is needed for lasercan, without it causes robot to lag on boot
-        //CanBridge.runTCP();
+        // CanBridge.runTCP();
 
         // Make elastic dashboard file available
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
@@ -38,17 +36,17 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
         partsNT = new PARTsNT(this);
         partsLogger = new PARTsLogger();
-        m_robotContainer.constructDashboard();
+        m_robotContainer.constructDashboard(); // loop-overrun
 
-        partsLogger.logCommandScheduler();
-        partsLogger.logPathPlanner();
+        partsLogger.logCommandScheduler(true);
+        // partsLogger.logPathPlanner(); // loop-overrun
 
-        CameraServer.startAutomaticCapture();
+        // CameraServer.startAutomaticCapture(); // loop-overrun
 
-        //m_robotContainer.resetStartPose();
+        // m_robotContainer.resetStartPose();
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
 
-        DriverStation.silenceJoystickConnectionWarning(!isReal());
+        DriverStation.silenceJoystickConnectionWarning(!isReal() || RobotContainer.debug);
 
         m_robotContainer.getAlliance();
 
@@ -59,11 +57,11 @@ public class Robot extends TimedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
 
-        partsNT.putDouble("Match Time", DriverStation.getMatchTime());
-        m_robotContainer.outputTelemetry();
-        m_robotContainer.log();
+        partsNT.putDouble("Match Time", DriverStation.getMatchTime(), true); // loop-overrun
+        m_robotContainer.outputTelemetry(); // loop-overrun
+        m_robotContainer.log(); // loop-overrun
 
-        m_robotContainer.getAlliance();
+        // m_robotContainer.getAlliance(); // loop-overrun
     }
 
     @Override
@@ -81,8 +79,8 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void autonomousInit() {
-        if (!RobotConstants.DEBUGGING) {
+    public void autonomousInit() {      
+        if (!RobotContainer.debug) {
             //PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
         }
         m_robotContainer.runOnEnabled();
@@ -103,7 +101,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        if (!RobotConstants.DEBUGGING) {
+        if (!RobotContainer.debug) {
             //PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
         }
 
