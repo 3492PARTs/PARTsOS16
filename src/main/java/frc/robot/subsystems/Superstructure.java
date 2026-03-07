@@ -207,6 +207,19 @@ public class Superstructure extends PARTsSubsystem {
         return PARTsCommandUtils.setCommandName("Superstructure.trenchAuto", c);
     }
 
+    public Command autoTest() {
+        Command c = new WaitCommand(0);
+        try {
+            c = Commands.parallel(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")), 
+                    intake.intake());
+        } catch (FileVersionException | IOException | ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return PARTsCommandUtils.setCommandName("Superstructure.trenchAuto", c);
+    }
+
     @Override
     public void outputTelemetry() {
     }
