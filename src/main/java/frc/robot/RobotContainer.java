@@ -198,10 +198,12 @@ public class RobotContainer {
         Pose2d leftCorner = Field.conditionallyTransformToOppositeAlliance(new Pose2d(20, 275, new Rotation2d()));
         Pose2d rightCorner = Field.conditionallyTransformToOppositeAlliance(new Pose2d(20, 20, new Rotation2d()));
         Pose2d outpost = Field.conditionallyTransformToOppositeAlliance(new Pose2d(20, 24, new Rotation2d()));
+        Pose2d WORK = new Pose2d(.25, .25, new Rotation2d());
 
         // Pose2d leftCorner = origin.
         // back left pose
-        driveController.a().onTrue(drivetrain.commandPathFindToPoseDeferred(leftCorner));
+        driveController.a().whileTrue(drivetrain.commandPathFindToPose(WORK));
+        driveController.b().whileTrue(drivetrain.commandPathFindToPose(Field.getTag(29).getLocation().toPose2d()));
         // back right pose
         // driveController.b().onTrue(drivetrain.commandPathFindToPoseDeferred(new
         // Pose2d(18.47, 19.25, new Rotation2d())));
@@ -327,8 +329,8 @@ public class RobotContainer {
     }
 
     public void constructDashboard() {
-        PARTsDashboard.setSubsystems(subsystems, RobotContainer.debug);
-        PARTsDashboard.setCommandScheduler(RobotContainer.debug);
+        PARTsDashboard.setSubsystems(subsystems, !RobotConstants.COMPETITION);
+        PARTsDashboard.setCommandScheduler(!RobotConstants.COMPETITION);
     }
 
     public void resetStartPose() {
