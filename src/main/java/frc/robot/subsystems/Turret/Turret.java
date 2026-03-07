@@ -120,8 +120,8 @@ public abstract class Turret extends PARTsSubsystem {
                         // double ffCalc =
                         // turretFeedforward.calculate(turretPIDController.getSetpoint());
 
-                        partsNT.putDouble("Turret voltage", voltage);
-                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint());
+                        partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
+                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(), RobotContainer.debug || debug);
 
                         voltage = pidCalc; // + ffCalc;
 
@@ -184,10 +184,6 @@ public abstract class Turret extends PARTsSubsystem {
         return PARTsCommandUtils.setCommandName("Turret.idle", this.runOnce(() -> {
             turretState = TurretState.IDLE;
         }));
-    }
-
-    public BooleanSupplier atSetpoint() {
-        return () -> turretPIDController.atSetpoint();
     }
     // endregion
 

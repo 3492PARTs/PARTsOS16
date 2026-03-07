@@ -81,7 +81,7 @@ public abstract class Shooter extends PARTsSubsystem {
             setSpeed(partsNT.getDouble("Shooter Speed", true));
         } else {
             Targets zone = Hub.getZone(poseSupplier.get());
-            double shooterRPM = shooterState.getZoneRPM(zone);
+            double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM() : ShooterState.getZoneRPM(zone);
 
             boolean inTrench = Trench.isUnderTrench(poseSupplier.get());
             if (inTrench) {
@@ -99,11 +99,9 @@ public abstract class Shooter extends PARTsSubsystem {
                 case SHOOTING:
                 case MANUAL:
                     double voltage = 0;
-                    Targets zone = Hub.getZone(poseSupplier.get());
-                    double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM() : ShooterState.getZoneRPM(zone);
                     // double shooterRPM = shooterState.getRPM();
                     if (debug) {
-                        shooterRPM = partsNT.getDouble("Shooter Speed");
+                        shooterRPM = partsNT.getDouble("Shooter Speed", true);
                     }
 
                     shooterPIDController.setSetpoint(shooterRPM);

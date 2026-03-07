@@ -138,7 +138,7 @@ public class Superstructure extends PARTsSubsystem {
                                         kicker.idle().onlyIf(() -> {
                                             return kicker.getState() != KickerState.IDLE;
                                         }),
-                                        () -> turret.atSetpoint().getAsBoolean()),
+                                        () -> turret.atSetpoint()),
                                 // ^^^ change condition to be if turret.isAtSetpoint --- make function in turret
                                 // to return pidcontroller at set point
 
