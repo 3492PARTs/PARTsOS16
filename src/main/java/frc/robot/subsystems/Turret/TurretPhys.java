@@ -17,12 +17,16 @@ public class TurretPhys extends Turret {
         super(robotPoseSupplier);
 
         turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID, TurretConstants.CAN_BUS_NAME);
-        TalonFXConfiguration turretConfig = new TalonFXConfiguration();
+        TalonFXConfiguration config = new TalonFXConfiguration();
 
-        turretConfig.CurrentLimits.SupplyCurrentLimit = 70;
-        turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLimit = 30;
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLowerTime = 0;
 
-        turretMotor.getConfigurator().apply(turretConfig);
+        config.CurrentLimits.StatorCurrentLimit = 100;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+
+        turretMotor.getConfigurator().apply(config);
         turretMotor.getConfigurator().setPosition(0);
         turretMotor.setNeutralMode(NeutralModeValue.Brake);
     }
