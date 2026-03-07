@@ -12,11 +12,11 @@ public class Trench {
 
     public static Command parkUnderTrench(PARTsDrivetrain drivetrain) {
         return PARTsCommandUtils.setCommandName("Trench.parkUnderTrench",
-                Commands.runOnce(() -> goal = getNearestTrench(drivetrain.getPose(), Field.getAllianceTrenchPoses()))
+                Commands.runOnce(() -> goal = getNearestPose(drivetrain.getPose(), Field.getAllianceTrenchPoses()))
                         .andThen(drivetrain.commandPathFindToPose(goal)));
     }
 
-    private static Pose2d getNearestTrench(Pose2d current, Pose2d[] poses) {
+    public static Pose2d getNearestPose(Pose2d current, Pose2d[] poses) {
         int index = 0;
         double distance = getDistance(current, poses[0]);
         for (int i = 0; i < poses.length; i++) {
@@ -30,7 +30,7 @@ public class Trench {
     }
 
     public static boolean isUnderTrench(Pose2d pose) {
-        Pose2d trench = getNearestTrench(pose, Field.getAllianceTrenchPoses());
+        Pose2d trench = getNearestPose(pose, Field.getAllianceTrenchPoses());
         return Hub.isInRadius(pose, trench, 1);
     }
 

@@ -5,6 +5,7 @@ public class TurretConstants {
         DISABLED(0),
         IDLE(0),
         TRACKING(-1),
+        TRACKING_CORNER(-1),
         LEFT_CORNER(45),
         RIGHT_CORNER(-45);
 

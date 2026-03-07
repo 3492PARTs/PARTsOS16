@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import frc.robot.constants.CandleConstants.CandleState;
 import frc.robot.constants.KickerConstants.KickerState;
 import frc.robot.constants.ShooterConstants.ShooterState;
+import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Intake.Intake;
@@ -43,12 +44,12 @@ public class Superstructure extends PARTsSubsystem {
      * lift up pivot arm, roll hopper, roll kicker, shoot. Only happens if turret
      * has valid angle
      */
-    public Command shoot(BooleanSupplier end) {
+    public Command shoot(BooleanSupplier end, TurretState turretState) {
         Command c = Commands.sequence(
                 // Initial startup
                 Commands.parallel(
                         // Start tracking the hub.
-                        turret.track(),
+                        turretState == TurretState.TRACKING_CORNER ? turret.trackCorner() : turret.track(),
                         // Feed the balls into the kicker.
                         hopper.roll(),
                         // Add CANdle shooting state for bot lights.

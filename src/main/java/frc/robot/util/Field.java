@@ -217,4 +217,13 @@ public interface Field {
     public static List<Pose2d> conditionallyTransformToOppositeAlliance(List<Pose2d> poses) {
         return RobotContainer.isBlue() ? poses : transformToOppositeAlliance(poses);
     }
+
+    public static Pose2d getNearestAllianceCorner(Pose2d current) {
+        Pose2d[] alliancePoses = new Pose2d[] {
+            new Pose2d(0, 0, new Rotation2d()), 
+            new Pose2d(0, WIDTH, new Rotation2d()), 
+        };
+        Pose2d corner = Trench.getNearestPose(current, alliancePoses);
+        return corner;
+    }
 }

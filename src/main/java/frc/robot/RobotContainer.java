@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.CandleConstants.CandleState;
+import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.constants.generated.TunerConstants;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -267,7 +268,9 @@ public class RobotContainer {
 
     private void configureSuperstructureBindings() {
         buttonBoxController.handleTrigger()
-                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
+                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean, TurretState.TRACKING));
+        buttonBoxController.handleTrigger()
+                .onTrue(superstructure.shoot(buttonBoxController.flashTrigger()::getAsBoolean, TurretState.TRACKING_CORNER));
         buttonBoxController.wipeTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
         buttonBoxController.mapTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
     }
