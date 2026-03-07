@@ -457,6 +457,26 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPose", pathfindingCommand);
         }
 
+        public Command commandPathFindToPoseDeferred(Pose2d pose) {
+
+                // Create the constraints to use while pathfinding. The constraints defined in
+                // the path will only be used for the path.
+                PathConstraints constraints = new PathConstraints(
+                                DrivetrainConstants.MAX_AIM_VELOCITY, DrivetrainConstants.MAX_AIM_ACCELERATION,
+                                PARTsUnit.DegreesToRadians.apply(540.0),
+                                PARTsUnit.DegreesToRadians.apply(720.0));
+
+                // Since AutoBuilder is configured, we can use it to build pathfinding commands
+                Command pathfindingCommand = Commands.defer(() -> {
+                        return AutoBuilder.pathfindToPose(
+                                Field.conditionallyTransformToOppositeAlliance(pose),
+                                constraints, 0.0);
+                        }, 
+                        new HashSet<>(Arrays.asList(this))
+                ); // Goal end velocity in meters/sec
+                return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPose", pathfindingCommand);
+        }
+
         public Command commandPathOnTheFly(Pose2d pose) {
 
                 return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathOnTheFly", Commands.defer(() -> {
