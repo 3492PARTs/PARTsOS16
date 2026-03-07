@@ -28,7 +28,8 @@ public class Superstructure extends PARTsSubsystem {
     private final Candle candle;
     private final PARTsDrivetrain drivetrain;
 
-    public Superstructure(Hopper hopper, Intake intake, Kicker kicker, Shooter shooter, Turret turret, Candle candle, PARTsDrivetrain drivetrain) {
+    public Superstructure(Hopper hopper, Intake intake, Kicker kicker, Shooter shooter, Turret turret, Candle candle,
+            PARTsDrivetrain drivetrain) {
         this.hopper = hopper;
         this.intake = intake;
         this.kicker = kicker;
@@ -39,28 +40,31 @@ public class Superstructure extends PARTsSubsystem {
     }
 
     /**
-     * lift up pivot arm, roll hopper, roll kicker, shoot. Only happens if turret has valid angle
+     * lift up pivot arm, roll hopper, roll kicker, shoot. Only happens if turret
+     * has valid angle
      */
     public Command shoot(BooleanSupplier end) {
         Command c = Commands.sequence(
                 // Initial startup
                 Commands.parallel(
-                    // Start tracking the hub.
-                    turret.track(),
-                    // Feed the balls into the kicker.
-                    hopper.roll(),
-                    // Add CANdle shooting state for bot lights.
-                    candle.commandAddState(CandleState.SHOOTING)
-                )
+                        // Start tracking the hub.
+                        turret.track(),
+                        // Feed the balls into the kicker.
+                        hopper.roll(),
+                        // Add CANdle shooting state for bot lights.
+                        candle.commandAddState(CandleState.SHOOTING))
 
-                .andThen(Commands.repeatingSequence(
+                        .andThen(Commands.repeatingSequence(
 
-                    // Spin up the shooter if the turret is at a valid angle.
-                    new ConditionalCommand(
-                        shooter.shoot().onlyIf(() -> { return shooter.getState() != ShooterState.SHOOTING; }),
-                        shooter.idle().onlyIf(() -> { return shooter.getState() != ShooterState.IDLE; }),
-                        () -> turret.isValidAngle() && Field.isInAllianceZone(drivetrain.getPose())
-                    ),
+                                // Spin up the shooter if the turret is at a valid angle.
+                                new ConditionalCommand(
+                                        shooter.shoot().onlyIf(() -> {
+                                            return shooter.getState() != ShooterState.SHOOTING;
+                                        }),
+                                        shooter.idle().onlyIf(() -> {
+                                            return shooter.getState() != ShooterState.IDLE;
+                                        }),
+                                        () -> turret.isValidAngle() && Field.isInAllianceZone(drivetrain.getPose())),
 
                     // Roll the kicker if the shooter is at its setpoint.
                     new ConditionalCommand(
@@ -75,40 +79,107 @@ public class Superstructure extends PARTsSubsystem {
                         () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()
                     ),*/
 
-                    /*new ConditionalCommand(
-                        hopper.roll().onlyIf(() -> { return hopper.getState() != HopperState.ROLLING; }),
-                        hopper.idle().onlyIf(() -> { return hopper.getState() != HopperState.IDLE; }),
-                        () -> shooter.atSetpoint().getAsBoolean() && (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle()
-                    ),*/
+                                /*
+                                 * new ConditionalCommand(
+                                 * hopper.roll().onlyIf(() -> { return hopper.getState() != HopperState.ROLLING;
+                                 * }),
+                                 * hopper.idle().onlyIf(() -> { return hopper.getState() != HopperState.IDLE;
+                                 * }),
+                                 * () -> shooter.atSetpoint().getAsBoolean() &&
+                                 * (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle()
+                                 * ),
+                                 */
 
-                    new ConditionalCommand(
-                        candle.commandAddState(CandleState.ACTIVE_SHOOTING)
-                            .onlyIf(() -> { return candle.getState() != CandleState.ACTIVE_SHOOTING; }),
-                        
-                        candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)
-                            .onlyIf(() -> { return candle.getState() == CandleState.ACTIVE_SHOOTING; }),
-                            
-                        () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()
-                    )
-                )
-                .until(end)),
-                
-                // Make sure to cancel and reset if we're forced to end or the turret is not at a valid angle.
+                                new ConditionalCommand(
+                                        candle.commandAddState(CandleState.ACTIVE_SHOOTING)
+                                                .onlyIf(() -> {
+                                                    return candle.getState() != CandleState.ACTIVE_SHOOTING;
+                                                }),
+
+                                        candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)
+                                                .onlyIf(() -> {
+                                                    return candle.getState() == CandleState.ACTIVE_SHOOTING;
+                                                }),
+
+                                        () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()))
+                                .until(end)),
+
+                // Make sure to cancel and reset if we're forced to end or the turret is not at
+                // a valid angle.
                 Commands.waitUntil(() -> end.getAsBoolean()).andThen(
-                    Commands.runOnce(() -> {
-                        turret.reset();
-                        intake.reset();
-                        hopper.reset();
-                        kicker.reset();
-                        shooter.reset();
-                        candle.removeState(CandleState.SHOOTING);
-                    })
-                )
-            );
+                        Commands.runOnce(() -> {
+                            turret.reset();
+                            intake.reset();
+                            hopper.reset();
+                            kicker.reset();
+                            shooter.reset();
+                            candle.removeState(CandleState.SHOOTING);
+                        })));
+        c.addRequirements(this);
+        return PARTsCommandUtils.setCommandName("Superstructure.shoot", c);
+    }
 
-            c.addRequirements(this);
-        return PARTsCommandUtils.setCommandName("Superstructure.shoot", c
-        );
+    public Command cornerShoot(BooleanSupplier end, boolean right) {
+        Command c = Commands.sequence(
+                // Initial startup
+                Commands.parallel(
+                        right ? turret.rightCorner() : turret.leftCorner(),
+                        hopper.roll(),
+                        shooter.manualShoot(), // make a manual state command in the shooter and call
+                        candle.commandAddState(CandleState.SHOOTING))
+
+                        .andThen(Commands.repeatingSequence(
+
+                                // Roll the kicker if the shooter is at its setpoint.
+                                new ConditionalCommand(
+                                        kicker.roll().onlyIf(() -> {
+                                            return kicker.getState() != KickerState.ROLLING;
+                                        }),
+                                        kicker.idle().onlyIf(() -> {
+                                            return kicker.getState() != KickerState.IDLE;
+                                        }),
+                                        () -> turret.atSetpoint()),
+                                // ^^^ change condition to be if turret.isAtSetpoint --- make function in turret
+                                // to return pidcontroller at set point
+
+                                /*
+                                 * new ConditionalCommand(
+                                 * intake.intakeShooting().onlyIf(() -> { return false && intake.getState() !=
+                                 * IntakeState.SHOOTING; }),
+                                 * intake.intakeIdle().onlyIf(() -> { return intake.getState() !=
+                                 * IntakeState.IDLE; }),
+                                 * () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()
+                                 * ),
+                                 */
+
+                                new ConditionalCommand(
+                                        candle.commandAddState(CandleState.ACTIVE_SHOOTING)
+                                                .onlyIf(() -> {
+                                                    return candle.getState() != CandleState.ACTIVE_SHOOTING;
+                                                }),
+
+                                        candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)
+                                                .onlyIf(() -> {
+                                                    return candle.getState() == CandleState.ACTIVE_SHOOTING;
+                                                }),
+
+                                        () -> shooter.atSetpoint().getAsBoolean()))
+                                .until(end)),
+
+                // Make sure to cancel and reset if we're forced to end or the turret is not at
+                // a valid angle.
+                Commands.waitUntil(() -> end.getAsBoolean()).andThen(
+                        Commands.runOnce(() -> {
+                            turret.reset();
+                            intake.reset();
+                            hopper.reset();
+                            kicker.reset();
+                            shooter.reset();
+                            candle.removeState(CandleState.SHOOTING);
+                        })));
+
+        c.addRequirements(this);
+        return PARTsCommandUtils.setCommandName("Superstructure.shoot", c);
     }
 
     @Override
