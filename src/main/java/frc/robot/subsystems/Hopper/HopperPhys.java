@@ -13,14 +13,18 @@ public class HopperPhys extends Hopper {
 
     public HopperPhys() {
         super();
-        TalonFXConfiguration hopperConfig = new TalonFXConfiguration();
-        hopperConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        hopperConfig.CurrentLimits.SupplyCurrentLimit = 40;
-        hopperConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLimit = 35;
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLowerTime = 0;
+
+        config.CurrentLimits.StatorCurrentLimit = 100;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         hopperMotor = new TalonFX(HopperConstants.HOPPER_MOTOR_ID, HopperConstants.CAN_BUS_NAME);
-        hopperMotor.getConfigurator().apply(hopperConfig);
+        hopperMotor.getConfigurator().apply(config);
         hopperMotor.setNeutralMode(NeutralModeValue.Brake);
     }
 

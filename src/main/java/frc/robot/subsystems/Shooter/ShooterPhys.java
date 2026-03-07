@@ -25,6 +25,11 @@ public class ShooterPhys extends Shooter {
 
         config.CurrentLimits.SupplyCurrentLimit = 70;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLowerLimit = 40;
+        config.CurrentLimits.SupplyCurrentLowerTime = 1.0;
+
+        config.CurrentLimits.StatorCurrentLimit = 160;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         leftMotor = new TalonFX(ShooterConstants.LEFT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
         leftMotor.getConfigurator().apply(config);
