@@ -46,11 +46,16 @@ public class IntakeSysid extends IntakePhys {
                                             appliedVoltage.mut_replace(
                                                     super.pivotMotor.getMotorVoltage().getValueAsDouble(), Volts))
                                     .angularPosition(pivotAngle.mut_replace(
-                                            getPivotRotations().getValue(), Rotations))
+                                            -getPivotRotations().getValue(), Rotations))
                                     .angularVelocity(
                                             pivotVelocity.mut_replace(getPivotRotationSpeed(), RotationsPerSecond));
                         },
                         this));
+    }
+
+    @Override
+    public void periodic() {
+        //dummy to stop super periodic from running
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

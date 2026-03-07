@@ -104,7 +104,7 @@ public abstract class Shooter extends PARTsSubsystem {
                     }
 
                     shooterPIDController.setSetpoint(shooterRPM);
-
+                    partsNT.putBoolean("In Setpoint Range", withinSetpointRange(), true);
                     double pidCalc = shooterPIDController.calculate(getRPM(), shooterRPM);
                     double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
                             * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
@@ -160,7 +160,7 @@ public abstract class Shooter extends PARTsSubsystem {
     }
 
     public boolean withinSetpointRange() {
-        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 100;
+        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 500;
     }
     // endregion
 }

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Intake;
 
+import static edu.wpi.first.units.Units.Radian;
+
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
@@ -80,27 +82,24 @@ public abstract class Intake extends PARTsSubsystem {
                     setPivotSpeed(0);
                     break;
                 case IDLE:
-                    setIntakeSpeed(intakeState.getSpeed());
-                    setPivotVoltage(intakeFeedForward.calculate(intakeState.getAngle().to(PARTsUnitType.Radian), 0));
-                    partsNT.putDouble("state angle", intakeState.getAngle().getValue(), true);
-                    break;
                 case INTAKING:
                 case OUTTAKING:
                 case SHOOTING:
                 case HOME:
                 case TRAVELING:
                     setIntakeSpeed(intakeState.getSpeed());
+
                     intakePIDController.setGoal(intakeState.getAngle().getValue());
                     double pidCalc = intakePIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
                             intakeState.getAngle().getValue());
-                    double ffCalc = intakeFeedForward.calculate(intakeState.getAngle().to(PARTsUnitType.Radian), intakePIDController.getSetpoint().velocity);
 
                     partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), true);
+                    partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), true);
 
-                    setPivotVoltage(pidCalc + ffCalc);
+                    setPivotVoltage(pidCalc);
                     break;
                 case MANUALPIVOT:
-                break;
+                    break;
                 default:
                     setIntakeSpeed(0);
                     setPivotSpeed(0);
@@ -144,7 +143,7 @@ public abstract class Intake extends PARTsSubsystem {
 
     public Command idle() {
         return PARTsCommandUtils.setCommandName("Intake.intakeIdle", Commands.runOnce(() -> {
-            IntakeState.IDLE.setAngle(getPivotRotations().toPARTsUnit(PARTsUnitType.Angle));
+            IntakeState.IDLE.setAngle(new PARTsUnit(getPivotRotations().toPARTsUnit(PARTsUnitType.Angle).getValue(), PARTsUnitType.Angle));
             intakeState = IntakeState.IDLE;
         }));
     }

@@ -156,6 +156,10 @@ public abstract class Turret extends PARTsSubsystem {
             turretState = TurretState.IDLE;
         }));
     }
+
+    public boolean withinSetpointRange() {
+        return Math.abs(turretPIDController.getSetpoint().position - getAngle()) < 5;
+    }
     // endregion
 
     // region private functions
