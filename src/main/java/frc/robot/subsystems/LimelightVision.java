@@ -229,7 +229,7 @@ public class LimelightVision extends PARTsSubsystem {
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0
                         && Field.isInRadius(Field.getTag((int) getVisibleTagId(camera.getName())).getLocation().toPose2d(),
-                                poseSupplier.get(), new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter))) {
+                                poseEstimate.pose, new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter))) {
                     boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
                             poseEstimate.timestampSeconds);
 
