@@ -19,8 +19,17 @@ import frc.robot.constants.VisionConstants;
 import frc.robot.util.Field;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LimelightHelpers.PoseEstimate;
+
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
+
+//camera 21 - 14 inches forward
+//camera 24 - 13 inches side
+//camera 14 inches up
+//camera 45 degrees side to side
+//camera 40 degrees up and down
 
 public class LimelightVision extends PARTsSubsystem {
 
@@ -56,7 +65,8 @@ public class LimelightVision extends PARTsSubsystem {
     private int imuMode;
     private int maxTagCount;
 
-    public LimelightVision(Supplier<Pose2d> poseSupplier, BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
+    public LimelightVision(Supplier<Pose2d> poseSupplier,
+            BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
             Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer, Consumer<Pose2d> resetPoseConsumer) {
         super("LimelightVision");
         this.poseSupplier = poseSupplier;
@@ -98,7 +108,8 @@ public class LimelightVision extends PARTsSubsystem {
     }
 
     public Command commandMegaTagMode(MegaTagMode mode) {
-        Command c = PARTsCommandUtils.setCommandName("LimelightVision.commandMegaTagMode", this.runOnce(() -> setMegaTagMode(mode)));
+        Command c = PARTsCommandUtils.setCommandName("LimelightVision.commandMegaTagMode",
+                this.runOnce(() -> setMegaTagMode(mode)));
         c = c.ignoringDisable(true);
         return c;
     }
@@ -204,7 +215,7 @@ public class LimelightVision extends PARTsSubsystem {
                     0,
                     0,
                     0);
-
+                int tagId = (int) getVisibleTagId(camera.getName());
                 PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
@@ -212,6 +223,12 @@ public class LimelightVision extends PARTsSubsystem {
                 partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX(), !RobotConstants.COMPETITION); // loop-overrun
                 partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY(), !RobotConstants.COMPETITION); // loop-overrun
                 partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees(), !RobotConstants.COMPETITION); // loop-overrun
+                 partsNT.putNumber(camera.getName() + "/tag id", tagId, !RobotConstants.COMPETITION);
+                if (poseEstimate != null && tagId != -1 && poseEstimate.tagCount > 0
+                        && Field.isInRadius(Field.getTag(tagId).getLocation().toPose2d(),
+                                poseEstimate.pose, new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter))) {
+                    boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
+                            poseEstimate.timestampSeconds);
                 int requiredTagCount = (megaTagMode == MegaTagMode.MEGATAG1) ? 2 : 1;
                 if (poseEstimate != null && poseEstimate.tagCount >= requiredTagCount) {
                     boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose, poseEstimate.timestampSeconds);
@@ -248,37 +265,41 @@ public class LimelightVision extends PARTsSubsystem {
 
     @Override
     public void log() {
+        // TODO Auto-generated method stub
+        // throw new UnsupportedOperationException("Unimplemented method 'log'");
     }
 
-    /*public void resetRobotPose() {
-        setMegaTagMode(MegaTagMode.MEGATAG1);
-        for (Camera camera : CameraConstants.LimelightCameras) {
-            LimelightHelpers.SetRobotOrientation(
-                    camera.getName(),
-                    (poseSupplier.get().getRotation().getDegrees()) % 360,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0);
-            if (camera.isEnabled()) {
-                PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
-                        ? getMegaTag2PoseEstimate(camera.getName())
-                        : getMegaTag1PoseEstimate(camera.getName());
-
-                if (poseEstimate != null && poseEstimate.tagCount > 0) {
-                    resetPoseConsumer.accept(poseEstimate.pose);
-                    partsNT.putBoolean(camera.getName() + "/Has Data", true);
-                    partsNT.putInteger(camera.getName() + "/Tag Count", poseEstimate.tagCount);
-                    maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
-                } else {
-                    partsNT.putBoolean(camera.getName() + "/Has Data", false);
-                    partsNT.putInteger(camera.getName() + "/Tag Count", 0);
-                }
-            }
-        }
-        setMegaTagMode(MegaTagMode.MEGATAG2);
-    }*/
+    /*
+     * public void resetRobotPose() {
+     * setMegaTagMode(MegaTagMode.MEGATAG1);
+     * for (Camera camera : CameraConstants.LimelightCameras) {
+     * LimelightHelpers.SetRobotOrientation(
+     * camera.getName(),
+     * (poseSupplier.get().getRotation().getDegrees()) % 360,
+     * 0,
+     * 0,
+     * 0,
+     * 0,
+     * 0);
+     * if (camera.isEnabled()) {
+     * PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
+     * ? getMegaTag2PoseEstimate(camera.getName())
+     * : getMegaTag1PoseEstimate(camera.getName());
+     * 
+     * if (poseEstimate != null && poseEstimate.tagCount > 0) {
+     * resetPoseConsumer.accept(poseEstimate.pose);
+     * partsNT.putBoolean(camera.getName() + "/Has Data", true);
+     * partsNT.putInteger(camera.getName() + "/Tag Count", poseEstimate.tagCount);
+     * maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
+     * } else {
+     * partsNT.putBoolean(camera.getName() + "/Has Data", false);
+     * partsNT.putInteger(camera.getName() + "/Tag Count", 0);
+     * }
+     * }
+     * }
+     * setMegaTagMode(MegaTagMode.MEGATAG2);
+     * }
+     */
 
     public void setPipelineIndex(Pipelines pipeline) {
         partsNT.putString("Pipeline name", pipeline.name(), true);

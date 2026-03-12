@@ -31,7 +31,7 @@ public class Trench {
 
     public static boolean isUnderTrench(Pose2d pose) {
         Pose2d trench = getNearestTrench(pose, Field.getAllianceTrenchPoses());
-        return Hub.isInRadius(pose, trench, 1);
+        return Field.isInRadius(pose, trench, 1);
     }
 
     // TODO: Move something like this to PARTsLib and make it return a PARTsUnit.
