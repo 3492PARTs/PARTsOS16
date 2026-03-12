@@ -228,10 +228,13 @@ public class LimelightVision extends PARTsSubsystem {
                 partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees(),
                         !RobotConstants.COMPETITION); // loop-overrun
                 partsNT.putNumber(camera.getName() + "/tag id", tagId, !RobotConstants.COMPETITION);
+                boolean inRadius = tagId != -1 && Field.isInRadius(Field.getTag(tagId).getLocation().toPose2d(),
+                        poseEstimate.pose, new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
+                partsNT.putNumber(getName() + "tag count", poseEstimate.tagCount, true);
+                partsNT.putBoolean(camera.getName() + "/In Radius", inRadius, true);
                 int requiredTagCount = (megaTagMode == MegaTagMode.MEGATAG1) ? 2 : 1;
-                if (poseEstimate != null && tagId != -1 && poseEstimate.tagCount > requiredTagCount
-                        && Field.isInRadius(Field.getTag(tagId).getLocation().toPose2d(),
-                                poseEstimate.pose, new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter))) {
+                if (poseEstimate != null && poseEstimate.tagCount >= requiredTagCount
+                        && inRadius) {
 
                     boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
                             poseEstimate.timestampSeconds);
@@ -253,7 +256,7 @@ public class LimelightVision extends PARTsSubsystem {
 
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Megatag Mode", getMTmode().toString(), RobotContainer.debug);
+        partsNT.putString("Megatag Mode", getMTmode().toString(), true);
         partsNT.putString("Whitelist Mode", getWhitelistMode().toString(), RobotContainer.debug);
         partsNT.putNumber("IMU Mode", imuMode, RobotContainer.debug);
     }

@@ -31,7 +31,7 @@ public interface CameraConstants {
 
     public enum Pipelines {
         MAIN(1),
-        VIEWING (0);
+        VIEWING (1);
 
         private int pipelineIndex;
 
