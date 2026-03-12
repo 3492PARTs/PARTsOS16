@@ -84,7 +84,6 @@ public abstract class Intake extends PARTsSubsystem {
                 case IDLE:
                 case INTAKING:
                 case OUTTAKING:
-                case SHOOTING:
                 case HOME:
                 case TRAVELING:
                     setIntakeSpeed(intakeState.getSpeed());
@@ -100,6 +99,27 @@ public abstract class Intake extends PARTsSubsystem {
                     break;
                 case MANUALPIVOT:
                     break;
+                case SHOOTING:
+                    setIntakeSpeed(intakeState.getSpeed());
+
+                    double getGoal = intakePIDController.getGoal().position;
+                    if (getGoal == 45 && intakePIDController.atGoal()) {
+                        getGoal = 60;
+                    }
+                    else if (getGoal == 60 && intakePIDController.atGoal()) {
+                        getGoal = 45;
+                    }
+                    else if (getGoal != 60 || getGoal != 45) {
+                        getGoal = 45;
+                    }
+                    intakePIDController.setGoal(getGoal);
+                    pidCalc = intakePIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
+                            intakeState.getAngle().getValue());
+
+                    partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), true);
+                    partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), true);
+
+                    setPivotVoltage(pidCalc);
                 default:
                     setIntakeSpeed(0);
                     setPivotSpeed(0);
