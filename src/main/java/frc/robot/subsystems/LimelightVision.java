@@ -19,6 +19,9 @@ import frc.robot.constants.VisionConstants;
 import frc.robot.util.Field;
 import frc.robot.util.LimelightHelpers;
 import frc.robot.util.LimelightHelpers.PoseEstimate;
+
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
@@ -187,38 +190,45 @@ public class LimelightVision extends PARTsSubsystem {
 
         updateWhitelistMode();
         for (Camera camera : CameraConstants.LimelightCameras) {
-            
-            double [] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
-            partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw [0]: -1, !RobotConstants.COMPETITION); // loop-overrun
+
+            double[] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
+            partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw[0] : -1, !RobotConstants.COMPETITION); // loop-overrun
 
             if (camera.isEnabled()) {
                 LimelightHelpers.SetRobotOrientation(
-                    camera.getName(),
-                    // i think this is still needed b/c if we always assume blue on red we start
-                    // backwards.
-                    (poseSupplier.get().getRotation().getDegrees()) % 360,
-                    // we may need to consider these values for when we go ove the bump
-                    // if we are at an angle on the bump it could throw our esimates off
-                    0,
-                    0,
-                    0,
-                    0,
-                    0);
-
+                        camera.getName(),
+                        // i think this is still needed b/c if we always assume blue on red we start
+                        // backwards.
+                        (poseSupplier.get().getRotation().getDegrees()) % 360,
+                        // we may need to consider these values for when we go ove the bump
+                        // if we are at an angle on the bump it could throw our esimates off
+                        0,
+                        0,
+                        0,
+                        0,
+                        0);
+                int tagId = (int) getVisibleTagId(camera.getName());
                 PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
 
                 partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX(), !RobotConstants.COMPETITION); // loop-overrun
                 partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY(), !RobotConstants.COMPETITION); // loop-overrun
-                partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees(), !RobotConstants.COMPETITION); // loop-overrun
+                partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees(),
+                        !RobotConstants.COMPETITION); // loop-overrun
+                partsNT.putNumber(camera.getName() + "/tag id", tagId, !RobotConstants.COMPETITION);
+                int requiredTagCount = (megaTagMode == MegaTagMode.MEGATAG1) ? 2 : 1;
+                if (poseEstimate != null && tagId != -1 && poseEstimate.tagCount > requiredTagCount
+                        && Field.isInRadius(Field.getTag(tagId).getLocation().toPose2d(),
+                                poseEstimate.pose, new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter))) {
 
-                if (poseEstimate != null && poseEstimate.tagCount > 0) {
-                    boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose, poseEstimate.timestampSeconds);
+                    boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
+                            poseEstimate.timestampSeconds);
 
                     partsNT.putBoolean(camera.getName() + "/Has Data", true, !RobotConstants.COMPETITION); // loop-overrun
                     partsNT.putBoolean(camera.getName() + "/Accepted Data", success, !RobotConstants.COMPETITION); // loop-overrun
-                    partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount, !RobotConstants.COMPETITION); // loop-overrun
+                    partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount,
+                            !RobotConstants.COMPETITION); // loop-overrun
 
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
                 } else {
