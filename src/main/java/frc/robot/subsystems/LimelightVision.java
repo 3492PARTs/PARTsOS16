@@ -229,6 +229,9 @@ public class LimelightVision extends PARTsSubsystem {
                                 poseEstimate.pose, new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter))) {
                     boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
                             poseEstimate.timestampSeconds);
+                int requiredTagCount = (megaTagMode == MegaTagMode.MEGATAG1) ? 2 : 1;
+                if (poseEstimate != null && poseEstimate.tagCount >= requiredTagCount) {
+                    boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose, poseEstimate.timestampSeconds);
 
                     partsNT.putBoolean(camera.getName() + "/Has Data", true, !RobotConstants.COMPETITION); // loop-overrun
                     partsNT.putBoolean(camera.getName() + "/Accepted Data", success, !RobotConstants.COMPETITION); // loop-overrun
