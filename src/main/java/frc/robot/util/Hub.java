@@ -8,6 +8,7 @@ import org.parts3492.partslib.network.PARTsNT;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
@@ -19,6 +20,23 @@ public class Hub {
     private static Timer timer = new Timer();
     private static boolean previousHubActive = true;
     private static PARTsNT partsNT = new PARTsNT("Hub");
+
+    /** K = Position (Meters), V = RPM */
+    public static InterpolatingDoubleTreeMap rpmTable = initRpmTable();
+
+    public static InterpolatingDoubleTreeMap initRpmTable() {
+        InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
+
+        table.put(PARTsUnit.InchesToMeters.apply(8.0), 3000.0);
+        //table.put(PARTsUnit.InchesToMeters.apply(10.0), 3300.0);
+        //table.put(PARTsUnit.InchesToMeters.apply(11.5), 3400.0);
+        //table.put(PARTsUnit.InchesToMeters.apply(13.0), 3600.0);
+        //table.put(PARTsUnit.InchesToMeters.apply(15.0), 3800.0);
+        table.put(PARTsUnit.InchesToMeters.apply(17.0), 4000.0);
+        //table.put(PARTsUnit.InchesToMeters.apply(19.0), 4000.0);
+
+        return table;
+    }
 
     public static enum Targets {
         DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
