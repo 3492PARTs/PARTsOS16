@@ -9,6 +9,8 @@ import java.util.Arrays;
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -101,7 +103,7 @@ public class RobotContainer {
     private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
 
     // private final ShooterSysid shooter = new
-    // ShooterSysid(drivetrain.supplierGetPose()); // for sysid
+    // ShooterSysid(drivetrain.supplierGetPose()); //for sysid
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new
     // TurretSysid(drivetrain.supplierGetPose());
@@ -204,10 +206,23 @@ public class RobotContainer {
          * driveController.start().and(driveController.x()).whileTrue(drivetrain.
          * sysIdQuasistatic(Direction.kReverse));
          */
+        Pose2d leftCorner = Field.conditionallyTransformToOppositeAlliance(new Pose2d(20, 275, new Rotation2d()));
+        Pose2d rightCorner = Field.conditionallyTransformToOppositeAlliance(new Pose2d(20, 20, new Rotation2d()));
+        Pose2d outpost = Field.conditionallyTransformToOppositeAlliance(new Pose2d(20, 24, new Rotation2d()));
+        Pose2d WORK = new Pose2d(.25, .25, new Rotation2d());
 
+        // Pose2d leftCorner = origin.
+        // back left pose
+        driveController.a().whileTrue(drivetrain.commandPathFindToPose(WORK));
+        driveController.b().whileTrue(drivetrain.commandPathFindToPose(Field.getTag(29).getLocation().toPose2d()));
+        // back right pose
+        // driveController.b().onTrue(drivetrain.commandPathFindToPoseDeferred(new
+        // Pose2d(18.47, 19.25, new Rotation2d())));
     }
 
     private void configureShooterBindings() {
+        // driveController.a().onTrue(shooter.shoot());
+        // driveController.b().onTrue(shooter.idle());
         // driveController.a().onTrue(shooter.shoot());
         // driveController.b().onTrue(shooter.idle());
 
@@ -221,7 +236,6 @@ public class RobotContainer {
          * operatorController.y().and(operatorController.rightBumper())
          * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
          */
-
     }
 
     private void configureCandleBindings() {
@@ -252,15 +266,18 @@ public class RobotContainer {
         buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
         buttonBoxController.negative4Trigger().onTrue(intake.intake());
         buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate())
+                
                 .onTrue(intake.idle());
         buttonBoxController.enterTrigger().onTrue(intake.home());
         buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
         buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
         /*
+         * 
          * driveController.x().onTrue(intake.intake());
-         * driveController.y().onTrue(intake.intakeIdle());
-         * driveController.rightTrigger().onTrue(intake.intakeShooting());
-         * //driveController.x().onTrue(intake.home());
+         *  * driveController.y().onTrue(intake.intakeIdle());
+         *  * driveController.rightTrigger().onTrue(intake.intakeShooting());
+         *  * //driveController.x().onTrue(intake.home());
+         
          */
 
         
@@ -278,6 +295,7 @@ public class RobotContainer {
 
     private void configureSuperstructureBindings() {
         buttonBoxController.handleTrigger()
+                
                 .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
         buttonBoxController.wipeTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
         buttonBoxController.mapTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
@@ -322,8 +340,8 @@ public class RobotContainer {
     }
 
     public void constructDashboard() {
-        PARTsDashboard.setSubsystems(subsystems, RobotContainer.debug);
-        PARTsDashboard.setCommandScheduler(RobotContainer.debug);
+        PARTsDashboard.setSubsystems(subsystems, !RobotConstants.COMPETITION);
+        PARTsDashboard.setCommandScheduler(!RobotConstants.COMPETITION);
     }
 
     public void resetStartPose() {

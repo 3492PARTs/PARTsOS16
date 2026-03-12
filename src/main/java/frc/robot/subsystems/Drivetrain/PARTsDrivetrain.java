@@ -440,13 +440,13 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 // Create the constraints to use while pathfinding. The constraints defined in
                 // the path will only be used for the path.
                 PathConstraints constraints = new PathConstraints(
-                                DrivetrainConstants.MAX_AIM_VELOCITY, DrivetrainConstants.MAX_AIM_ACCELERATION,
-                                PARTsUnit.DegreesToRadians.apply(540.0),
-                                PARTsUnit.DegreesToRadians.apply(720.0));
+                                DrivetrainConstants.MAX_RANGE_VELOCITY, DrivetrainConstants.MAX_RANGE_ACCELERATION,
+                                DrivetrainConstants.MAX_AIM_VELOCITY,
+                                DrivetrainConstants.MAX_AIM_ACCELERATION);
 
                 // Since AutoBuilder is configured, we can use it to build pathfinding commands
                 Command pathfindingCommand = AutoBuilder.pathfindToPose(
-                                Field.conditionallyTransformToOppositeAlliance(pose),
+                                pose,
                                 constraints, 0.0); // Goal end velocity in meters/sec
                 return PARTsCommandUtils.setCommandName("PARTsDrivetrain.commandPathFindToPose", pathfindingCommand);
         }
