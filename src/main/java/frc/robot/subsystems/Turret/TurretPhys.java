@@ -9,12 +9,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.RobotContainer;
 import frc.robot.constants.TurretConstants;
+import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 
 public class TurretPhys extends Turret {
     protected final TalonFX turretMotor;
 
-    public TurretPhys(Supplier<Pose2d> robotPoseSupplier) {
-        super(robotPoseSupplier);
+    public TurretPhys(Supplier<Pose2d> robotPoseSupplier, PARTsDrivetrain drivetrain) {
+        super(robotPoseSupplier, drivetrain);
 
         turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID, TurretConstants.CAN_BUS_NAME);
         TalonFXConfiguration config = new TalonFXConfiguration();

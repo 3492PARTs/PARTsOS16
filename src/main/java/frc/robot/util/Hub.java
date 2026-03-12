@@ -21,22 +21,29 @@ public class Hub {
     private static PARTsNT partsNT = new PARTsNT("Hub");
 
     public static enum Targets {
-        DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE2(new PARTsUnit(11.5, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE3(new PARTsUnit(13, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE4(new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE5(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE6(new PARTsUnit(19, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
+        DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1),
+        ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.2),
+        ZONE2(new PARTsUnit(11.5, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.4),
+        ZONE3(new PARTsUnit(13, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.6),
+        ZONE4(new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.8),
+        ZONE5(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 2),
+        ZONE6(new PARTsUnit(19, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 2.2);
 
         private double radius;
+        //get actual time of flights later
+        private double timeOfFlight;
 
-        Targets(double radius) {
+        Targets(double radius, double timeOfFlight) {
             this.radius = radius;
+            this.timeOfFlight = timeOfFlight;
         }
 
         public double getRadius() {
             return radius;
+        }
+
+        public double getTimeOfFlight() {
+            return timeOfFlight;
         }
 
         public void setFieldObject2d() {

@@ -3,6 +3,8 @@ package frc.robot.subsystems.Turret;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -10,9 +12,11 @@ import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
 import frc.robot.constants.TurretConstants.TurretState;
+import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.util.Field;
+import frc.robot.util.Hub;
+import frc.robot.util.Hub.Targets;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import org.parts3492.partslib.command.PARTsCommandUtils;
@@ -24,11 +28,12 @@ public abstract class Turret extends PARTsSubsystem {
     private ProfiledPIDController turretPIDController;
     private SimpleMotorFeedforward turretFeedforward;
     private Supplier<Pose2d> robotPoseSupplier;
+    private PARTsDrivetrain drivetrain;
 
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
 
-    public Turret(Supplier<Pose2d> robotPoseSupplier) {
+    public Turret(Supplier<Pose2d> robotPoseSupplier, PARTsDrivetrain drivetrain) {
         super("Turret", RobotConstants.LOGGING);
         if (RobotConstants.COMPETITION) debug = false;
 
@@ -38,6 +43,7 @@ public abstract class Turret extends PARTsSubsystem {
         }
 
         this.robotPoseSupplier = robotPoseSupplier;
+        this.drivetrain = drivetrain;
 
         turretPIDController = new ProfiledPIDController(TurretConstants.P, TurretConstants.I, TurretConstants.D, new TrapezoidProfile.Constraints(TurretConstants.TURRET_MAX_VELOCITY, TurretConstants.TURRET_MAX_ACCELERATION));
         turretFeedforward = new SimpleMotorFeedforward(TurretConstants.S, TurretConstants.V, TurretConstants.A);
@@ -193,10 +199,15 @@ public abstract class Turret extends PARTsSubsystem {
 
     // region private functions
     private double getAngleToTarget() {
+        Targets zone = Hub.getZone(robotPoseSupplier.get());
+        double timeOfFlight = (zone == null) ? 0 : zone.getTimeOfFlight();
+        Pose2d calculatedPose = 
+                    Field.getAllianceHubPose().plus(new Transform2d(-drivetrain.getXVelocity().getValue() * timeOfFlight,
+                            -drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d()));
         double angleToTarget = edu.wpi.first.math.MathUtil
                 .inputModulus(robotPoseSupplier.get().getRotation().getDegrees(), -180, 180)
-                - (Math.atan2(Field.getAllianceHubPose().getY() - robotPoseSupplier.get().getY(),
-                        Field.getAllianceHubPose().getX() - robotPoseSupplier.get().getX()) * 180 / Math.PI);
+                - (Math.atan2(calculatedPose.getY() - robotPoseSupplier.get().getY(),
+                        calculatedPose.getX() - robotPoseSupplier.get().getX()) * 180 / Math.PI);
         return angleToTarget;
     }
     // endregion private functions
