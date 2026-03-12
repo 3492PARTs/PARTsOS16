@@ -60,7 +60,7 @@ import org.parts3492.partslib.command.IPARTsSubsystem;
 public class RobotContainer {
     private FieldObject2d hubFieldObject2d;
 
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
+    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
     private final PARTsCommandController operatorController = new PARTsCommandController(1,
             RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
@@ -129,6 +129,17 @@ public class RobotContainer {
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D, true);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
+        partsNT.logPathPlanner((pose) -> {
+                        // Do whatever you want with the pose here
+                        Field.FIELD2D
+                                .getObject("target pose")
+                                .setPose(pose);
+                    }, (poses) -> {
+                        // Do whatever you want with the poses here
+                        Field.FIELD2D
+                                .getObject("path")
+                                .setPoses(poses);
+                    }, true);
 
         partsNT.putSmartDashboardSendable("Toggle Complete Debug", toggleDebug, !RobotConstants.COMPETITION);
 
