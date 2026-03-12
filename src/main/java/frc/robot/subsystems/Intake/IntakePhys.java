@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import frc.robot.RobotContainer;
 import frc.robot.constants.IntakeConstants;
 
 /**
@@ -21,27 +22,45 @@ public class IntakePhys extends Intake {
     public IntakePhys() {
         super();
         TalonFXConfiguration intakeConfig = new TalonFXConfiguration();
-        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);
         intakeConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+
+        intakeConfig.CurrentLimits.SupplyCurrentLimit = 30;
+        intakeConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        intakeConfig.CurrentLimits.SupplyCurrentLowerTime = 0;
+
+        intakeConfig.CurrentLimits.StatorCurrentLimit = 100;
+        intakeConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
+        TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
+
+        pivotConfig.CurrentLimits.SupplyCurrentLimit = 30;
+        pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        pivotConfig.CurrentLimits.SupplyCurrentLowerTime = 0;
+
+        pivotConfig.CurrentLimits.StatorCurrentLimit = 100;
+        pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+
+        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);
         intakeMotor.getConfigurator().apply(intakeConfig);
         intakeMotor.setNeutralMode(NeutralModeValue.Brake);
 
         pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);
-        TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
         pivotMotor.getConfigurator().apply(pivotConfig);
-        pivotMotor.getConfigurator().setPosition(0);
         pivotMotor.setNeutralMode(NeutralModeValue.Brake);
+
+        // Home the pivot position.
+        pivotMotor.getConfigurator().setPosition(0);
     
     }
 
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble());
-        partsNT.putDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble());
+        partsNT.putDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
 
-        partsNT.putDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble());
-        partsNT.putDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble());
+        partsNT.putDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -59,11 +78,11 @@ public class IntakePhys extends Intake {
     @Override
     public void log() {
         super.log();
-        partsLogger.logDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble());
-        partsLogger.logDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble());
+        partsLogger.logDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
         
-        partsLogger.logDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble());
-        partsLogger.logDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble());
+        partsLogger.logDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -88,11 +107,11 @@ public class IntakePhys extends Intake {
 
     @Override
     public double getPivotRotationSpeed() {
-        return pivotMotor.getVelocity().getValueAsDouble();
+        return pivotMotor.getVelocity().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO;
     }
 
     @Override
-    public PARTsUnit getPivotAngle() {
+    public PARTsUnit getPivotRotations() {
         return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO, PARTsUnitType.Rotations);
     }
 }

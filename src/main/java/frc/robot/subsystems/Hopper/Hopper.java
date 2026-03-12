@@ -4,24 +4,34 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
+import frc.robot.constants.HopperConstants.HopperState;
 import frc.robot.constants.RobotConstants;
-import frc.robot.states.HopperState;
+
 
 public abstract class Hopper extends PARTsSubsystem {
     private HopperState hopperstate = HopperState.IDLE;
 
+    protected boolean debug = false;
+    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+
     public Hopper () {
         super("Hopper");
+        if (RobotConstants.COMPETITION) debug = false;
 
-        if (RobotConstants.DEBUGGING) {
-            partsNT.putDouble("Hopper Speed", 0);
+        if (RobotContainer.debug || debug) {
+            partsNT.putDouble("Hopper Speed", 0, true);
         }
+
+        partsNT.putSmartDashboardSendable("Toggle Hopper Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
 
     //region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Hopper State", hopperstate.toString());
+        partsNT.putString("Hopper State", hopperstate.toString(), !RobotConstants.COMPETITION);
+        partsNT.putBoolean("Hopper Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
     @Override
@@ -36,13 +46,13 @@ public abstract class Hopper extends PARTsSubsystem {
 
     @Override
     public void log() {
-        partsLogger.logString("Hopper State", hopperstate.toString());
+        partsLogger.logString("Hopper State", hopperstate.toString(), RobotContainer.debug || debug);
     }
 
     @Override
     public void periodic() {
-        if (RobotConstants.DEBUGGING) {
-            setSpeed(partsNT.getDouble("Hopper Speed"));
+        if (RobotContainer.debug || debug) {
+            setSpeed(partsNT.getDouble("Hopper Speed", true));
         }
         else {
             switch(hopperstate) {

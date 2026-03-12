@@ -12,6 +12,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.constants.CameraConstants;
+import frc.robot.constants.RobotConstants;
 import frc.robot.constants.CameraConstants.Camera;
 import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.VisionConstants;
@@ -90,11 +91,8 @@ public class LimelightVision extends PARTsSubsystem {
         setWhitelistMode(WhitelistMode.ALL);
         setIMUMode(1);
 
-        // elastic crashes :(
-        // super.partsNT.putSmartDashboardSendable("Set MT-1",
-        // commandMegaTagMode(MegaTagMode.MEGATAG1));
-        // super.partsNT.putSmartDashboardSendable("Set MT-2",
-        // commandMegaTagMode(MegaTagMode.MEGATAG2));
+        super.partsNT.putSmartDashboardSendable("Set MT-1", commandMegaTagMode(MegaTagMode.MEGATAG1), true);
+        super.partsNT.putSmartDashboardSendable("Set MT-2", commandMegaTagMode(MegaTagMode.MEGATAG2), true);
     }
 
     public void setMegaTagMode(MegaTagMode mode) {
@@ -199,11 +197,13 @@ public class LimelightVision extends PARTsSubsystem {
         this.maxTagCount = 0;
 
         updateWhitelistMode();
-        partsNT.putNumber("Robot Rotation (deg)",
-                (poseSupplier.get().getRotation().getDegrees()) % 360);
-
         for (Camera camera : CameraConstants.LimelightCameras) {
-            LimelightHelpers.SetRobotOrientation(
+            
+            double [] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
+            partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw [0]: -1, !RobotConstants.COMPETITION); // loop-overrun
+
+            if (camera.isEnabled()) {
+                LimelightHelpers.SetRobotOrientation(
                     camera.getName(),
                     // i think this is still needed b/c if we always assume blue on red we start
                     // backwards.
@@ -215,17 +215,14 @@ public class LimelightVision extends PARTsSubsystem {
                     0,
                     0,
                     0);
-            double[] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
-            partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw[0] : -1);
-            if (camera.isEnabled()) {
+
                 PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
 
-                // partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX());
-                // partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY());
-                // partsNT.putNumber(camera.getName() + "/Rotation (deg)",
-                // poseEstimate.pose.getRotation().getDegrees());
+                partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX(), !RobotConstants.COMPETITION); // loop-overrun
+                partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY(), !RobotConstants.COMPETITION); // loop-overrun
+                partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees(), !RobotConstants.COMPETITION); // loop-overrun
 
                 if (poseEstimate != null && poseEstimate.tagCount > 0
                         && Field.isInRadius(Field.getTag((int) getVisibleTagId(camera.getName())).getLocation().toPose2d(),
@@ -233,15 +230,15 @@ public class LimelightVision extends PARTsSubsystem {
                     boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
                             poseEstimate.timestampSeconds);
 
-                    // partsNT.putBoolean(camera.getName() + "/Has Data", true);
-                    // partsNT.putBoolean(camera.getName() + "/Accepted Data", success);
-                    // partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount);
+                    partsNT.putBoolean(camera.getName() + "/Has Data", true, !RobotConstants.COMPETITION); // loop-overrun
+                    partsNT.putBoolean(camera.getName() + "/Accepted Data", success, !RobotConstants.COMPETITION); // loop-overrun
+                    partsNT.putNumber(camera.getName() + "/Tag Count", poseEstimate.tagCount, !RobotConstants.COMPETITION); // loop-overrun
 
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
                 } else {
-                    // partsNT.putBoolean(camera.getName() + "/Accepted Data", false);
-                    // partsNT.putBoolean(camera.getName() + "/Has Data", false);
-                    // partsNT.putNumber(camera.getName() + "/Tag Count", 0);
+                    partsNT.putBoolean(camera.getName() + "/Accepted Data", false, !RobotConstants.COMPETITION); // loop-overrun
+                    partsNT.putBoolean(camera.getName() + "/Has Data", false, !RobotConstants.COMPETITION); // loop-overrun
+                    partsNT.putNumber(camera.getName() + "/Tag Count", 0, !RobotConstants.COMPETITION); // loop-overrun
                 }
             }
         }
@@ -249,9 +246,9 @@ public class LimelightVision extends PARTsSubsystem {
 
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Megatag Mode", getMTmode().toString());
-        partsNT.putString("Whitelist Mode", getWhitelistMode().toString());
-        partsNT.putNumber("IMU Mode", imuMode);
+        partsNT.putString("Megatag Mode", getMTmode().toString(), RobotContainer.debug);
+        partsNT.putString("Whitelist Mode", getWhitelistMode().toString(), RobotContainer.debug);
+        partsNT.putNumber("IMU Mode", imuMode, RobotContainer.debug);
     }
 
     @Override
@@ -261,8 +258,6 @@ public class LimelightVision extends PARTsSubsystem {
 
     @Override
     public void reset() {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'reset'");
     }
 
     @Override
@@ -304,7 +299,7 @@ public class LimelightVision extends PARTsSubsystem {
      */
 
     public void setPipelineIndex(Pipelines pipeline) {
-        partsNT.putString("Pipeline name", pipeline.name());
+        partsNT.putString("Pipeline name", pipeline.name(), true);
         for (Camera camera : CameraConstants.LimelightCameras) {
             if (camera.isEnabled()) {
                 LimelightHelpers.setLEDMode_PipelineControl(camera.getName());

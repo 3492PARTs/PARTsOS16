@@ -4,10 +4,13 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
-import frc.robot.states.ShooterState;
+import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.util.Hub;
+import frc.robot.util.Trench;
 import frc.robot.util.Hub.Targets;
 
 import java.util.function.BooleanSupplier;
@@ -23,33 +26,38 @@ public abstract class Shooter extends PARTsSubsystem {
 
     private PIDController shooterPIDController;
     private SimpleMotorFeedforward shooterFeedforward;
-    private Supplier <Pose2d> poseSupplier;
+    private Supplier<Pose2d> poseSupplier;
 
-    public Shooter(Supplier <Pose2d> poseSupplier) {
+    protected boolean debug = false;
+    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+
+    public Shooter(Supplier<Pose2d> poseSupplier) {
         super("Shooter", RobotConstants.LOGGING);
+        if (RobotConstants.COMPETITION) debug = false;
+        
         this.poseSupplier = poseSupplier;
-        if (RobotConstants.DEBUGGING || ShooterConstants.SHOOT_DEBUG) {
-            partsNT.putDouble("Shooter Speed", 0);
+        if (RobotContainer.debug || debug) {
+            partsNT.putDouble("Shooter Speed", 0, true);
         }
 
         shooterPIDController = new PIDController(ShooterConstants.P, ShooterConstants.I, ShooterConstants.D);
         shooterFeedforward = new SimpleMotorFeedforward(ShooterConstants.S, ShooterConstants.V, ShooterConstants.A);
 
         shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
+
+        partsNT.putSmartDashboardSendable("Toggle Shooter Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
 
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Shooter State", shooterState.toString());
-        partsNT.putDouble("RPM", getRPM());
-        partsNT.putDouble("Voltage", getVoltage());
-        partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint());
-        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint());
-        partsNT.putDouble("Current Error", shooterPIDController.getError());
-
-        Targets zone = Hub.getZone(poseSupplier.get());
-        partsNT.putString("Zone", zone == null ? "No zone" : zone.toString());
+        partsNT.putString("Shooter State", shooterState.toString(), RobotContainer.debug || debug);
+        partsNT.putDouble("RPM", getRPM(), true);
+        partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
+        partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint(), RobotContainer.debug || debug);
+        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), true);
+        partsNT.putDouble("Current Error", shooterPIDController.getError(), RobotContainer.debug || debug);
+        partsNT.putBoolean("Shooter Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
     @Override
@@ -64,14 +72,24 @@ public abstract class Shooter extends PARTsSubsystem {
 
     @Override
     public void log() {
-        partsLogger.logString("Shooter State", shooterState.toString());
+        partsLogger.logString("Shooter State", shooterState.toString(), !RobotConstants.COMPETITION);
     }
 
     @Override
     public void periodic() {
-        if (RobotConstants.DEBUGGING) {
-            setSpeed(partsNT.getDouble("Shooter Speed"));
+        if (RobotContainer.debug || debug) {
+            setSpeed(partsNT.getDouble("Shooter Speed", true));
         } else {
+            Targets zone = Hub.getZone(poseSupplier.get());
+            double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM() : ShooterState.getZoneRPM(zone);
+
+            boolean inTrench = Trench.isUnderTrench(poseSupplier.get());
+            if (inTrench) {
+                shooterRPM = shooterState.getZoneRPM(Targets.ZONE2);
+            }
+
+            partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);
+            
             switch (shooterState) {
                 case CHARGING:
                 case DISABLED:
@@ -79,15 +97,15 @@ public abstract class Shooter extends PARTsSubsystem {
                     setSpeed(0);
                     break;
                 case SHOOTING:
+                case MANUAL:
                     double voltage = 0;
-                    Targets zone = Hub.getZone(poseSupplier.get());
-                    double shooterRPM = shooterState.getZoneRPM(zone);
-                    //double shooterRPM = shooterState.getRPM();
-                    if (ShooterConstants.SHOOT_DEBUG) {
-                        shooterRPM = partsNT.getDouble("Shooter Speed");
+                    // double shooterRPM = shooterState.getRPM();
+                    if (debug) {
+                        shooterRPM = partsNT.getDouble("Shooter Speed", true);
                     }
-                    shooterPIDController.setSetpoint(shooterRPM);
 
+                    shooterPIDController.setSetpoint(shooterRPM);
+                    partsNT.putBoolean("In Setpoint Range", withinSetpointRange(), true);
                     double pidCalc = shooterPIDController.calculate(getRPM(), shooterRPM);
                     double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
                             * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
@@ -123,14 +141,20 @@ public abstract class Shooter extends PARTsSubsystem {
     }
 
     public Command shoot() {
-        return PARTsCommandUtils.setCommandName("Kicker.shoot", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Shooter.shoot", this.runOnce(() -> {
             shooterState = ShooterState.SHOOTING;
         }));
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Kicker.idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Shooter.idle", this.runOnce(() -> {
             shooterState = ShooterState.IDLE;
+        }));
+    }
+
+    public Command manualShoot() {
+        return PARTsCommandUtils.setCommandName("Shooter.manualShoot", this.runOnce(() -> {
+            shooterState = ShooterState.MANUAL;
         }));
     }
 
@@ -140,6 +164,10 @@ public abstract class Shooter extends PARTsSubsystem {
 
     public DoubleSupplier getSetpoint() {
         return () -> shooterPIDController.getSetpoint();
+    }
+
+    public boolean withinSetpointRange() {
+        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 500;
     }
     // endregion
 }
