@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
@@ -29,6 +30,7 @@ public abstract class Turret extends PARTsSubsystem {
     private SimpleMotorFeedforward turretFeedforward;
     private Supplier<Pose2d> robotPoseSupplier;
     private PARTsDrivetrain drivetrain;
+    private FieldObject2d target;
 
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
@@ -44,6 +46,7 @@ public abstract class Turret extends PARTsSubsystem {
 
         this.robotPoseSupplier = robotPoseSupplier;
         this.drivetrain = drivetrain;
+        target = Field.FIELD2D.getObject("Turret Target");
 
         turretPIDController = new ProfiledPIDController(TurretConstants.P, TurretConstants.I, TurretConstants.D, new TrapezoidProfile.Constraints(TurretConstants.TURRET_MAX_VELOCITY, TurretConstants.TURRET_MAX_ACCELERATION));
         turretFeedforward = new SimpleMotorFeedforward(TurretConstants.S, TurretConstants.V, TurretConstants.A);
@@ -202,8 +205,9 @@ public abstract class Turret extends PARTsSubsystem {
         Targets zone = Hub.getZone(robotPoseSupplier.get());
         double timeOfFlight = (zone == null) ? 0 : zone.getTimeOfFlight();
         Pose2d calculatedPose = 
-                    Field.getAllianceHubPose().plus(new Transform2d(-drivetrain.getXVelocity().getValue() * timeOfFlight,
-                            -drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d()));
+                    Field.getAllianceHubPose().plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
+                            drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d()));
+        target.setPose(calculatedPose);
         double angleToTarget = edu.wpi.first.math.MathUtil
                 .inputModulus(robotPoseSupplier.get().getRotation().getDegrees(), -180, 180)
                 - (Math.atan2(calculatedPose.getY() - robotPoseSupplier.get().getY(),
