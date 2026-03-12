@@ -86,7 +86,7 @@ public class Hub {
             return Targets.ZONE5;
         }
 
-        else if (isInRadius(hubPose2d, point, Targets.ZONE6.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE6.getRadius())) {
             return Targets.ZONE6;
         }
 

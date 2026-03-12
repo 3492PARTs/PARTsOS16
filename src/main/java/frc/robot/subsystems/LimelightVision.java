@@ -215,7 +215,7 @@ public class LimelightVision extends PARTsSubsystem {
                     0,
                     0,
                     0);
-
+                int tagId = (int) getVisibleTagId(camera.getName());
                 PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
                         ? getMegaTag2PoseEstimate(camera.getName())
                         : getMegaTag1PoseEstimate(camera.getName());
@@ -223,10 +223,10 @@ public class LimelightVision extends PARTsSubsystem {
                 partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX(), !RobotConstants.COMPETITION); // loop-overrun
                 partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY(), !RobotConstants.COMPETITION); // loop-overrun
                 partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees(), !RobotConstants.COMPETITION); // loop-overrun
-
-                if (poseEstimate != null && poseEstimate.tagCount > 0
-                        && Field.isInRadius(Field.getTag((int) getVisibleTagId(camera.getName())).getLocation().toPose2d(),
-                                poseEstimate.pose, new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter))) {
+                 partsNT.putNumber(camera.getName() + "/tag id", tagId, !RobotConstants.COMPETITION);
+                if (poseEstimate != null && tagId != -1 && poseEstimate.tagCount > 0
+                        && Field.isInRadius(Field.getTag(tagId).getLocation().toPose2d(),
+                                poseEstimate.pose, new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter))) {
                     boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
                             poseEstimate.timestampSeconds);
 
