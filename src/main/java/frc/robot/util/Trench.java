@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
+import frc.robot.util.Hub.Targets;
 
 public class Trench {
     private static Pose2d goal;
@@ -43,5 +44,9 @@ public class Trench {
      */
     public static double getDistance(Pose2d current, Pose2d goal) {
         return Math.sqrt(Math.pow(current.getX() - goal.getX(), 2) + Math.pow(current.getY() - goal.getY(), 2));
+    }
+
+    public static double getGranularZoneRPM(Targets zone) {
+        return 0;
     }
 }
