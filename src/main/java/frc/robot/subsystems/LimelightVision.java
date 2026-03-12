@@ -212,8 +212,8 @@ public class LimelightVision extends PARTsSubsystem {
                 partsNT.putNumber(camera.getName() + "/X", poseEstimate.pose.getX(), !RobotConstants.COMPETITION); // loop-overrun
                 partsNT.putNumber(camera.getName() + "/Y", poseEstimate.pose.getY(), !RobotConstants.COMPETITION); // loop-overrun
                 partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate.pose.getRotation().getDegrees(), !RobotConstants.COMPETITION); // loop-overrun
-
-                if (poseEstimate != null && poseEstimate.tagCount > 0) {
+                int requiredTagCount = (megaTagMode == MegaTagMode.MEGATAG1) ? 2 : 1;
+                if (poseEstimate != null && poseEstimate.tagCount >= requiredTagCount) {
                     boolean success = addVisionMeasurementBiFunction.apply(poseEstimate.pose, poseEstimate.timestampSeconds);
 
                     partsNT.putBoolean(camera.getName() + "/Has Data", true, !RobotConstants.COMPETITION); // loop-overrun
