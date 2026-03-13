@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Turret;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,7 +23,7 @@ import org.parts3492.partslib.command.PARTsSubsystem;
 public abstract class Turret extends PARTsSubsystem {
     private TurretState turretState = TurretState.IDLE;
 
-    private ProfiledPIDController turretPIDController;
+    private PIDController turretPIDController;
     private SimpleMotorFeedforward turretFeedforward;
     private Supplier<Pose2d> robotPoseSupplier;
 
@@ -39,7 +41,7 @@ public abstract class Turret extends PARTsSubsystem {
 
         this.robotPoseSupplier = robotPoseSupplier;
 
-        turretPIDController = new ProfiledPIDController(TurretConstants.P, TurretConstants.I, TurretConstants.D, new TrapezoidProfile.Constraints(TurretConstants.TURRET_MAX_VELOCITY, TurretConstants.TURRET_MAX_ACCELERATION));
+        turretPIDController = new PIDController(TurretConstants.P, TurretConstants.I, TurretConstants.D);
         turretFeedforward = new SimpleMotorFeedforward(TurretConstants.S, TurretConstants.V, TurretConstants.A);
 
         turretPIDController.setTolerance(TurretConstants.PID_THRESHOLD);
@@ -53,7 +55,7 @@ public abstract class Turret extends PARTsSubsystem {
         partsNT.putString("Turret State", turretState.toString(), !RobotConstants.COMPETITION);
         partsNT.putDouble("Angle", getAngle(), true);
         partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
-        partsNT.putDouble("Get Setpoint", turretPIDController.getSetpoint().position, RobotContainer.debug || debug);
+        partsNT.putDouble("Get Setpoint", turretPIDController.getSetpoint(), RobotContainer.debug || debug);
         partsNT.putBoolean("At Setpoint", turretPIDController.atSetpoint(), true);
         partsNT.putDouble("Current Error", turretPIDController.getPositionError(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Angle to target", getAngleToTarget(), true);
@@ -79,12 +81,12 @@ public abstract class Turret extends PARTsSubsystem {
     public void periodic() {
         if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Turret Speed", true));
-            turretPIDController.setGoal(partsNT.getDouble("Turret Angle", true));
+            turretPIDController.setSetpoint(partsNT.getDouble("Turret Angle", true));
             double pidCalc = turretPIDController.calculate(getAngle(), partsNT.getDouble("Turret Angle", true));
             // double ffCalc =
             // turretFeedforward.calculate(turretPIDController.getSetpoint());
 
-            double voltage = pidCalc; // + ffCalc;
+            double voltage = MathUtil.clamp(pidCalc, -5, 5); // + ffCalc;
 
             setVoltage(voltage);
         } else {
@@ -97,7 +99,7 @@ public abstract class Turret extends PARTsSubsystem {
                     break;
                 case TRACKING:
                     if (isValidAngle()) {
-                        turretPIDController.setGoal(getAngleToTarget());
+                        turretPIDController.setSetpoint(getAngleToTarget());
                         double pidCalc = turretPIDController.calculate(getAngle(), getAngleToTarget());
                         // double ffCalc =
                         // turretFeedforward.calculate(turretPIDController.getSetpoint());
@@ -115,7 +117,7 @@ public abstract class Turret extends PARTsSubsystem {
                 
                     case LEFT_CORNER:
                     case RIGHT_CORNER:
-                        turretPIDController.setGoal(turretState.getAngle());
+                        turretPIDController.setSetpoint(turretState.getAngle());
                         double pidCalc = turretPIDController.calculate(getAngle(), turretState.getAngle());
                         // double ffCalc =
                         // turretFeedforward.calculate(turretPIDController.getSetpoint());
@@ -187,7 +189,7 @@ public abstract class Turret extends PARTsSubsystem {
     }
 
     public boolean withinSetpointRange() {
-        return Math.abs(turretPIDController.getSetpoint().position - getAngle()) < 5;
+        return Math.abs(turretPIDController.getSetpoint() - getAngle()) < 5;
     }
     // endregion
 
