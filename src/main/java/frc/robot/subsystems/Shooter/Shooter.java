@@ -89,8 +89,8 @@ public abstract class Shooter extends PARTsSubsystem {
             Targets zone = Hub.getZone(robotPoseSupplier.get());
             double timeOfFlight = (zone == null) ? 0 : zone.getTimeOfFlight();
             Targets calculatedZone = Hub.getZone(
-                    robotPoseSupplier.get().plus(new Transform2d(-drivetrain.getXVelocity().getValue() * timeOfFlight,
-                            -drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d())));
+                    robotPoseSupplier.get().plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
+                            drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d())));
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
                     : ShooterState.getZoneRPM(calculatedZone);
 
