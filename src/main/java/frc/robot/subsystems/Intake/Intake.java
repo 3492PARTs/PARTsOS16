@@ -109,17 +109,19 @@ public abstract class Intake extends PARTsSubsystem {
                     else if (getGoal == 60 && intakePIDController.atGoal()) {
                         getGoal = 45;
                     }
-                    else if (getGoal != 60 || getGoal != 45) {
+                    else if (getGoal != 60 && getGoal != 45) {
                         getGoal = 45;
                     }
                     intakePIDController.setGoal(getGoal);
                     pidCalc = intakePIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
-                            intakeState.getAngle().getValue());
+                            getGoal);
 
                     partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), true);
                     partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), true);
+                    partsNT.putDouble("Pivot Goal", getGoal, true);
 
                     setPivotVoltage(pidCalc);
+                    break;
                 default:
                     setIntakeSpeed(0);
                     setPivotSpeed(0);
