@@ -86,7 +86,7 @@ public abstract class Turret extends PARTsSubsystem {
             // double ffCalc =
             // turretFeedforward.calculate(turretPIDController.getSetpoint());
 
-            double voltage = MathUtil.clamp(pidCalc, -5, 5); // + ffCalc;
+            double voltage = MathUtil.clamp(pidCalc, -9, 9); // + ffCalc;
 
             setVoltage(voltage);
         } else {
@@ -107,7 +107,7 @@ public abstract class Turret extends PARTsSubsystem {
                         partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
                         partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(), RobotContainer.debug || debug);
 
-                        voltage = pidCalc; // + ffCalc;
+                        voltage = MathUtil.clamp(pidCalc, -9, 9);
 
                         setVoltage(voltage);
                     } else {
@@ -125,7 +125,7 @@ public abstract class Turret extends PARTsSubsystem {
                         partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
                         partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(), RobotContainer.debug || debug);
 
-                        voltage = pidCalc; // + ffCalc;
+                        voltage = MathUtil.clamp(pidCalc, -9, 9);
 
                         setVoltage(voltage);
                     break;
