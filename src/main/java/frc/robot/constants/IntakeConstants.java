@@ -43,10 +43,10 @@ public class IntakeConstants {
     public static final double PIVOT_GEAR_RATIO = (12.0 / 1.0) * (3.0 / 1.0);
 
     // PID Controller
-    public static final double P = 0.07;
+    public static final double P = 0.18;
     public static final double I = 0;
     public static final double D = 0;
-    public static final int PID_THRESHOLD = 1;
+    public static final int PID_THRESHOLD = 3;
 
     public static final double INTAKE_MAX_VELOCITY = 800;
     public static final double INTAKE_MAX_ACCELERATION = 1000;
