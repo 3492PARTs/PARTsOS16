@@ -129,6 +129,17 @@ public class RobotContainer {
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D, true);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
+        partsNT.logPathPlanner((pose) -> {
+                        // Do whatever you want with the pose here
+                        Field.FIELD2D
+                                .getObject("target pose")
+                                .setPose(pose);
+                    }, (poses) -> {
+                        // Do whatever you want with the poses here
+                        Field.FIELD2D
+                                .getObject("path")
+                                .setPoses(poses);
+                    }, true);
 
         partsNT.putSmartDashboardSendable("Toggle Complete Debug", toggleDebug, !RobotConstants.COMPETITION);
 

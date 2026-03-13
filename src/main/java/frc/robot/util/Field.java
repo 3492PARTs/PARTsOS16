@@ -217,4 +217,15 @@ public interface Field {
     public static List<Pose2d> conditionallyTransformToOppositeAlliance(List<Pose2d> poses) {
         return RobotContainer.isBlue() ? poses : transformToOppositeAlliance(poses);
     }
+
+    public static boolean isInRadius(Pose2d center, Pose2d point, double radius) {
+        double centerPoseX = center.getX();
+        double centerPoseY = center.getY();
+
+        double pointPoseX = point.getX();
+        double pointPoseY = point.getY();
+
+        double distanceSquared = (Math.pow(centerPoseX - pointPoseX, 2) + Math.pow(centerPoseY - pointPoseY, 2));
+        return distanceSquared <= Math.pow(radius, 2);
+    }
 }
