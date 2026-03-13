@@ -8,6 +8,7 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 
@@ -195,7 +196,7 @@ public class Superstructure extends PARTsSubsystem {
             c = Commands.sequence(
                 Commands.parallel(
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftTrenchToCenter")), 
-                    intake.intake()),
+                    Commands.sequence(new WaitCommand(.25), intake.intake())),
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")),
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterToTrench")),
                     shoot(()-> false)
@@ -210,6 +211,7 @@ public class Superstructure extends PARTsSubsystem {
     public Command autoTest() {
         Command c = new WaitCommand(0);
         try {
+            PathConstraints constraints = new PathConstraints(2, 2, 2 * Math.PI, 4 * Math.PI);
             c = Commands.parallel(
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")), 
                     intake.intake());
