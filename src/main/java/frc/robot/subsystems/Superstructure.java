@@ -196,10 +196,10 @@ public class Superstructure extends PARTsSubsystem {
             c = Commands.sequence(
                 Commands.parallel(
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftTrenchToCenter")), 
-                    Commands.sequence(new WaitCommand(.25), intake.intake())),
+                    Commands.sequence(new WaitCommand(.4), intake.intake())),
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")),
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterToTrench")),
-                    shoot(()-> false)
+                    Commands.parallel(shoot(()-> false), Commands.sequence(new WaitCommand(1), intake.intakeShooting()))
                     );
         } catch (FileVersionException | IOException | ParseException e) {
             // TODO Auto-generated catch block
