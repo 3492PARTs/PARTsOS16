@@ -62,13 +62,14 @@ public abstract class Turret extends PARTsSubsystem {
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
+        partsNT.putBoolean("Valid Angle", isValidAngle(), true);
         partsNT.putString("Turret State", turretState.toString(), !RobotConstants.COMPETITION);
         partsNT.putDouble("Angle", getAngle(), true);
         partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Setpoint", turretPIDController.getSetpoint(), RobotContainer.debug || debug);
         partsNT.putBoolean("At Setpoint", turretPIDController.atSetpoint(), true);
         partsNT.putDouble("Current Error", turretPIDController.getPositionError(), RobotContainer.debug || debug);
-        partsNT.putDouble("Get Angle to target", getAngleToTarget(Field.getAllianceHubPose()), true);
+        partsNT.putDouble("Get Angle to target", getAngleToTarget(getTargetPose()), true);
         partsNT.putBoolean("Turret Debug Active", debug, !RobotConstants.COMPETITION);
     }
 
@@ -176,7 +177,7 @@ public abstract class Turret extends PARTsSubsystem {
         return turretState;
     }
 
-    public Command track() {
+    public Command trackHub() {
         return PARTsCommandUtils.setCommandName("Turret.track", this.runOnce(() -> {
             turretState = TurretState.TRACKING_HUB;
         }));
@@ -222,13 +223,18 @@ public abstract class Turret extends PARTsSubsystem {
         Targets zone = Hub.getZone(robotPoseSupplier.get());
         double timeOfFlight = (zone == null) ? 0 : zone.getTimeOfFlight();
         Pose2d calculatedPose = 
-                    Field.getAllianceHubPose().plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
+                    target.plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
                             drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d()));
         fieldTarget.setPose(calculatedPose);
-        double angleToTarget = edu.wpi.first.math.MathUtil
-                .inputModulus(robotPoseSupplier.get().getRotation().getDegrees(), -180, 180)
+        double angleToTarget = robotPoseSupplier.get().getRotation().getDegrees()
                 - (Math.atan2(calculatedPose.getY() - robotPoseSupplier.get().getY(),
                         calculatedPose.getX() - robotPoseSupplier.get().getX()) * 180 / Math.PI);
+        if (angleToTarget <= -180) {
+            angleToTarget += 360;
+        }
+        else if (angleToTarget >= 180) {
+            angleToTarget -= 360;
+        }
         return angleToTarget;
     }
     // endregion private functions

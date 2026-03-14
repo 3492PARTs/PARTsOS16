@@ -11,7 +11,9 @@ import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants.ShooterState;
+import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
+import frc.robot.util.Field;
 import frc.robot.util.Hub;
 import frc.robot.util.Trench;
 import frc.robot.util.Hub.Targets;
@@ -30,17 +32,19 @@ public abstract class Shooter extends PARTsSubsystem {
     private PIDController shooterPIDController;
     private SimpleMotorFeedforward shooterFeedforward;
     private Supplier<Pose2d> robotPoseSupplier;
+    private Supplier<TurretState> turretStateSupplier;
     private PARTsDrivetrain drivetrain;
 
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
-    public Shooter(Supplier<Pose2d> poseSupplier, PARTsDrivetrain drivetrain) {
+    public Shooter(Supplier<Pose2d> poseSupplier, PARTsDrivetrain drivetrain, Supplier<TurretState> turretSupplierState) {
         super("Shooter", RobotConstants.LOGGING);
         if (RobotConstants.COMPETITION)
             debug = false;
 
         this.robotPoseSupplier = poseSupplier;
+        this.turretStateSupplier = turretSupplierState;
         this.drivetrain = drivetrain;
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Shooter Speed", 0, true);
@@ -57,7 +61,7 @@ public abstract class Shooter extends PARTsSubsystem {
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Shooter State", shooterState.toString(), RobotContainer.debug || debug);
+        partsNT.putString("Shooter State", shooterState.toString(), !RobotConstants.COMPETITION);
         partsNT.putDouble("RPM", getRPM(), true);
         partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint(), RobotContainer.debug || debug);
@@ -86,11 +90,18 @@ public abstract class Shooter extends PARTsSubsystem {
         if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Shooter Speed", true));
         } else {
+
             Targets zone = Hub.getZone(robotPoseSupplier.get());
+
             double timeOfFlight = (zone == null) ? 0 : zone.getTimeOfFlight();
             Targets calculatedZone = Hub.getZone(
                     robotPoseSupplier.get().plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
                             drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d())));
+
+            if (zone == null && turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
+                calculatedZone = Targets.BEHIND_HUB;
+            }
+
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
                     : ShooterState.getZoneRPM(calculatedZone);
 

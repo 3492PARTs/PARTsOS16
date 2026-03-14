@@ -21,6 +21,7 @@ public class Hub {
     private static PARTsNT partsNT = new PARTsNT("Hub");
 
     public static enum Targets {
+        BEHIND_HUB (0, 0),
         DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0),
         TRENCH(0, 0.6),
         ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.5),

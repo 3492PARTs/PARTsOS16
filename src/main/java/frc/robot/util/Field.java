@@ -13,6 +13,8 @@ import frc.robot.RobotContainer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.game.AprilTag;
 
 /** This interface stores information about the field elements. */
@@ -219,9 +221,10 @@ public interface Field {
     }
 
     public static Pose2d getNearestAllianceCorner(Pose2d current) {
+        PARTsUnit offset = new PARTsUnit(5, PARTsUnitType.Foot);
         Pose2d[] alliancePoses = new Pose2d[] {
-            new Pose2d(0, 0, new Rotation2d()), 
-            new Pose2d(0, WIDTH, new Rotation2d()), 
+            new Pose2d(0, offset.to(PARTsUnitType.Meter), new Rotation2d()), 
+            new Pose2d(0, WIDTH - offset.to(PARTsUnitType.Meter), new Rotation2d()), 
         };
         Pose2d corner = Trench.getNearestPose(current, alliancePoses);
         return corner;

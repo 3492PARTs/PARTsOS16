@@ -12,14 +12,15 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.RobotContainer;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 
 public class ShooterPhys extends Shooter {
     protected final TalonFX leftMotor;
     protected final TalonFX rightMotor;
 
-    public ShooterPhys(Supplier <Pose2d> poseSupplier, PARTsDrivetrain drivetrain) {
-        super(poseSupplier, drivetrain);
+    public ShooterPhys(Supplier <Pose2d> poseSupplier, PARTsDrivetrain drivetrain, Supplier<TurretState> turretSupplierState) {
+        super(poseSupplier, drivetrain, turretSupplierState);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
