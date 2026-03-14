@@ -99,14 +99,7 @@ public abstract class Shooter extends PARTsSubsystem {
 
         else {
             Targets zone = Hub.getZone(robotPoseSupplier.get());
-            double timeOfFlight = (zone == null) ? 0 : zone.getTimeOfFlight();
-            Targets calculatedZone = Hub.getZone(
-                    robotPoseSupplier.get().plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
-                            drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d())));
-
-            if (zone == null && turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
-                calculatedZone = Targets.BEHIND_HUB;
-            }
+            double timeOfFlight = (zone == null) ? 0 : ShooterState.getTofFromDistanceToHub(robotPoseSupplier.get());
 
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
                     : ShooterState.getRPMFromDistanceToHub(robotPoseSupplier.get()
@@ -118,8 +111,13 @@ public abstract class Shooter extends PARTsSubsystem {
             if (inTrench) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.TRENCH);
             }
+
+            if (zone == null && turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
+                shooterRPM = ShooterState.getZoneRPM(Targets.BEHIND_HUB);
+            }
             
             partsNT.putDouble("Shooting RPM", shooterRPM, true);
+            partsNT.putDouble("Shooting ToF", timeOfFlight, true);
             partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);
 
             switch (shooterState) {

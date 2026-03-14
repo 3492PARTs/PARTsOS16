@@ -63,6 +63,16 @@ public class ShooterConstants {
         public static InterpolatingDoubleTreeMap rpmTable = initRpmTable();
 
         /**
+         * Key = Distance (Meters)
+         * <p>
+         * Value = Time of Fuel Flight
+         * 
+         * Make sure to use the gotten distance from
+         * {@link frc.robot.util.Trench#getDistance(Pose2d, Pose2d) Trench.getDistance()} to properly calculate the right RPM.
+         */
+        public static InterpolatingDoubleTreeMap tofTable = initTofTable();
+
+        /**
          * Creates and populates the {@link #rpmTable RPM Table} with the correct
          * position-to-rpm values based off of the current zone code.
          * <p>
@@ -97,6 +107,28 @@ public class ShooterConstants {
         }
 
         /**
+         * Creates and populates the {@link #tofTable ToF (Time of Flight) Table} with the correct
+         * position-to-ToF values based off of the current zone code.
+         * <p>
+         * This function should automatically get called at runtime, so there's no need
+         * to expose this function.
+         */
+        private static InterpolatingDoubleTreeMap initTofTable() {
+            InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
+
+            // 0
+            table.put(Targets.DEADZONE.getRadius(), Targets.DEADZONE.getTimeOfFlight());
+
+            // Min
+            table.put(Targets.ZONE1.getRadius(), Targets.ZONE1.getTimeOfFlight());
+
+            // Max
+            table.put(Targets.ZONE6.getRadius(), Targets.ZONE6.getTimeOfFlight());
+
+            return table;
+        }
+
+        /**
          * Gets the RPM from the distance to the known hub using the {@link #rpmTable RPM Table}.
          * 
          * @param robotPose The current pose of the robot, used to calculate the
@@ -108,6 +140,20 @@ public class ShooterConstants {
 
             double distance = Trench.getDistance(robotPose, hubPose);
             return rpmTable.get(distance);
+        }
+
+        /**
+         * Gets the ToF from the distance to the known hub using the {@link #tofTable ToF Table}.
+         * 
+         * @param robotPose The current pose of the robot, used to calculate the
+         *                  distance to the hub.
+         * @return The ToF corresponding to the distance.
+         */
+        public static double getTofFromDistanceToHub(Pose2d robotPose) {
+            Pose2d hubPose = Field.getAllianceHubPose();
+
+            double distance = Trench.getDistance(robotPose, hubPose);
+            return tofTable.get(distance);
         }
     }
 
