@@ -119,6 +119,7 @@ public abstract class Shooter extends PARTsSubsystem {
                 shooterRPM = ShooterState.getZoneRPM(Targets.TRENCH);
             }
             
+            partsNT.putDouble("Shooting RPM", shooterRPM, true);
             partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);
 
             switch (shooterState) {
