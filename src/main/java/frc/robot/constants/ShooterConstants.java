@@ -34,7 +34,7 @@ public class ShooterConstants {
                 case BEHIND_HUB:
                     return 3000;
                 case TRENCH:
-                    return 3500;
+                    return 3400;
                 case ZONE1:
                     return 3000;
                 case ZONE2:

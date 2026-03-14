@@ -13,11 +13,11 @@ public class DrivetrainConstants {
         public static final double MAX_RANGE_VELOCITY = 2;// m/s
         public static final double MAX_RANGE_ACCELERATION = 2;// m/2^s
 
-        public static final double THETA_P = 10; // Proprotinal //4.5 15
+        public static final double THETA_P = 7; // Proprotinal //4.5 15
         public static final double THETA_I = 0; // Gradual corretction
         public static final double THETA_D = 0; // Smooth oscilattions
 
-        public static final double RANGE_X_P = 10; // 6.5
+        public static final double RANGE_X_P = 16; // 6.5
         public static final double RANGE_I = 0;
         public static final double RANGE_D = 0;
 
