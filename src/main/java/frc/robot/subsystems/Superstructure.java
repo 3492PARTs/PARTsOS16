@@ -80,30 +80,19 @@ public class Superstructure extends PARTsSubsystem {
 
                                 // Roll the kicker if the shooter is at its setpoint.
                                 new ConditionalCommand(
-                                        kicker.roll().onlyIf(() -> {
-                                            return kicker.getState() != KickerState.ROLLING;
-                                        }),
-                                        kicker.idle().onlyIf(() -> {
-                                            return kicker.getState() != KickerState.IDLE;
-                                        }),
+                                        Commands.parallel(kicker.roll(),
+                                                candle.commandAddState(CandleState.ACTIVE_SHOOTING)).onlyIf(() -> {
+                                                    return kicker.getState() != KickerState.ROLLING;
+                                                }),
+                                        Commands.parallel(kicker.idle(),
+                                                candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)).onlyIf(() -> {
+                                                    return kicker.getState() != KickerState.IDLE;
+                                                }),
                                         () -> shooter.withinSetpointRange() &&
                                                 (shooter.getSetpoint().getAsDouble() > 0)
                                                 && turret.isValidAngle() &&
                                                 turret.withinSetpointRange() &&
-                                                tracking.getAsBoolean()),
-
-                                new ConditionalCommand(
-                                        candle.commandAddState(CandleState.ACTIVE_SHOOTING)
-                                                .onlyIf(() -> {
-                                                    return candle.getState() != CandleState.ACTIVE_SHOOTING;
-                                                }),
-
-                                        candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)
-                                                .onlyIf(() -> {
-                                                    return candle.getState() == CandleState.ACTIVE_SHOOTING;
-                                                }),
-
-                                        () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()))
+                                                tracking.getAsBoolean()))
                                 .until(end)),
 
                 // Make sure to cancel and reset if we're forced to end or the turret is not at
@@ -116,6 +105,7 @@ public class Superstructure extends PARTsSubsystem {
                             kicker.reset();
                             shooter.reset();
                             candle.removeState(CandleState.SHOOTING);
+                            candle.removeState(CandleState.ACTIVE_SHOOTING);
                         })));
         c.addRequirements(this);
         return PARTsCommandUtils.setCommandName("Superstructure.shoot", c);
@@ -134,26 +124,15 @@ public class Superstructure extends PARTsSubsystem {
 
                                 // Roll the kicker if the shooter is at its setpoint.
                                 new ConditionalCommand(
-                                        kicker.roll().onlyIf(() -> {
-                                            return kicker.getState() != KickerState.ROLLING;
-                                        }),
-                                        kicker.idle().onlyIf(() -> {
-                                            return kicker.getState() != KickerState.IDLE;
-                                        }),
-                                        () -> turret.atSetpoint()),
-
-                                new ConditionalCommand(
-                                        candle.commandAddState(CandleState.ACTIVE_SHOOTING)
-                                                .onlyIf(() -> {
-                                                    return candle.getState() != CandleState.ACTIVE_SHOOTING;
+                                        Commands.parallel(kicker.roll(),
+                                                candle.commandAddState(CandleState.ACTIVE_SHOOTING)).onlyIf(() -> {
+                                                    return kicker.getState() != KickerState.ROLLING;
                                                 }),
-
-                                        candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)
-                                                .onlyIf(() -> {
-                                                    return candle.getState() == CandleState.ACTIVE_SHOOTING;
+                                        Commands.parallel(kicker.idle(),
+                                                candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)).onlyIf(() -> {
+                                                    return kicker.getState() != KickerState.IDLE;
                                                 }),
-
-                                        () -> shooter.atSetpoint().getAsBoolean()))
+                                        () -> turret.atSetpoint()))
                                 .until(end)),
 
                 // Make sure to cancel and reset if we're forced to end or the turret is not at
