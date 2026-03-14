@@ -31,6 +31,10 @@ public abstract class Shooter extends PARTsSubsystem {
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
 
+    /**
+     * Creates a new Shooter subsystem.
+     * @param poseSupplier The supplier for the robot's pose, used to get the distance to the hub and trench.
+     */
     public Shooter(Supplier<Pose2d> poseSupplier) {
         super("Shooter", RobotConstants.LOGGING);
         if (RobotConstants.COMPETITION) debug = false;
@@ -81,7 +85,7 @@ public abstract class Shooter extends PARTsSubsystem {
             setSpeed(partsNT.getDouble("Shooter Speed", true));
         } else {
             Targets zone = Hub.getZone(poseSupplier.get());
-            double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM() : ShooterState.getZoneRPM(zone);
+             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM() : ShooterState.getRPMFromDistanceToHub(poseSupplier.get());
 
             boolean inTrench = Trench.isUnderTrench(poseSupplier.get());
             if (inTrench) {
@@ -130,42 +134,86 @@ public abstract class Shooter extends PARTsSubsystem {
      */
     protected abstract void setSpeed(double speed);
 
+    /**
+     * Sets the voltage of the Shooter.
+     * 
+     * @param voltage The voltage between <code>-12.0</code> and <code>12.0</code>.
+     */
     protected abstract void setVoltage(double voltage);
 
+    /**
+     * Gets the voltage of the Shooter.
+     * 
+     * @return The voltage between <code>-12.0</code> and <code>12.0</code>.
+     */
     protected abstract double getVoltage();
 
+    /**
+     * Gets the RPM of the Shooter.
+     * 
+     * @return The RPM of the Shooter.
+     */
     protected abstract double getRPM();
 
+    /**
+     * Gets the current state of the Shooter.
+     * @return The current state of the Shooter.
+     */
     public ShooterState getState() {
         return shooterState;
     }
 
+    /**
+     * Command to set the Shooter to the {@link ShooterState#SHOOTING SHOOTING} state.
+     * @return The command.
+     */
     public Command shoot() {
         return PARTsCommandUtils.setCommandName("Shooter.shoot", this.runOnce(() -> {
             shooterState = ShooterState.SHOOTING;
         }));
     }
 
+    /**
+     * Command to set the Shooter to the {@link ShooterState#IDLE IDLE} state.
+     * @return The command.
+     */
     public Command idle() {
         return PARTsCommandUtils.setCommandName("Shooter.idle", this.runOnce(() -> {
             shooterState = ShooterState.IDLE;
         }));
     }
 
+    /**
+     * Command to set the Shooter to the {@link ShooterState#MANUAL MANUAL} state.<p>
+     * This allows manual control of the shooter RPM.
+     * @return The command.
+     */
     public Command manualShoot() {
         return PARTsCommandUtils.setCommandName("Shooter.manualShoot", this.runOnce(() -> {
             shooterState = ShooterState.MANUAL;
         }));
     }
 
+    /**
+     * Gets whether the Shooter is at the setpoint RPM.
+     * @return A boolean supplier that returns true if the Shooter is at the setpoint RPM.
+     */
     public BooleanSupplier atSetpoint() {
         return () -> shooterPIDController.atSetpoint();
     }
 
+    /**
+     * Gets the current setpoint of the Shooter.
+     * @return A double supplier that returns the current setpoint of the Shooter in RPM.
+     */
     public DoubleSupplier getSetpoint() {
         return () -> shooterPIDController.getSetpoint();
     }
 
+    /**
+     * Gets whether the Shooter is within a certain range of the setpoint RPM.
+     * @return Boolean that returns true if the Shooter is within the setpoint range.
+     */
     public boolean withinSetpointRange() {
         return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 500;
     }

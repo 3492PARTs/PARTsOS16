@@ -5,7 +5,9 @@ import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import frc.robot.util.Field;
 import frc.robot.util.Hub.Targets;
+import frc.robot.util.Trench;
 
 public class ShooterConstants {
     public enum ShooterState {
@@ -48,41 +50,61 @@ public class ShooterConstants {
         }
 
         /**
-         * K = Distance (Meters),
+         * Key = Distance (Meters)
          * <p>
-         * V = RPM
+         * Value = RPM
          * 
          * Make sure to use the gotten distance from
-         * {@link frc.robot.util.Trench#getDistance(Pose2d, Pose2d)
-         * Trench.getDistance()} to properly calculate the right RPM.
+         * {@link frc.robot.util.Trench#getDistance(Pose2d, Pose2d) Trench.getDistance()} to properly calculate the right RPM.
          */
         public static InterpolatingDoubleTreeMap rpmTable = initRpmTable();
 
         /**
-         * Creates and populates the {@link #rpmTable RPM Table} with the correct position-to-rpm values based off of the current zone code.<p>
-         * This function should automatically get called at runtime, so there's no need to expose this function.
+         * Creates and populates the {@link #rpmTable RPM Table} with the correct
+         * position-to-rpm values based off of the current zone code.
+         * <p>
+         * This function should automatically get called at runtime, so there's no need
+         * to expose this function.
          */
         private static InterpolatingDoubleTreeMap initRpmTable() {
             InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
 
+            // Cut off the shooter in the deadzone.
+            //? It's a little bit lower than the actual deadzone just in case the robot is slightly in the deadzone, might have to be removed.
+            table.put(PARTsUnit.FootToMeters.apply(7.85), 0.0);
             // End of Deadzone / Start of Zone 1
-            table.put(PARTsUnit.InchesToMeters.apply(8.0), 3000.0);
+            table.put(PARTsUnit.FootToMeters.apply(8.0), 3000.0);
 
             /*
              * I don't think that we need to populate the table with these calcs, but
              * they're here just in case we do.
              * Further testing is required though.
+             * It seems to work fine without these values in sim.
              */
-            // table.put(PARTsUnit.InchesToMeters.apply(10.0), 3300.0);
-            // table.put(PARTsUnit.InchesToMeters.apply(11.5), 3400.0);
-            // table.put(PARTsUnit.InchesToMeters.apply(13.0), 3600.0);
-            // table.put(PARTsUnit.InchesToMeters.apply(15.0), 3800.0);
-            // table.put(PARTsUnit.InchesToMeters.apply(17.0), 4000.0);
+            // table.put(PARTsUnit.FootToMeters.apply(10.0), 3300.0);
+            // table.put(PARTsUnit.FootToMeters.apply(11.5), 3400.0);
+            // table.put(PARTsUnit.FootToMeters.apply(13.0), 3600.0);
+            // table.put(PARTsUnit.FootToMeters.apply(15.0), 3800.0);
+            // table.put(PARTsUnit.FootToMeters.apply(17.0), 4000.0);
 
             // Zone 6
-            table.put(PARTsUnit.InchesToMeters.apply(19.0), 4000.0);
+            table.put(PARTsUnit.FootToMeters.apply(19.0), 4000.0);
 
             return table;
+        }
+
+        /**
+         * Gets the RPM from the distance to the known hub using the {@link #rpmTable RPM Table}.
+         * 
+         * @param robotPose The current pose of the robot, used to calculate the
+         *                  distance to the hub.
+         * @return The RPM corresponding to the distance.
+         */
+        public static double getRPMFromDistanceToHub(Pose2d robotPose) {
+            Pose2d hubPose = Field.getAllianceHubPose();
+
+            double distance = Trench.getDistance(robotPose, hubPose);
+            return rpmTable.get(distance);
         }
     }
 
