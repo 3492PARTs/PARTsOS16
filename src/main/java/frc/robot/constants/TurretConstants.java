@@ -33,9 +33,4 @@ public class TurretConstants {
 
     public static final double TURRET_MAX_VELOCITY = 12000;
     public static final double TURRET_MAX_ACCELERATION = 6000;
-
-    // Feedforward
-    public static final double S = 0;
-    public static final double V = 0;
-    public static final double A = 0;
 }

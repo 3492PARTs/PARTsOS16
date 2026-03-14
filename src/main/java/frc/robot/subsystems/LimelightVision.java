@@ -22,24 +22,14 @@ import frc.robot.util.LimelightHelpers.PoseEstimate;
 
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
-
-import org.parts3492.partslib.PARTsUnit;
-import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
-
-//camera 21 - 14 inches forward
-//camera 24 - 13 inches side
-//camera 14 inches up
-//camera 45 degrees side to side
-//camera 40 degrees up and down
 
 public class LimelightVision extends PARTsSubsystem {
 
     private final Supplier<Pose2d> poseSupplier;
     private final BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction;
     private final Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer;
-    private final Consumer<Pose2d> resetPoseConsumer;
 
     public enum MegaTagMode {
         MEGATAG1,
@@ -75,7 +65,7 @@ public class LimelightVision extends PARTsSubsystem {
         this.poseSupplier = poseSupplier;
         this.addVisionMeasurementBiFunction = addVisionMeasurementBiFunction;
         this.setVisionMeasurementStdDevsConsumer = setVisionMeasurementStdDevsConsumer;
-        this.resetPoseConsumer = resetPoseConsumer;
+
         for (Camera camera : CameraConstants.LimelightCameras) {
             Pose3d robotRelativePose = camera.getLocation();
             LimelightHelpers.setCameraPose_RobotSpace(
@@ -240,17 +230,21 @@ public class LimelightVision extends PARTsSubsystem {
 
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
                 }
-                
+
                 partsNT.putBoolean(camera.getName() + "/Has Data", data, !RobotConstants.COMPETITION); // loop-overrun
                 partsNT.putBoolean(camera.getName() + "/Accepted Data", accepted, !RobotConstants.COMPETITION); // loop-overrun
 
-                partsNT.putNumber(camera.getName() + "/X", poseEstimate == null ? -1 : poseEstimate.pose.getX(), !RobotConstants.COMPETITION); // loop-overrun
-                partsNT.putNumber(camera.getName() + "/Y", poseEstimate == null ? -1 : poseEstimate.pose.getY(), !RobotConstants.COMPETITION); // loop-overrun
-                partsNT.putNumber(camera.getName() + "/Rotation (deg)", poseEstimate == null ? -1 : poseEstimate.pose.getRotation().getDegrees(),
+                partsNT.putNumber(camera.getName() + "/X", poseEstimate == null ? -1 : poseEstimate.pose.getX(),
+                        !RobotConstants.COMPETITION); // loop-overrun
+                partsNT.putNumber(camera.getName() + "/Y", poseEstimate == null ? -1 : poseEstimate.pose.getY(),
+                        !RobotConstants.COMPETITION); // loop-overrun
+                partsNT.putNumber(camera.getName() + "/Rotation (deg)",
+                        poseEstimate == null ? -1 : poseEstimate.pose.getRotation().getDegrees(),
                         !RobotConstants.COMPETITION); // loop-overrun
 
                 partsNT.putNumber(camera.getName() + "/tag id", tagId, !RobotConstants.COMPETITION);
-                partsNT.putNumber(camera.getName() + "/tag count", poseEstimate == null ? -1 : poseEstimate.tagCount, true);
+                partsNT.putNumber(camera.getName() + "/tag count", poseEstimate == null ? -1 : poseEstimate.tagCount,
+                        true);
                 partsNT.putBoolean(camera.getName() + "/In Radius", inRadius, true);
             }
         }
@@ -277,38 +271,6 @@ public class LimelightVision extends PARTsSubsystem {
         // TODO Auto-generated method stub
         // throw new UnsupportedOperationException("Unimplemented method 'log'");
     }
-
-    /*
-     * public void resetRobotPose() {
-     * setMegaTagMode(MegaTagMode.MEGATAG1);
-     * for (Camera camera : CameraConstants.LimelightCameras) {
-     * LimelightHelpers.SetRobotOrientation(
-     * camera.getName(),
-     * (poseSupplier.get().getRotation().getDegrees()) % 360,
-     * 0,
-     * 0,
-     * 0,
-     * 0,
-     * 0);
-     * if (camera.isEnabled()) {
-     * PoseEstimate poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
-     * ? getMegaTag2PoseEstimate(camera.getName())
-     * : getMegaTag1PoseEstimate(camera.getName());
-     * 
-     * if (poseEstimate != null && poseEstimate.tagCount > 0) {
-     * resetPoseConsumer.accept(poseEstimate.pose);
-     * partsNT.putBoolean(camera.getName() + "/Has Data", true);
-     * partsNT.putInteger(camera.getName() + "/Tag Count", poseEstimate.tagCount);
-     * maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
-     * } else {
-     * partsNT.putBoolean(camera.getName() + "/Has Data", false);
-     * partsNT.putInteger(camera.getName() + "/Tag Count", 0);
-     * }
-     * }
-     * }
-     * setMegaTagMode(MegaTagMode.MEGATAG2);
-     * }
-     */
 
     public void setPipelineIndex(Pipelines pipeline) {
         partsNT.putString("Pipeline name", pipeline.name(), true);

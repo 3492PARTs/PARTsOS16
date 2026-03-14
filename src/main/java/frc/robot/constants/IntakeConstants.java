@@ -8,9 +8,7 @@ public class IntakeConstants {
         IDLE(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         DISABLED(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         INTAKING(1, new PARTsUnit(190, PARTsUnitType.Angle)),
-        OUTTAKING(-1, new PARTsUnit(190, PARTsUnitType.Angle)),
         SHOOTING(0.5, new PARTsUnit(45, PARTsUnitType.Angle)),
-        TRAVELING(0, new PARTsUnit(160, PARTsUnitType.Angle)),
         HOME(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         MANUALPIVOT(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         HOLD(0, new PARTsUnit(0, PARTsUnitType.Angle));
@@ -51,9 +49,4 @@ public class IntakeConstants {
 
     public static final double INTAKE_MAX_VELOCITY = 800;
     public static final double INTAKE_MAX_ACCELERATION = 1000;
-
-    // Feedforward
-    public static final double S = 1.2398;
-    public static final double V = 1.1537;
-    public static final double A = 0.27146;
 }

@@ -35,9 +35,11 @@ public class TurretPhys extends Turret {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
 
-        partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -48,9 +50,11 @@ public class TurretPhys extends Turret {
     @Override
     public void log() {
         super.log();
-        partsLogger.logDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
 
-        partsLogger.logDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override

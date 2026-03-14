@@ -6,20 +6,6 @@ public class CandleConstants {
         DISABLED,
         SHOOTING,
         ACTIVE_SHOOTING
-        /*
-         * ELEVATOR_ERROR,
-         * CORAL_LASER_EXIT_ERROR,
-         * CORAL_LASER_ENTRY_ERROR,
-         * FINE_GRAIN_DRIVE,
-         * CORAL_ENTERING,
-         * HAS_CORAL,
-         * ELEVATOR_STOW,
-         * ELEVATOR_L2,
-         * ELEVATOR_L3,
-         * ELEVATOR_L4,
-         * SCORING,
-         * AUTO_ALIGN
-         */
     }
 
     public static final int CAN_ID = 31;

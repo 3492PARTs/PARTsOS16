@@ -37,8 +37,9 @@ public class Trench {
     // TODO: Move something like this to PARTsLib and make it return a PARTsUnit.
     /**
      * Gets the distance between a point and a goal.
+     * 
      * @param current The origin point. I.e. the drivetrain's position.
-     * @param goal The target point.
+     * @param goal    The target point.
      * @return The distance in meters.
      */
     public static double getDistance(Pose2d current, Pose2d goal) {

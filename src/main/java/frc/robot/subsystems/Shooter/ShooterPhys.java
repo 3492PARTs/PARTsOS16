@@ -19,7 +19,8 @@ public class ShooterPhys extends Shooter {
     protected final TalonFX leftMotor;
     protected final TalonFX rightMotor;
 
-    public ShooterPhys(Supplier <Pose2d> poseSupplier, PARTsDrivetrain drivetrain, Supplier<TurretState> turretSupplierState) {
+    public ShooterPhys(Supplier<Pose2d> poseSupplier, PARTsDrivetrain drivetrain,
+            Supplier<TurretState> turretSupplierState) {
         super(poseSupplier, drivetrain, turretSupplierState);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -37,7 +38,6 @@ public class ShooterPhys extends Shooter {
         leftMotor.getConfigurator().apply(config);
 
         rightMotor = new TalonFX(ShooterConstants.RIGHT_MOTOR_ID, ShooterConstants.CAN_BUS_NAME);
-
         rightMotor.setControl(new Follower(ShooterConstants.LEFT_MOTOR_ID, MotorAlignmentValue.Opposed));
 
         leftMotor.setNeutralMode(NeutralModeValue.Coast);
@@ -47,11 +47,15 @@ public class ShooterPhys extends Shooter {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsNT.putDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsNT.putDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
 
-        partsNT.putDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsNT.putDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsNT.putDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -62,11 +66,15 @@ public class ShooterPhys extends Shooter {
     @Override
     public void log() {
         super.log();
-        partsLogger.logDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsLogger.logDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Current/Left", leftMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Current/Right", rightMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
 
-        partsLogger.logDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsLogger.logDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Output/Left", leftMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Output/Right", rightMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override

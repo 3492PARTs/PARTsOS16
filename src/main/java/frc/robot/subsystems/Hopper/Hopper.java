@@ -9,16 +9,16 @@ import frc.robot.RobotContainer;
 import frc.robot.constants.HopperConstants.HopperState;
 import frc.robot.constants.RobotConstants;
 
-
 public abstract class Hopper extends PARTsSubsystem {
     private HopperState hopperstate = HopperState.IDLE;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
-    public Hopper () {
+    public Hopper() {
         super("Hopper");
-        if (RobotConstants.COMPETITION) debug = false;
+        if (RobotConstants.COMPETITION)
+            debug = false;
 
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Hopper Speed", 0, true);
@@ -27,7 +27,7 @@ public abstract class Hopper extends PARTsSubsystem {
         partsNT.putSmartDashboardSendable("Toggle Hopper Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
 
-    //region Generic Subsystem Functions
+    // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
         partsNT.putString("Hopper State", hopperstate.toString(), !RobotConstants.COMPETITION);
@@ -53,40 +53,37 @@ public abstract class Hopper extends PARTsSubsystem {
     public void periodic() {
         if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Hopper Speed", true));
-        }
-        else {
-            switch(hopperstate) {
-            case DISABLED:
-            case ROLLING:
-            case IDLE:
-            case BACKROLLING:
-                setSpeed(hopperstate.getSpeed());
-                break;
-            default:
-                setSpeed(0);
-                break;
-        }
+        } else {
+            switch (hopperstate) {
+                case DISABLED:
+                case ROLLING:
+                case IDLE:
+
+                    setSpeed(hopperstate.getSpeed());
+                    break;
+                default:
+                    setSpeed(0);
+                    break;
+            }
         }
     }
-    //endregion
+    // endregion
 
-    //region Custom Public Functions
-    /** Sets the speed of the Hopper.
+    // region Custom Public Functions
+    /**
+     * Sets the speed of the Hopper.
+     * 
      * @param speed The speed between <code>-1.0</code> and <code>1.0</code>.
-    */
+     */
     protected abstract void setSpeed(double speed);
 
-    public HopperState getState() { return hopperstate; }
+    public HopperState getState() {
+        return hopperstate;
+    }
 
     public Command roll() {
         return PARTsCommandUtils.setCommandName("Hopper.roll", this.runOnce(() -> {
             hopperstate = HopperState.ROLLING;
-        }));
-    }
-
-    public Command backRoll() {
-        return PARTsCommandUtils.setCommandName("Hopper.backRoll", this.runOnce(() -> {
-            hopperstate = HopperState.BACKROLLING;
         }));
     }
 
@@ -95,5 +92,5 @@ public abstract class Hopper extends PARTsSubsystem {
             hopperstate = HopperState.IDLE;
         }));
     }
-    //endregion
+    // endregion
 }

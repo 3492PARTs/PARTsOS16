@@ -39,11 +39,7 @@ public class Robot extends TimedRobot {
         m_robotContainer.constructDashboard(); // loop-overrun
 
         partsLogger.logCommandScheduler(true);
-        // partsLogger.logPathPlanner(); // loop-overrun
 
-        // CameraServer.startAutomaticCapture(); // loop-overrun
-
-        // m_robotContainer.resetStartPose();
         m_robotContainer.setMegaTagMode(MegaTagMode.MEGATAG1);
 
         DriverStation.silenceJoystickConnectionWarning(!isReal() || RobotContainer.debug);
@@ -60,8 +56,6 @@ public class Robot extends TimedRobot {
         partsNT.putDouble("Match Time", DriverStation.getMatchTime(), true); // loop-overrun
         m_robotContainer.outputTelemetry(); // loop-overrun
         m_robotContainer.log(); // loop-overrun
-
-        // m_robotContainer.getAlliance(); // loop-overrun
     }
 
     @Override

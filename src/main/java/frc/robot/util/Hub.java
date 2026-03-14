@@ -21,7 +21,7 @@ public class Hub {
     private static PARTsNT partsNT = new PARTsNT("Hub");
 
     public static enum Targets {
-        BEHIND_HUB (0, 0),
+        BEHIND_HUB(0, 0),
         DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0),
         TRENCH(0, 0.6),
         ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.5),
@@ -32,7 +32,7 @@ public class Hub {
         ZONE6(new PARTsUnit(19, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.2);
 
         private double radius;
-        //get actual time of flights later
+        // get actual time of flights later
         private double timeOfFlight;
 
         Targets(double radius, double timeOfFlight) {
@@ -51,15 +51,18 @@ public class Hub {
         public void setFieldObject2d() {
             hubPose2d = Field.getAllianceHubPose();
             FieldObject2d targetFieldObject2d = Field.FIELD2D.getObject(this.name());
-            Pose2d pose = new Pose2d(hubPose2d.getX() - this.radius * (RobotContainer.isBlue() ? 1 : -1), hubPose2d.getY(), hubPose2d.getRotation());
+            Pose2d pose = new Pose2d(hubPose2d.getX() - this.radius * (RobotContainer.isBlue() ? 1 : -1),
+                    hubPose2d.getY(), hubPose2d.getRotation());
             targetFieldObject2d.setPose(pose);
 
-            Pose2d poseRot = pose.rotateAround(hubPose2d.getTranslation(), new Rotation2d(new PARTsUnit(45, PARTsUnitType.Angle).to(PARTsUnitType.Radian)));
+            Pose2d poseRot = pose.rotateAround(hubPose2d.getTranslation(),
+                    new Rotation2d(new PARTsUnit(45, PARTsUnitType.Angle).to(PARTsUnitType.Radian)));
 
             FieldObject2d targetFieldObject2dRotated = Field.FIELD2D.getObject(this.name() + "Rot");
             targetFieldObject2dRotated.setPose(poseRot);
 
-            Pose2d poseRotInv = pose.rotateAround(hubPose2d.getTranslation(), new Rotation2d(new PARTsUnit(-45, PARTsUnitType.Angle).to(PARTsUnitType.Radian)));
+            Pose2d poseRotInv = pose.rotateAround(hubPose2d.getTranslation(),
+                    new Rotation2d(new PARTsUnit(-45, PARTsUnitType.Angle).to(PARTsUnitType.Radian)));
             FieldObject2d targetFieldObject2dRotatedInv = Field.FIELD2D.getObject(this.name() + "RotInv");
             targetFieldObject2dRotatedInv.setPose(poseRotInv);
         }
@@ -67,15 +70,14 @@ public class Hub {
 
     public static void outputTelemetry() {
         partsNT.putBoolean("Hub Active", Hub.isHubActive(), true);
-        partsNT.putDouble("Time Left", timer.get() <=25 ? 25 - timer.get() : 0, true);
+        partsNT.putDouble("Time Left", timer.get() <= 25 ? 25 - timer.get() : 0, true);
         checkHubActivity();
     }
 
     public static Targets getZone(Pose2d point) {
         if (Field.isInRadius(hubPose2d, point, Targets.DEADZONE.getRadius())) {
             return null;
-        }
-        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE1.getRadius())) {
+        } else if (Field.isInRadius(hubPose2d, point, Targets.ZONE1.getRadius())) {
             return Targets.ZONE1;
         }
 
@@ -174,7 +176,6 @@ public class Hub {
         }
         previousHubActive = Hub.isHubActive();
     }
-
 
     public static void putZonesOnField() {
         Targets.DEADZONE.setFieldObject2d();

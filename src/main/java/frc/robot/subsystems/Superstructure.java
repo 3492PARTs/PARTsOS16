@@ -8,7 +8,6 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 
@@ -54,10 +53,8 @@ public class Superstructure extends PARTsSubsystem {
      */
     public Command shoot(BooleanSupplier end, TurretState turretState) {
         BooleanSupplier tracking = () -> ((turretState == TurretState.TRACKING_HUB
-                                                        && Field.isInAllianceZone(drivetrain.getPose()))
-                                                        || turretState == TurretState.TRACKING_CORNER);
-        
-                                                        
+                && Field.isInAllianceZone(drivetrain.getPose()))
+                || turretState == TurretState.TRACKING_CORNER);
 
         Command c = Commands.sequence(
                 // Initial startup
@@ -94,27 +91,6 @@ public class Superstructure extends PARTsSubsystem {
                                                 && turret.isValidAngle() &&
                                                 turret.withinSetpointRange() &&
                                                 tracking.getAsBoolean()),
-
-                                /*
-                                 * new ConditionalCommand(
-                                 * intake.intakeShooting().onlyIf(() -> { return false && intake.getState() !=
-                                 * IntakeState.SHOOTING; }),
-                                 * intake.intakeIdle().onlyIf(() -> { return intake.getState() !=
-                                 * IntakeState.IDLE; }),
-                                 * () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()
-                                 * ),
-                                 */
-
-                                /*
-                                 * new ConditionalCommand(
-                                 * hopper.roll().onlyIf(() -> { return hopper.getState() != HopperState.ROLLING;
-                                 * }),
-                                 * hopper.idle().onlyIf(() -> { return hopper.getState() != HopperState.IDLE;
-                                 * }),
-                                 * () -> shooter.atSetpoint().getAsBoolean() &&
-                                 * (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle()
-                                 * ),
-                                 */
 
                                 new ConditionalCommand(
                                         candle.commandAddState(CandleState.ACTIVE_SHOOTING)
@@ -165,18 +141,6 @@ public class Superstructure extends PARTsSubsystem {
                                             return kicker.getState() != KickerState.IDLE;
                                         }),
                                         () -> turret.atSetpoint()),
-                                // ^^^ change condition to be if turret.isAtSetpoint --- make function in turret
-                                // to return pidcontroller at set point
-
-                                /*
-                                 * new ConditionalCommand(
-                                 * intake.intakeShooting().onlyIf(() -> { return false && intake.getState() !=
-                                 * IntakeState.SHOOTING; }),
-                                 * intake.intakeIdle().onlyIf(() -> { return intake.getState() !=
-                                 * IntakeState.IDLE; }),
-                                 * () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()
-                                 * ),
-                                 */
 
                                 new ConditionalCommand(
                                         candle.commandAddState(CandleState.ACTIVE_SHOOTING)

@@ -13,7 +13,6 @@ import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
-import frc.robot.util.Field;
 import frc.robot.util.Hub;
 import frc.robot.util.Trench;
 import frc.robot.util.Hub.Targets;
@@ -38,7 +37,8 @@ public abstract class Shooter extends PARTsSubsystem {
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
-    public Shooter(Supplier<Pose2d> poseSupplier, PARTsDrivetrain drivetrain, Supplier<TurretState> turretSupplierState) {
+    public Shooter(Supplier<Pose2d> poseSupplier, PARTsDrivetrain drivetrain,
+            Supplier<TurretState> turretSupplierState) {
         super("Shooter", RobotConstants.LOGGING);
         if (RobotConstants.COMPETITION)
             debug = false;
@@ -46,13 +46,13 @@ public abstract class Shooter extends PARTsSubsystem {
         this.robotPoseSupplier = poseSupplier;
         this.turretStateSupplier = turretSupplierState;
         this.drivetrain = drivetrain;
+
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Shooter Speed", 0, true);
         }
 
         shooterPIDController = new PIDController(ShooterConstants.P, ShooterConstants.I, ShooterConstants.D);
         shooterFeedforward = new SimpleMotorFeedforward(ShooterConstants.S, ShooterConstants.V, ShooterConstants.A);
-
         shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
 
         partsNT.putSmartDashboardSendable("Toggle Shooter Debug", toggleDebug, !RobotConstants.COMPETITION);
@@ -89,10 +89,10 @@ public abstract class Shooter extends PARTsSubsystem {
     public void periodic() {
         if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Shooter Speed", true));
-        } else {
+        }
 
+        else {
             Targets zone = Hub.getZone(robotPoseSupplier.get());
-
             double timeOfFlight = (zone == null) ? 0 : zone.getTimeOfFlight();
             Targets calculatedZone = Hub.getZone(
                     robotPoseSupplier.get().plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
@@ -114,7 +114,6 @@ public abstract class Shooter extends PARTsSubsystem {
             partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);
 
             switch (shooterState) {
-                case CHARGING:
                 case DISABLED:
                 case IDLE:
                     setSpeed(0);
@@ -122,7 +121,6 @@ public abstract class Shooter extends PARTsSubsystem {
                 case SHOOTING:
                 case MANUAL:
                     double voltage = 0;
-                    // double shooterRPM = shooterState.getRPM();
                     if (debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed", true);
                     }

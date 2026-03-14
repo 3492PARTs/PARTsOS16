@@ -31,9 +31,11 @@ public class KickerPhys extends Kicker {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
 
-        partsNT.putDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -43,9 +45,11 @@ public class KickerPhys extends Kicker {
 
     @Override
     public void log() {
-        partsLogger.logDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("KickerCurrent", kickerMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
 
-        partsLogger.logDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("KickerOutput", kickerMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override
