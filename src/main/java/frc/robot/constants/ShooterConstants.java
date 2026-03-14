@@ -28,6 +28,8 @@ public class ShooterConstants {
                 return 0;
             }
             switch (zone) {
+                case TRENCH:
+                    return 3500;
                 case ZONE1:
                     return 3000;
                 case ZONE2:

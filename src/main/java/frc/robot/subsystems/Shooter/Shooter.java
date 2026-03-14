@@ -97,7 +97,7 @@ public abstract class Shooter extends PARTsSubsystem {
             boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
 
             if (inTrench) {
-                shooterRPM = ShooterState.getZoneRPM(Targets.ZONE2);
+                shooterRPM = ShooterState.getZoneRPM(Targets.TRENCH);
             }
 
             partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);

@@ -22,6 +22,7 @@ public class Hub {
 
     public static enum Targets {
         DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.4),
+        TRENCH(0, 0.6),
         ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.5),
         ZONE2(new PARTsUnit(11.5, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.6),
         ZONE3(new PARTsUnit(13, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.7),
