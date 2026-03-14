@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 
 public class ShooterSim extends Shooter {
@@ -33,8 +34,8 @@ public class ShooterSim extends Shooter {
     SparkRelativeEncoderSim motorEncoder;
     FlywheelSim shooterSim;
 
-    public ShooterSim(Supplier <Pose2d> poseSupplier, PARTsDrivetrain drivetrain) {
-        super(poseSupplier, drivetrain);
+    public ShooterSim(Supplier <Pose2d> poseSupplier, PARTsDrivetrain drivetrain, Supplier<TurretState> turretSupplierState) {
+        super(poseSupplier, drivetrain, turretSupplierState);
         maxGearbox = DCMotor.getNEO(2);
 
         SparkMaxConfig shooterConfig = new SparkMaxConfig();

@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.CandleConstants.CandleState;
+import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.constants.generated.TunerConstants;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
@@ -87,12 +88,12 @@ public class RobotContainer {
             drivetrain.consumerResetPose());
 
     public final Candle candle = new Candle();
-
-    private final Shooter shooter = Robot.isReal() ? new ShooterPhys(drivetrain.supplierGetPose(), drivetrain)
-            : new ShooterSim(drivetrain.supplierGetPose(), drivetrain);
-
     private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose(), drivetrain)
             : new TurretSim(drivetrain.supplierGetPose(), drivetrain);
+            
+    private final Shooter shooter = Robot.isReal()
+            ? new ShooterPhys(drivetrain.supplierGetPose(), drivetrain, turret::getState)
+            : new ShooterSim(drivetrain.supplierGetPose(), drivetrain, turret::getState);
 
     private final Kicker kicker = Robot.isReal() ? new KickerPhys() : new KickerSim();
 
@@ -130,16 +131,16 @@ public class RobotContainer {
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D, true);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
         partsNT.logPathPlanner((pose) -> {
-                        // Do whatever you want with the pose here
-                        Field.FIELD2D
-                                .getObject("target pose")
-                                .setPose(pose);
-                    }, (poses) -> {
-                        // Do whatever you want with the poses here
-                        Field.FIELD2D
-                                .getObject("path")
-                                .setPoses(poses);
-                    }, true);
+            // Do whatever you want with the pose here
+            Field.FIELD2D
+                    .getObject("target pose")
+                    .setPose(pose);
+        }, (poses) -> {
+            // Do whatever you want with the poses here
+            Field.FIELD2D
+                    .getObject("path")
+                    .setPoses(poses);
+        }, true);
 
         partsNT.putSmartDashboardSendable("Toggle Complete Debug", toggleDebug, !RobotConstants.COMPETITION);
 
@@ -263,29 +264,35 @@ public class RobotContainer {
          * //driveController.x().onTrue(intake.home());
          */
 
-        
-        /*operatorController.a().and(operatorController.rightBumper())
-          .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-          operatorController.b().and(operatorController.rightBumper())
-          .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-          operatorController.x().and(operatorController.rightBumper())
-         .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
-          operatorController.y().and(operatorController.rightBumper())
-          .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
-         
+        /*
+         * operatorController.a().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         * operatorController.b().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         * operatorController.x().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * operatorController.y().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         */
 
     }
 
     private void configureSuperstructureBindings() {
         buttonBoxController.handleTrigger()
-                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
-        buttonBoxController.wipeTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
-        buttonBoxController.mapTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
+                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
+                        TurretState.TRACKING_HUB));
+        buttonBoxController.enginestartTrigger()
+                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
+                        TurretState.TRACKING_CORNER));
+        buttonBoxController.wipeTrigger()
+                .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
+        buttonBoxController.mapTrigger()
+                .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
         buttonBoxController.escTrigger().onTrue(superstructure.outpostAuto());
     }
 
     public void configureAutonomousCommands() {
-        //autoChooser = AutoBuilder.buildAutoChooser();
+        // autoChooser = AutoBuilder.buildAutoChooser();
         autoChooser = new SendableChooser<>();
         autoChooser.addOption("Outpost Auto", superstructure.outpostAuto());
         partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);

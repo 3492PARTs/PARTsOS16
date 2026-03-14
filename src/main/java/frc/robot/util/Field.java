@@ -13,6 +13,8 @@ import frc.robot.RobotContainer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.game.AprilTag;
 
 /** This interface stores information about the field elements. */
@@ -216,6 +218,16 @@ public interface Field {
 
     public static List<Pose2d> conditionallyTransformToOppositeAlliance(List<Pose2d> poses) {
         return RobotContainer.isBlue() ? poses : transformToOppositeAlliance(poses);
+    }
+
+    public static Pose2d getNearestAllianceCorner(Pose2d current) {
+        PARTsUnit offset = new PARTsUnit(5, PARTsUnitType.Foot);
+        Pose2d[] alliancePoses = new Pose2d[] {
+            new Pose2d(0, offset.to(PARTsUnitType.Meter), new Rotation2d()), 
+            new Pose2d(0, WIDTH - offset.to(PARTsUnitType.Meter), new Rotation2d()), 
+        };
+        Pose2d corner = Trench.getNearestPose(current, alliancePoses);
+        return corner;
     }
 
     public static boolean isInRadius(Pose2d center, Pose2d point, double radius) {
