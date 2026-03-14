@@ -5,6 +5,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
@@ -13,6 +14,7 @@ import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
+import frc.robot.util.Field;
 import frc.robot.util.Hub;
 import frc.robot.util.Trench;
 import frc.robot.util.Hub.Targets;
@@ -33,6 +35,7 @@ public abstract class Shooter extends PARTsSubsystem {
     private Supplier<Pose2d> robotPoseSupplier;
     private Supplier<TurretState> turretStateSupplier;
     private PARTsDrivetrain drivetrain;
+    private FieldObject2d calculatedRobotPose;
 
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
@@ -52,6 +55,8 @@ public abstract class Shooter extends PARTsSubsystem {
         this.robotPoseSupplier = poseSupplier;
         this.turretStateSupplier = turretSupplierState;
         this.drivetrain = drivetrain;
+
+        calculatedRobotPose = Field.FIELD2D.getObject("Calculated Robot Pose");
 
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Shooter Speed", 0, true);
@@ -101,10 +106,16 @@ public abstract class Shooter extends PARTsSubsystem {
             Targets zone = Hub.getZone(robotPoseSupplier.get());
             double timeOfFlight = (zone == null) ? 0 : ShooterState.getTofFromDistanceToHub(robotPoseSupplier.get());
 
+            Pose2d calcRobotPose = robotPoseSupplier.get().plus(
+                    new Transform2d(
+                            drivetrain.getXVelocity().getValue() * timeOfFlight,
+                            drivetrain.getYVelocity().getValue() * timeOfFlight,
+                            new Rotation2d()));
+
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
-                    : ShooterState.getRPMFromDistanceToHub(robotPoseSupplier.get()
-                            .plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
-                                    drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d())));
+                    : ShooterState.getRPMFromDistanceToHub(calcRobotPose);
+
+            calculatedRobotPose.setPose(calcRobotPose);
 
             boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
 
@@ -115,7 +126,7 @@ public abstract class Shooter extends PARTsSubsystem {
             if (zone == null && turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.BEHIND_HUB);
             }
-            
+
             partsNT.putDouble("Shooting RPM", shooterRPM, true);
             partsNT.putDouble("Shooting ToF", timeOfFlight, true);
             partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);
@@ -128,7 +139,7 @@ public abstract class Shooter extends PARTsSubsystem {
                 case SHOOTING:
                 case MANUAL:
                     double voltage = 0;
-                    
+
                     if (debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed", true);
                     }
