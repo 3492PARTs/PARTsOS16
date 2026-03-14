@@ -3,12 +3,13 @@ package frc.robot.subsystems.Turret;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 
 public class TurretSim extends Turret {
     //protected final TalonFX turretMotor;
 
-    public TurretSim(Supplier<Pose2d> robotPoseSupplier) {
-        super(robotPoseSupplier);
+    public TurretSim(Supplier<Pose2d> robotPoseSupplier, PARTsDrivetrain drivetrain) {
+        super(robotPoseSupplier, drivetrain);
     }
 
     @Override

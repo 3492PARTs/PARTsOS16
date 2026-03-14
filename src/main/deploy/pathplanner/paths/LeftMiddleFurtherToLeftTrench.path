@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 4.413,
-        "y": 7.368
+        "x": 4.271954350927246,
+        "y": 7.366704707560627
       },
       "prevControl": {
-        "x": 4.661955979404855,
-        "y": 7.3451763210991405
+        "x": 4.520910330332101,
+        "y": 7.3438810286597676
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Start"
+      "linkedName": "LeftTrenchStart"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 2.0,
-    "maxAcceleration": 2.0,
+    "maxVelocity": 3.5,
+    "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
