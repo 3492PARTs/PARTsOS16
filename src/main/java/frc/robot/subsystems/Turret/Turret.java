@@ -33,7 +33,7 @@ public abstract class Turret extends PARTsSubsystem {
     private SimpleMotorFeedforward turretFeedforward;
     private Supplier<Pose2d> robotPoseSupplier;
     private PARTsDrivetrain drivetrain;
-    private FieldObject2d target;
+    private FieldObject2d fieldTarget;
 
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
@@ -49,7 +49,7 @@ public abstract class Turret extends PARTsSubsystem {
 
         this.robotPoseSupplier = robotPoseSupplier;
         this.drivetrain = drivetrain;
-        target = Field.FIELD2D.getObject("Turret Target");
+        fieldTarget = Field.FIELD2D.getObject("Turret Target");
 
         turretPIDController = new PIDController(TurretConstants.P, TurretConstants.I, TurretConstants.D);
         turretFeedforward = new SimpleMotorFeedforward(TurretConstants.S, TurretConstants.V, TurretConstants.A);
@@ -215,10 +215,6 @@ public abstract class Turret extends PARTsSubsystem {
 
     }
 
-    public Pose2d getTargetPose() {
-        return turretState == TurretState.TRACKING_HUB ? Field.getAllianceHubPose() : Field.getNearestAllianceCorner(robotPoseSupplier.get());
-
-    }
     // endregion
 
     // region private functions
@@ -228,7 +224,7 @@ public abstract class Turret extends PARTsSubsystem {
         Pose2d calculatedPose = 
                     Field.getAllianceHubPose().plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
                             drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d()));
-        target.setPose(calculatedPose);
+        fieldTarget.setPose(calculatedPose);
         double angleToTarget = edu.wpi.first.math.MathUtil
                 .inputModulus(robotPoseSupplier.get().getRotation().getDegrees(), -180, 180)
                 - (Math.atan2(calculatedPose.getY() - robotPoseSupplier.get().getY(),
