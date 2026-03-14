@@ -777,9 +777,9 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                                                                         .robotRelativeForcesYNewtons())),
                                         new PPHolonomicDriveController(
                                                         // PID constants for translation
-                                                        new PIDConstants(14, 0, 0),
+                                                        new PIDConstants(DrivetrainConstants.RANGE_X_P, DrivetrainConstants.RANGE_I, DrivetrainConstants.RANGE_D),
                                                         // PID constants for rotation
-                                                        new PIDConstants(7, 0, 0)),
+                                                        new PIDConstants(DrivetrainConstants.THETA_P, DrivetrainConstants.THETA_I, DrivetrainConstants.THETA_D)),
                                         config,
                                         // Assume the path needs to be flipped for Red vs Blue, this is normally the
                                         // case

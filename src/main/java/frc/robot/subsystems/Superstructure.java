@@ -152,30 +152,17 @@ public class Superstructure extends PARTsSubsystem {
         return PARTsCommandUtils.setCommandName("Superstructure.shoot", c);
     }
 
-    public Command trenchAuto() {
+    public Command trenchAuto(boolean left) {
         Command c = new WaitCommand(0);
         try {
             c = Commands.sequence(
                     Commands.parallel(
-                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftTrenchToCenter")),
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftTrenchToCenter" : "RightTrenchToCenter")),
                             Commands.sequence(new WaitCommand(.4), intake.intake())),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterToTrench")),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftCenterCollectBalls" : "RightCenterCollectBalls")),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench" : "RightCenterToTrench")),
                     Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
                             Commands.sequence(new WaitCommand(1), intake.intakeShooting())));
-        } catch (FileVersionException | IOException | ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return PARTsCommandUtils.setCommandName("Superstructure.trenchAuto", c);
-    }
-
-    public Command autoTest() {
-        Command c = new WaitCommand(0);
-        try {
-            c = Commands.parallel(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")),
-                    intake.intake());
         } catch (FileVersionException | IOException | ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
