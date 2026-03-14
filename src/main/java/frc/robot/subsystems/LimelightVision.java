@@ -22,6 +22,9 @@ import frc.robot.util.LimelightHelpers.PoseEstimate;
 
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
@@ -255,7 +258,7 @@ public class LimelightVision extends PARTsSubsystem {
 
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Megatag Mode", getMTmode().toString(), RobotContainer.debug);
+        partsNT.putString("Megatag Mode", getMTmode().toString(), true);
         partsNT.putString("Whitelist Mode", getWhitelistMode().toString(), RobotContainer.debug);
         partsNT.putNumber("IMU Mode", imuMode, RobotContainer.debug);
     }

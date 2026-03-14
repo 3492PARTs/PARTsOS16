@@ -103,14 +103,14 @@ public abstract class Intake extends PARTsSubsystem {
                     setIntakeSpeed(intakeState.getSpeed());
 
                     double getGoal = intakePIDController.getGoal().position;
-                    if (getGoal == 45 && intakePIDController.atGoal()) {
+                    if (getGoal == 30 && intakePIDController.atGoal()) {
                         getGoal = 60;
                     }
                     else if (getGoal == 60 && intakePIDController.atGoal()) {
-                        getGoal = 45;
+                        getGoal = 30;
                     }
-                    else if (getGoal != 60 && getGoal != 45) {
-                        getGoal = 45;
+                    else if (getGoal != 60 && getGoal != 30) {
+                        getGoal = 30;
                     }
                     intakePIDController.setGoal(getGoal);
                     pidCalc = intakePIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),

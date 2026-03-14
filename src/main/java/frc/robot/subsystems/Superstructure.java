@@ -1,13 +1,21 @@
 package frc.robot.subsystems;
 
+import java.io.IOException;
 import java.util.function.BooleanSupplier;
 
+import org.json.simple.parser.ParseException;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.CandleConstants.CandleState;
 import frc.robot.constants.KickerConstants.KickerState;
 import frc.robot.constants.ShooterConstants.ShooterState;
@@ -180,6 +188,38 @@ public class Superstructure extends PARTsSubsystem {
 
         c.addRequirements(this);
         return PARTsCommandUtils.setCommandName("Superstructure.shoot", c);
+    }
+
+    public Command trenchAuto() {
+        Command c = new WaitCommand(0);
+        try {
+            c = Commands.sequence(
+                Commands.parallel(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftTrenchToCenter")), 
+                    Commands.sequence(new WaitCommand(.4), intake.intake())),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterToTrench")),
+                    Commands.parallel(shoot(()-> false), Commands.sequence(new WaitCommand(1), intake.intakeShooting()))
+                    );
+        } catch (FileVersionException | IOException | ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return PARTsCommandUtils.setCommandName("Superstructure.trenchAuto", c);
+    }
+
+    public Command autoTest() {
+        Command c = new WaitCommand(0);
+        try {
+            PathConstraints constraints = new PathConstraints(2, 2, 2 * Math.PI, 4 * Math.PI);
+            c = Commands.parallel(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")), 
+                    intake.intake());
+        } catch (FileVersionException | IOException | ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return PARTsCommandUtils.setCommandName("Superstructure.trenchAuto", c);
     }
 
     @Override

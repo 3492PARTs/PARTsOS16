@@ -88,11 +88,11 @@ public class RobotContainer {
 
     public final Candle candle = new Candle();
 
-    private final Shooter shooter = Robot.isReal() ? new ShooterPhys(drivetrain.supplierGetPose())
-            : new ShooterSim(drivetrain.supplierGetPose());
+    private final Shooter shooter = Robot.isReal() ? new ShooterPhys(drivetrain.supplierGetPose(), drivetrain)
+            : new ShooterSim(drivetrain.supplierGetPose(), drivetrain);
 
-    private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose())
-            : new TurretSim(drivetrain.supplierGetPose());
+    private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose(), drivetrain)
+            : new TurretSim(drivetrain.supplierGetPose(), drivetrain);
 
     private final Kicker kicker = Robot.isReal() ? new KickerPhys() : new KickerSim();
 
@@ -281,6 +281,7 @@ public class RobotContainer {
                 .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
         buttonBoxController.wipeTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
         buttonBoxController.mapTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
+        buttonBoxController.escTrigger().whileTrue(superstructure.trenchAuto());
     }
 
     public void configureAutonomousCommands() {
