@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.367704264321328,
-        "y": 7.366704707560627
+        "x": 6.2571239944661645,
+        "y": 7.421758523489362
       },
       "isLocked": false,
       "linkedName": "LeftTrenchStart"
@@ -20,8 +20,8 @@
         "y": 6.635795180722892
       },
       "prevControl": {
-        "x": 6.14586064459906,
-        "y": 6.574148261526789
+        "x": 6.882180722891565,
+        "y": 7.094759036144578
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 89.01223960036013
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "Left",

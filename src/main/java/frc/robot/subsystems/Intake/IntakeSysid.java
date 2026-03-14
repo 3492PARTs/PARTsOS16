@@ -1,12 +1,8 @@
 package frc.robot.subsystems.Intake;
 
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
-
-import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.MutAngle;
@@ -55,7 +51,7 @@ public class IntakeSysid extends IntakePhys {
 
     @Override
     public void periodic() {
-        //dummy to stop super periodic from running
+        // dummy to stop super periodic from running
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

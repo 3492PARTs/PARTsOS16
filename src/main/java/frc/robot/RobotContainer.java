@@ -7,7 +7,6 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.Arrays;
 import com.ctre.phoenix6.SignalLogger;
-import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -90,7 +89,7 @@ public class RobotContainer {
     public final Candle candle = new Candle();
     private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose(), drivetrain)
             : new TurretSim(drivetrain.supplierGetPose(), drivetrain);
-            
+
     private final Shooter shooter = Robot.isReal()
             ? new ShooterPhys(drivetrain.supplierGetPose(), drivetrain, turret::getState)
             : new ShooterSim(drivetrain.supplierGetPose(), drivetrain, turret::getState);
@@ -209,34 +208,15 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
-        // driveController.a().onTrue(shooter.shoot());
-        // driveController.b().onTrue(shooter.idle());
-
-        /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-         */
-
     }
 
     private void configureCandleBindings() {
-
     }
 
     private void configureHopperBindings() {
-        // driveController.a().onTrue(hopper.roll());
     }
 
     private void configureTurretBindings() {
-        // driveController.a().onTrue(turret.track());
-        // driveController.b().onTrue(turret.idle());
-
         /*
          * operatorController.a().and(operatorController.rightBumper())
          * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -257,12 +237,6 @@ public class RobotContainer {
         buttonBoxController.enterTrigger().onTrue(intake.home());
         buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
         buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
-        /*
-         * driveController.x().onTrue(intake.intake());
-         * driveController.y().onTrue(intake.intakeIdle());
-         * driveController.rightTrigger().onTrue(intake.intakeShooting());
-         * //driveController.x().onTrue(intake.home());
-         */
 
         /*
          * operatorController.a().and(operatorController.rightBumper())
@@ -292,7 +266,6 @@ public class RobotContainer {
     }
 
     public void configureAutonomousCommands() {
-        // autoChooser = AutoBuilder.buildAutoChooser();
         autoChooser = new SendableChooser<>();
         autoChooser.addOption("Outpost Auto", superstructure.outpostAuto());
         partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);
@@ -371,11 +344,6 @@ public class RobotContainer {
         hubFieldObject2d.setPose(Field.getAllianceHubPose());
         subsystems.forEach(s -> s.reset());
         CommandScheduler.getInstance().schedule(new WaitCommand(0).andThen(Commands.runOnce(() -> {
-            /*
-             * if (!RobotContainer.isBlue()) {
-             * drivetrain.resetPose(drivetrain.getPose().rotateBy(new Rotation2d(Math.PI)));
-             * }
-             */
             setMegaTagMode(MegaTagMode.MEGATAG2);
         })));
     }
