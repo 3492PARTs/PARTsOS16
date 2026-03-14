@@ -38,7 +38,7 @@ public class ShooterConstants {
                 case ZONE1:
                     return 3000;
                 case ZONE2:
-                    return 3300;
+                    return 3200;
                 case ZONE3:
                     return 3400;
                 case ZONE4:
@@ -86,7 +86,7 @@ public class ShooterConstants {
             //? It's a little bit lower (0.1 feet in meters) than the actual deadzone just in case the robot is slightly in the deadzone, might have to be removed.
             table.put(Targets.DEADZONE.getRadius() - (0.03048), 0.0);
             // End of Deadzone / Start of Zone 1
-            table.put(Targets.DEADZONE.getRadius(), 3000.0);
+            table.put(Targets.DEADZONE.getRadius(), getZoneRPM(Targets.ZONE1));
 
             /*
              * I don't think that we need to populate the table with these zones, but
@@ -94,14 +94,14 @@ public class ShooterConstants {
              * Further testing is required though.
              * It seems to work fine without these values in sim.
              */
-            // table.put(Targets.ZONE1.getRadius(), 3300.0);
-            // table.put(Targets.ZONE2.getRadius(), 3400.0);
-            // table.put(Targets.ZONE3.getRadius(), 3600.0);
-            // table.put(Targets.ZONE4.getRadius(), 3800.0);
-            // table.put(Targets.ZONE5.getRadius(), 4000.0);
+            table.put(Targets.ZONE1.getRadius(), getZoneRPM(Targets.ZONE2));
+            table.put(Targets.ZONE2.getRadius(), getZoneRPM(Targets.ZONE3));
+            table.put(Targets.ZONE3.getRadius(), getZoneRPM(Targets.ZONE4));
+            table.put(Targets.ZONE4.getRadius(), getZoneRPM(Targets.ZONE5));
+            table.put(Targets.ZONE5.getRadius(), getZoneRPM(Targets.ZONE6));
 
             // Zone 6
-            table.put(Targets.ZONE6.getRadius(), 4000.0);
+            table.put(Targets.ZONE6.getRadius(), getZoneRPM(Targets.ZONE6));
 
             return table;
         }
@@ -116,11 +116,16 @@ public class ShooterConstants {
         private static InterpolatingDoubleTreeMap initTofTable() {
             InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
 
-            // 0
-            table.put(Targets.DEADZONE.getRadius(), Targets.DEADZONE.getTimeOfFlight());
+            // 0 Little less than deadzone to make sure it's set to zero like it's supposed to be.
+            table.put(Targets.DEADZONE.getRadius() - (0.03048), Targets.DEADZONE.getTimeOfFlight());
+            table.put(Targets.DEADZONE.getRadius(), Targets.ZONE1.getTimeOfFlight());
 
             // Min
-            table.put(Targets.ZONE1.getRadius(), Targets.ZONE1.getTimeOfFlight());
+            table.put(Targets.ZONE1.getRadius(), Targets.ZONE2.getTimeOfFlight());
+            table.put(Targets.ZONE2.getRadius(), Targets.ZONE3.getTimeOfFlight());
+            table.put(Targets.ZONE3.getRadius(), Targets.ZONE4.getTimeOfFlight());
+            table.put(Targets.ZONE4.getRadius(), Targets.ZONE5.getTimeOfFlight());
+            table.put(Targets.ZONE5.getRadius(), Targets.ZONE6.getTimeOfFlight());
 
             // Max
             table.put(Targets.ZONE6.getRadius(), Targets.ZONE6.getTimeOfFlight());

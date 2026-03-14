@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
+import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.util.Field;
@@ -207,7 +208,7 @@ public abstract class Turret extends PARTsSubsystem {
     // region private functions
     private double getAngleToTarget(Pose2d target) {
         Targets zone = Hub.getZone(robotPoseSupplier.get());
-        double timeOfFlight = (zone == null) ? 0 : zone.getTimeOfFlight();
+        double timeOfFlight = (zone == null) ? 0 : ShooterState.getTofFromDistanceToHub(robotPoseSupplier.get());
         Pose2d calculatedPose = 
                     target.plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
                             drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d()));
