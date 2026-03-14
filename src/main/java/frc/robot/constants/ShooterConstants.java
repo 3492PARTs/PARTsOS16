@@ -70,25 +70,25 @@ public class ShooterConstants {
             InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
 
             // Cut off the shooter in the deadzone.
-            //? It's a little bit lower than the actual deadzone just in case the robot is slightly in the deadzone, might have to be removed.
-            table.put(PARTsUnit.FootToMeters.apply(7.85), 0.0);
+            //? It's a little bit lower (0.1 feet in meters) than the actual deadzone just in case the robot is slightly in the deadzone, might have to be removed.
+            table.put(Targets.DEADZONE.getRadius() - (0.03048), 0.0);
             // End of Deadzone / Start of Zone 1
-            table.put(PARTsUnit.FootToMeters.apply(8.0), 3000.0);
+            table.put(Targets.DEADZONE.getRadius(), 3000.0);
 
             /*
-             * I don't think that we need to populate the table with these calcs, but
+             * I don't think that we need to populate the table with these zones, but
              * they're here just in case we do.
              * Further testing is required though.
              * It seems to work fine without these values in sim.
              */
-            // table.put(PARTsUnit.FootToMeters.apply(10.0), 3300.0);
-            // table.put(PARTsUnit.FootToMeters.apply(11.5), 3400.0);
-            // table.put(PARTsUnit.FootToMeters.apply(13.0), 3600.0);
-            // table.put(PARTsUnit.FootToMeters.apply(15.0), 3800.0);
-            // table.put(PARTsUnit.FootToMeters.apply(17.0), 4000.0);
+            // table.put(Targets.ZONE1.getRadius(), 3300.0);
+            // table.put(Targets.ZONE2.getRadius(), 3400.0);
+            // table.put(Targets.ZONE3.getRadius(), 3600.0);
+            // table.put(Targets.ZONE4.getRadius(), 3800.0);
+            // table.put(Targets.ZONE5.getRadius(), 4000.0);
 
             // Zone 6
-            table.put(PARTsUnit.FootToMeters.apply(19.0), 4000.0);
+            table.put(Targets.ZONE6.getRadius(), 4000.0);
 
             return table;
         }
