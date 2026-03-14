@@ -69,13 +69,6 @@ public class IntakePhys extends Intake {
     }
 
     @Override
-    public void stop() {
-        super.stop();
-        intakeMotor.set(0);
-        pivotMotor.set(0);
-    }
-
-    @Override
     public void reset() {
         super.reset();
     }

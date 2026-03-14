@@ -69,10 +69,10 @@ public class Candle extends PARTsCandle {
         // Maps state to animation
         switch (candleState) {
             case SHOOTING:
-                runLarsonAnimation(Color.ORANGE);
+                runStrobeAnimation(Color.ORANGE_RED);
                 break;
             case ACTIVE_SHOOTING:
-                runLarsonAnimation(Color.SKY_BLUE);
+                runStrobeAnimation(Color.SKY_BLUE);
                 break;
             case IDLE:
                 runFadeAnimation(Color.BLUE, 100);

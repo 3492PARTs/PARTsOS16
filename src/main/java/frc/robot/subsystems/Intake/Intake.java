@@ -69,7 +69,9 @@ public abstract class Intake extends PARTsSubsystem {
         if (RobotContainer.debug || debug) {
             setIntakeSpeed(partsNT.getDouble("Intake Speed", true));
             setPivotSpeed(partsNT.getDouble("Pivot Speed", true));
-        } else {
+        } 
+        
+        else {
             switch (intakeState) {
                 case IDLE:
                 case DISABLED:

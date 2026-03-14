@@ -121,6 +121,7 @@ public abstract class Shooter extends PARTsSubsystem {
                 case SHOOTING:
                 case MANUAL:
                     double voltage = 0;
+                    
                     if (debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed", true);
                     }

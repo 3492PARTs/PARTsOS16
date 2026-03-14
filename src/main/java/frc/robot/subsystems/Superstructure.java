@@ -166,6 +166,7 @@ public class Superstructure extends PARTsSubsystem {
                             kicker.reset();
                             shooter.reset();
                             candle.removeState(CandleState.SHOOTING);
+                            candle.removeState(CandleState.ACTIVE_SHOOTING);
                         })));
 
         c.addRequirements(this);

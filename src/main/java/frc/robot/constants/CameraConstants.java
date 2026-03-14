@@ -56,7 +56,7 @@ public interface CameraConstants {
                             PARTsUnit.InchesToMeters.apply(14.0),
                             new Rotation3d(0, Units.degreesToRadians(40),
                                     -Units.degreesToRadians(45))),
-                    false)
+                    true)
     };
 
     public static class Camera {
