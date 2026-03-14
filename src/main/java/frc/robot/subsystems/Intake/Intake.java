@@ -110,7 +110,7 @@ public abstract class Intake extends PARTsSubsystem {
                         getGoal = 30;
                     }
                     else if (getGoal != 60 && getGoal != 30) {
-                        getGoal = 30;
+                        getGoal = 60;
                     }
                     intakePIDController.setGoal(getGoal);
                     pidCalc = intakePIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),

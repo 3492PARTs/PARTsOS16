@@ -281,11 +281,13 @@ public class RobotContainer {
                 .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
         buttonBoxController.wipeTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
         buttonBoxController.mapTrigger().onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
-        buttonBoxController.escTrigger().whileTrue(superstructure.trenchAuto());
+        buttonBoxController.escTrigger().onTrue(superstructure.outpostAuto());
     }
 
     public void configureAutonomousCommands() {
-        autoChooser = AutoBuilder.buildAutoChooser();
+        //autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser = new SendableChooser<>();
+        autoChooser.addOption("Outpost Auto", superstructure.outpostAuto());
         partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);
     }
 
