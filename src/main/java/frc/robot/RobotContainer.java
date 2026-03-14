@@ -295,7 +295,7 @@ public class RobotContainer {
     }
 
     public void setCandleDisabledState() {
-        candle.removeState(CandleState.IDLE);
+        candle.removeAllStates();
         candle.addState(CandleState.DISABLED);
     }
 

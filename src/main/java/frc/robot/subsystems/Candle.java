@@ -37,6 +37,10 @@ public class Candle extends PARTsCandle {
         setState();
     }
 
+    public void removeAllStates() {
+        candleStates = new HashSet<>();
+    }
+
     public CandleState getState() {
         return candleState;
     }
@@ -90,6 +94,6 @@ public class Candle extends PARTsCandle {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        super.partsNT.putString("State", candleState.toString(), RobotContainer.debug);
+        super.partsNT.putString("State", candleState.toString(), true);
     }
 }
