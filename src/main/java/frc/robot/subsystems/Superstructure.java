@@ -8,7 +8,6 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 
@@ -19,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.CandleConstants.CandleState;
 import frc.robot.constants.KickerConstants.KickerState;
 import frc.robot.constants.ShooterConstants.ShooterState;
+import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Intake.Intake;
@@ -51,12 +51,16 @@ public class Superstructure extends PARTsSubsystem {
      * lift up pivot arm, roll hopper, roll kicker, shoot. Only happens if turret
      * has valid angle
      */
-    public Command shoot(BooleanSupplier end) {
+    public Command shoot(BooleanSupplier end, TurretState turretState) {
+        BooleanSupplier tracking = () -> ((turretState == TurretState.TRACKING_HUB
+                && Field.isInAllianceZone(drivetrain.getPose()))
+                || turretState == TurretState.TRACKING_CORNER);
+
         Command c = Commands.sequence(
                 // Initial startup
                 Commands.parallel(
                         // Start tracking the hub.
-                        turret.track(),
+                        turretState == TurretState.TRACKING_CORNER ? turret.trackCorner() : turret.trackHub(),
                         // Feed the balls into the kicker.
                         hopper.roll(),
                         // Add CANdle shooting state for bot lights.
@@ -72,44 +76,23 @@ public class Superstructure extends PARTsSubsystem {
                                         shooter.idle().onlyIf(() -> {
                                             return shooter.getState() != ShooterState.IDLE;
                                         }),
-                                        () -> turret.isValidAngle() && Field.isInAllianceZone(drivetrain.getPose())),
+                                        () -> turret.isValidAngle() && tracking.getAsBoolean()),
 
-                    // Roll the kicker if the shooter is at its setpoint.
-                    new ConditionalCommand(
-                        kicker.roll().onlyIf(() -> { return kicker.getState() != KickerState.ROLLING; }),
-                        kicker.idle().onlyIf(() -> { return kicker.getState() != KickerState.IDLE; }),
-                        () -> shooter.withinSetpointRange() && (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle() && Field.isInAllianceZone(drivetrain.getPose()) && turret.withinSetpointRange()
-                    ),
-
-                    /*new ConditionalCommand(
-                        intake.intakeShooting().onlyIf(() -> { return false && intake.getState() != IntakeState.SHOOTING; }),
-                        intake.intakeIdle().onlyIf(() -> { return intake.getState() != IntakeState.IDLE; }),
-                        () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()
-                    ),*/
-
-                                /*
-                                 * new ConditionalCommand(
-                                 * hopper.roll().onlyIf(() -> { return hopper.getState() != HopperState.ROLLING;
-                                 * }),
-                                 * hopper.idle().onlyIf(() -> { return hopper.getState() != HopperState.IDLE;
-                                 * }),
-                                 * () -> shooter.atSetpoint().getAsBoolean() &&
-                                 * (shooter.getSetpoint().getAsDouble() > 0) && turret.isValidAngle()
-                                 * ),
-                                 */
-
+                                // Roll the kicker if the shooter is at its setpoint.
                                 new ConditionalCommand(
-                                        candle.commandAddState(CandleState.ACTIVE_SHOOTING)
-                                                .onlyIf(() -> {
-                                                    return candle.getState() != CandleState.ACTIVE_SHOOTING;
+                                        Commands.parallel(kicker.roll(),
+                                                candle.commandAddState(CandleState.ACTIVE_SHOOTING)).onlyIf(() -> {
+                                                    return kicker.getState() != KickerState.ROLLING;
                                                 }),
-
-                                        candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)
-                                                .onlyIf(() -> {
-                                                    return candle.getState() == CandleState.ACTIVE_SHOOTING;
+                                        Commands.parallel(kicker.idle(),
+                                                candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)).onlyIf(() -> {
+                                                    return kicker.getState() != KickerState.IDLE;
                                                 }),
-
-                                        () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()))
+                                        () -> shooter.withinSetpointRange() &&
+                                                (shooter.getSetpoint().getAsDouble() > 0)
+                                                && turret.isValidAngle() &&
+                                                turret.withinSetpointRange() &&
+                                                tracking.getAsBoolean()))
                                 .until(end)),
 
                 // Make sure to cancel and reset if we're forced to end or the turret is not at
@@ -122,6 +105,7 @@ public class Superstructure extends PARTsSubsystem {
                             kicker.reset();
                             shooter.reset();
                             candle.removeState(CandleState.SHOOTING);
+                            candle.removeState(CandleState.ACTIVE_SHOOTING);
                         })));
         c.addRequirements(this);
         return PARTsCommandUtils.setCommandName("Superstructure.shoot", c);
@@ -140,38 +124,15 @@ public class Superstructure extends PARTsSubsystem {
 
                                 // Roll the kicker if the shooter is at its setpoint.
                                 new ConditionalCommand(
-                                        kicker.roll().onlyIf(() -> {
-                                            return kicker.getState() != KickerState.ROLLING;
-                                        }),
-                                        kicker.idle().onlyIf(() -> {
-                                            return kicker.getState() != KickerState.IDLE;
-                                        }),
-                                        () -> turret.atSetpoint()),
-                                // ^^^ change condition to be if turret.isAtSetpoint --- make function in turret
-                                // to return pidcontroller at set point
-
-                                /*
-                                 * new ConditionalCommand(
-                                 * intake.intakeShooting().onlyIf(() -> { return false && intake.getState() !=
-                                 * IntakeState.SHOOTING; }),
-                                 * intake.intakeIdle().onlyIf(() -> { return intake.getState() !=
-                                 * IntakeState.IDLE; }),
-                                 * () -> shooter.atSetpoint().getAsBoolean() && turret.isValidAngle()
-                                 * ),
-                                 */
-
-                                new ConditionalCommand(
-                                        candle.commandAddState(CandleState.ACTIVE_SHOOTING)
-                                                .onlyIf(() -> {
-                                                    return candle.getState() != CandleState.ACTIVE_SHOOTING;
+                                        Commands.parallel(kicker.roll(),
+                                                candle.commandAddState(CandleState.ACTIVE_SHOOTING)).onlyIf(() -> {
+                                                    return kicker.getState() != KickerState.ROLLING;
                                                 }),
-
-                                        candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)
-                                                .onlyIf(() -> {
-                                                    return candle.getState() == CandleState.ACTIVE_SHOOTING;
+                                        Commands.parallel(kicker.idle(),
+                                                candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)).onlyIf(() -> {
+                                                    return kicker.getState() != KickerState.IDLE;
                                                 }),
-
-                                        () -> shooter.atSetpoint().getAsBoolean()))
+                                        () -> turret.atSetpoint()))
                                 .until(end)),
 
                 // Make sure to cancel and reset if we're forced to end or the turret is not at
@@ -184,6 +145,7 @@ public class Superstructure extends PARTsSubsystem {
                             kicker.reset();
                             shooter.reset();
                             candle.removeState(CandleState.SHOOTING);
+                            candle.removeState(CandleState.ACTIVE_SHOOTING);
                         })));
 
         c.addRequirements(this);
@@ -194,13 +156,13 @@ public class Superstructure extends PARTsSubsystem {
         Command c = new WaitCommand(0);
         try {
             c = Commands.sequence(
-                Commands.parallel(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftTrenchToCenter")), 
-                    Commands.sequence(new WaitCommand(.4), intake.intake())),
+                    Commands.parallel(
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftTrenchToCenter")),
+                            Commands.sequence(new WaitCommand(.4), intake.intake())),
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")),
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterToTrench")),
-                    Commands.parallel(shoot(()-> false), Commands.sequence(new WaitCommand(1), intake.intakeShooting()))
-                    );
+                    Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
+                            Commands.sequence(new WaitCommand(1), intake.intakeShooting())));
         } catch (FileVersionException | IOException | ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -212,7 +174,7 @@ public class Superstructure extends PARTsSubsystem {
         Command c = new WaitCommand(0);
         try {
             c = Commands.parallel(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")), 
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")),
                     intake.intake());
         } catch (FileVersionException | IOException | ParseException e) {
             // TODO Auto-generated catch block
@@ -225,11 +187,11 @@ public class Superstructure extends PARTsSubsystem {
         Command c = new WaitCommand(0);
         try {
             c = Commands.sequence(
-                Commands.parallel(
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightRampToOutpost")), 
-                    intake.intake()),
-                    Commands.parallel(shoot(()-> false), Commands.sequence(new WaitCommand(3), intake.intakeShooting()))
-                    );
+                    Commands.parallel(
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightRampToOutpost")),
+                            intake.intake()),
+                    Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
+                            Commands.sequence(new WaitCommand(3), intake.intakeShooting())));
         } catch (FileVersionException | IOException | ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

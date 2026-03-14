@@ -13,7 +13,6 @@ public class ShooterConstants {
     public enum ShooterState {
         IDLE(0),
         DISABLED(0),
-        CHARGING(3500),
         SHOOTING(3500),
         MANUAL(getZoneRPM(Targets.ZONE6));
 
@@ -32,6 +31,8 @@ public class ShooterConstants {
                 return 0;
             }
             switch (zone) {
+                case BEHIND_HUB:
+                    return 3000;
                 case TRENCH:
                     return 3500;
                 case ZONE1:
@@ -113,7 +114,6 @@ public class ShooterConstants {
     public static final int LEFT_MOTOR_ID = 33;
     public static final int RIGHT_MOTOR_ID = 35;
     public static final String CAN_BUS_NAME = "bye";
-    // public static final boolean SHOOT_DEBUG = false;
 
     public static final PARTsUnit SHOOTER_WHEEL_RADIUS = new PARTsUnit(1.5, PARTsUnitType.Inch);
     // TODO: Get actual wheel weight.

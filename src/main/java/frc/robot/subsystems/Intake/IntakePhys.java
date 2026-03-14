@@ -12,7 +12,8 @@ import frc.robot.RobotContainer;
 import frc.robot.constants.IntakeConstants;
 
 /**
- * The physical intake subsystem.<p>
+ * The physical intake subsystem.
+ * <p>
  * WARNING: The pivot arm MUST be in home position when the robot starts.
  */
 public class IntakePhys extends Intake {
@@ -50,24 +51,21 @@ public class IntakePhys extends Intake {
 
         // Home the pivot position.
         pivotMotor.getConfigurator().setPosition(0);
-    
+
     }
 
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsNT.putDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsNT.putDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
 
-        partsNT.putDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsNT.putDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
-        intakeMotor.set(0);
-        pivotMotor.set(0);
+        partsNT.putDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsNT.putDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -78,11 +76,15 @@ public class IntakePhys extends Intake {
     @Override
     public void log() {
         super.log();
-        partsLogger.logDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsLogger.logDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
-        
-        partsLogger.logDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsLogger.logDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Pivot/Output", pivotMotor.getMotorOutputStatus().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Pivot/Current", pivotMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+
+        partsLogger.logDouble("Intake/Output", intakeMotor.getMotorOutputStatus().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Intake/Current", intakeMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -112,6 +114,7 @@ public class IntakePhys extends Intake {
 
     @Override
     public PARTsUnit getPivotRotations() {
-        return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO, PARTsUnitType.Rotations);
+        return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO,
+                PARTsUnitType.Rotations);
     }
 }

@@ -4,7 +4,8 @@ public class TurretConstants {
     public enum TurretState {
         DISABLED(0),
         IDLE(0),
-        TRACKING(-1),
+        TRACKING_HUB(-1),
+        TRACKING_CORNER(-1),
         LEFT_CORNER(45),
         RIGHT_CORNER(-45);
 
@@ -32,9 +33,4 @@ public class TurretConstants {
 
     public static final double TURRET_MAX_VELOCITY = 12000;
     public static final double TURRET_MAX_ACCELERATION = 6000;
-
-    // Feedforward
-    public static final double S = 0;
-    public static final double V = 0;
-    public static final double A = 0;
 }

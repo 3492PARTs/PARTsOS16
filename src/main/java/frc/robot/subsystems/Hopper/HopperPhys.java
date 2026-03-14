@@ -31,8 +31,10 @@ public class HopperPhys extends Hopper {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsNT.putDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsNT.putDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -42,8 +44,10 @@ public class HopperPhys extends Hopper {
 
     @Override
     public void log() {
-        partsLogger.logDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsLogger.logDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override
