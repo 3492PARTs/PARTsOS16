@@ -211,10 +211,25 @@ public class Superstructure extends PARTsSubsystem {
     public Command autoTest() {
         Command c = new WaitCommand(0);
         try {
-            PathConstraints constraints = new PathConstraints(2, 2, 2 * Math.PI, 4 * Math.PI);
             c = Commands.parallel(
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile("LeftCenterCollectBalls")), 
                     intake.intake());
+        } catch (FileVersionException | IOException | ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return PARTsCommandUtils.setCommandName("Superstructure.trenchAuto", c);
+    }
+
+    public Command outpostAuto() {
+        Command c = new WaitCommand(0);
+        try {
+            c = Commands.sequence(
+                Commands.parallel(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightRampToOutpost")), 
+                    intake.intake()),
+                    Commands.parallel(shoot(()-> false), Commands.sequence(new WaitCommand(3), intake.intakeShooting()))
+                    );
         } catch (FileVersionException | IOException | ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

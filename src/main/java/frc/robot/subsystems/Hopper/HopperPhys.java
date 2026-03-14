@@ -25,7 +25,7 @@ public class HopperPhys extends Hopper {
 
         hopperMotor = new TalonFX(HopperConstants.HOPPER_MOTOR_ID, HopperConstants.CAN_BUS_NAME);
         hopperMotor.getConfigurator().apply(config);
-        hopperMotor.setNeutralMode(NeutralModeValue.Brake);
+        hopperMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     @Override
