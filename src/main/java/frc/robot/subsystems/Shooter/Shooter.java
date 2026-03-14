@@ -3,12 +3,15 @@ package frc.robot.subsystems.Shooter;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants.ShooterState;
+import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.util.Hub;
 import frc.robot.util.Trench;
 import frc.robot.util.Hub.Targets;
@@ -26,16 +29,19 @@ public abstract class Shooter extends PARTsSubsystem {
 
     private PIDController shooterPIDController;
     private SimpleMotorFeedforward shooterFeedforward;
-    private Supplier<Pose2d> poseSupplier;
+    private Supplier<Pose2d> robotPoseSupplier;
+    private PARTsDrivetrain drivetrain;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
-    public Shooter(Supplier<Pose2d> poseSupplier) {
+    public Shooter(Supplier<Pose2d> poseSupplier, PARTsDrivetrain drivetrain) {
         super("Shooter", RobotConstants.LOGGING);
-        if (RobotConstants.COMPETITION) debug = false;
-        
-        this.poseSupplier = poseSupplier;
+        if (RobotConstants.COMPETITION)
+            debug = false;
+
+        this.robotPoseSupplier = poseSupplier;
+        this.drivetrain = drivetrain;
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Shooter Speed", 0, true);
         }
@@ -80,16 +86,22 @@ public abstract class Shooter extends PARTsSubsystem {
         if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Shooter Speed", true));
         } else {
-            Targets zone = Hub.getZone(poseSupplier.get());
-            double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM() : ShooterState.getZoneRPM(zone);
+            Targets zone = Hub.getZone(robotPoseSupplier.get());
+            double timeOfFlight = (zone == null) ? 0 : zone.getTimeOfFlight();
+            Targets calculatedZone = Hub.getZone(
+                    robotPoseSupplier.get().plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
+                            drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d())));
+            double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
+                    : ShooterState.getZoneRPM(calculatedZone);
 
-            boolean inTrench = Trench.isUnderTrench(poseSupplier.get());
+            boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
+
             if (inTrench) {
-                shooterRPM = shooterState.getZoneRPM(Targets.ZONE2);
+                shooterRPM = ShooterState.getZoneRPM(Targets.TRENCH);
             }
 
             partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);
-            
+
             switch (shooterState) {
                 case CHARGING:
                 case DISABLED:

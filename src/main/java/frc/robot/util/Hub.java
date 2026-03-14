@@ -21,22 +21,30 @@ public class Hub {
     private static PARTsNT partsNT = new PARTsNT("Hub");
 
     public static enum Targets {
-        DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE2(new PARTsUnit(11.5, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE3(new PARTsUnit(13, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE4(new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE5(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter)),
-        ZONE6(new PARTsUnit(19, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
+        DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0),
+        TRENCH(0, 0.6),
+        ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.5),
+        ZONE2(new PARTsUnit(11.5, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.8),
+        ZONE3(new PARTsUnit(13, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.9),
+        ZONE4(new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1),
+        ZONE5(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.1),
+        ZONE6(new PARTsUnit(19, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.2);
 
         private double radius;
+        //get actual time of flights later
+        private double timeOfFlight;
 
-        Targets(double radius) {
+        Targets(double radius, double timeOfFlight) {
             this.radius = radius;
+            this.timeOfFlight = timeOfFlight;
         }
 
         public double getRadius() {
             return radius;
+        }
+
+        public double getTimeOfFlight() {
+            return timeOfFlight;
         }
 
         public void setFieldObject2d() {
@@ -62,37 +70,31 @@ public class Hub {
         checkHubActivity();
     }
 
-    public static boolean isInRadius(Pose2d center, Pose2d point, double radius) {
-        double distanceSquared = Math.pow(Trench.getDistance(point, center), 2);
-        return distanceSquared <= Math.pow(radius, 2);
-    }
-
     public static Targets getZone(Pose2d point) {
-        
-        if (isInRadius(hubPose2d, point, Targets.DEADZONE.getRadius())) {
+        if (Field.isInRadius(hubPose2d, point, Targets.DEADZONE.getRadius())) {
             return null;
         }
-        else if (isInRadius(hubPose2d, point, Targets.ZONE1.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE1.getRadius())) {
             return Targets.ZONE1;
         }
 
-        else if (isInRadius(hubPose2d, point, Targets.ZONE2.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE2.getRadius())) {
             return Targets.ZONE2;
         }
 
-        else if (isInRadius(hubPose2d, point, Targets.ZONE3.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE3.getRadius())) {
             return Targets.ZONE3;
         }
 
-        else if (isInRadius(hubPose2d, point, Targets.ZONE4.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE4.getRadius())) {
             return Targets.ZONE4;
         }
 
-        else if (isInRadius(hubPose2d, point, Targets.ZONE5.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE5.getRadius())) {
             return Targets.ZONE5;
         }
 
-        else if (isInRadius(hubPose2d, point, Targets.ZONE6.getRadius())) {
+        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE6.getRadius())) {
             return Targets.ZONE6;
         }
 
