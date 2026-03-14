@@ -12,7 +12,8 @@ public class IntakeConstants {
         SHOOTING(0.5, new PARTsUnit(45, PARTsUnitType.Angle)),
         TRAVELING(0, new PARTsUnit(160, PARTsUnitType.Angle)),
         HOME(0, new PARTsUnit(0, PARTsUnitType.Angle)),
-        MANUALPIVOT(0, new PARTsUnit(0, PARTsUnitType.Angle));
+        MANUALPIVOT(0, new PARTsUnit(0, PARTsUnitType.Angle)),
+        HOLD(0, new PARTsUnit(0, PARTsUnitType.Angle));
 
         private double speed;
         private PARTsUnit angle;

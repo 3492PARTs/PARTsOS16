@@ -108,8 +108,10 @@ public class Candle extends PARTsCandle {
                 runRainbowAnimation();
                 break;*/
             case SHOOTING:
+                runLarsonAnimation(Color.ORANGE);
                 break;
             case ACTIVE_SHOOTING:
+                runLarsonAnimation(Color.SKY_BLUE);
                 break;
             case IDLE:
                 runFadeAnimation(Color.BLUE, 100);

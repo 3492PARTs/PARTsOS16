@@ -77,11 +77,11 @@ public abstract class Intake extends PARTsSubsystem {
             setPivotSpeed(partsNT.getDouble("Pivot Speed", true));
         } else {
             switch (intakeState) {
+                case IDLE:
                 case DISABLED:
                     setIntakeSpeed(intakeState.getSpeed());
                     setPivotSpeed(0);
                     break;
-                case IDLE:
                 case INTAKING:
                 case OUTTAKING:
                 case HOME:
@@ -164,9 +164,15 @@ public abstract class Intake extends PARTsSubsystem {
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Intake.intakeIdle", Commands.runOnce(() -> {
-            IntakeState.IDLE.setAngle(new PARTsUnit(getPivotRotations().toPARTsUnit(PARTsUnitType.Angle).getValue(), PARTsUnitType.Angle));
+        return PARTsCommandUtils.setCommandName("Intake.idle", Commands.runOnce(() -> {
             intakeState = IntakeState.IDLE;
+        }));
+    }
+
+    public Command hold() {
+        return PARTsCommandUtils.setCommandName("Intake.hold", Commands.runOnce(() -> {
+            IntakeState.HOLD.setAngle(new PARTsUnit(getPivotRotations().toPARTsUnit(PARTsUnitType.Angle).getValue(), PARTsUnitType.Angle));
+            intakeState = IntakeState.HOLD;
         }));
     }
 
