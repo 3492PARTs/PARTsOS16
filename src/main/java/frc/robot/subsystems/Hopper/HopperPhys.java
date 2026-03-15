@@ -13,22 +13,28 @@ public class HopperPhys extends Hopper {
 
     public HopperPhys() {
         super();
-        TalonFXConfiguration hopperConfig = new TalonFXConfiguration();
-        hopperConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        hopperConfig.CurrentLimits.SupplyCurrentLimit = 70;
-        hopperConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLimit = 30;
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLowerTime = 0;
+
+        config.CurrentLimits.StatorCurrentLimit = 100;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         hopperMotor = new TalonFX(HopperConstants.HOPPER_MOTOR_ID, HopperConstants.CAN_BUS_NAME);
-        hopperMotor.getConfigurator().apply(hopperConfig);
-        hopperMotor.setNeutralMode(NeutralModeValue.Brake);
+        hopperMotor.getConfigurator().apply(config);
+        hopperMotor.setNeutralMode(NeutralModeValue.Coast);
     }
 
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsNT.putDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsNT.putDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -38,8 +44,10 @@ public class HopperPhys extends Hopper {
 
     @Override
     public void log() {
-        partsLogger.logDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
-        partsLogger.logDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Output", hopperMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Current", hopperMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override

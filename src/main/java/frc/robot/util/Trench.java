@@ -12,11 +12,11 @@ public class Trench {
 
     public static Command parkUnderTrench(PARTsDrivetrain drivetrain) {
         return PARTsCommandUtils.setCommandName("Trench.parkUnderTrench",
-                Commands.runOnce(() -> goal = getNearestTrench(drivetrain.getPose(), Field.getAllianceTrenchPoses()))
+                Commands.runOnce(() -> goal = getNearestPose(drivetrain.getPose(), Field.getAllianceTrenchPoses()))
                         .andThen(drivetrain.commandPathFindToPose(goal)));
     }
 
-    private static Pose2d getNearestTrench(Pose2d current, Pose2d[] poses) {
+    public static Pose2d getNearestPose(Pose2d current, Pose2d[] poses) {
         int index = 0;
         double distance = getDistance(current, poses[0]);
         for (int i = 0; i < poses.length; i++) {
@@ -30,15 +30,16 @@ public class Trench {
     }
 
     public static boolean isUnderTrench(Pose2d pose) {
-        Pose2d trench = getNearestTrench(pose, Field.getAllianceTrenchPoses());
-        return Hub.isInRadius(pose, trench, 1);
+        Pose2d trench = getNearestPose(pose, Field.getAllianceTrenchPoses());
+        return Field.isInRadius(pose, trench, 1);
     }
 
     // TODO: Move something like this to PARTsLib and make it return a PARTsUnit.
     /**
      * Gets the distance between a point and a goal.
+     * 
      * @param current The origin point. I.e. the drivetrain's position.
-     * @param goal The target point.
+     * @param goal    The target point.
      * @return The distance in meters.
      */
     public static double getDistance(Pose2d current, Pose2d goal) {

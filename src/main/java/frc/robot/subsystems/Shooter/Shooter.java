@@ -3,12 +3,18 @@ package frc.robot.subsystems.Shooter;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants.ShooterState;
+import frc.robot.constants.TurretConstants.TurretState;
+import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
+import frc.robot.util.Field;
 import frc.robot.util.Hub;
 import frc.robot.util.Trench;
 import frc.robot.util.Hub.Targets;
@@ -26,23 +32,38 @@ public abstract class Shooter extends PARTsSubsystem {
 
     private PIDController shooterPIDController;
     private SimpleMotorFeedforward shooterFeedforward;
-    private Supplier<Pose2d> poseSupplier;
+    private Supplier<Pose2d> robotPoseSupplier;
+    private Supplier<TurretState> turretStateSupplier;
+    private PARTsDrivetrain drivetrain;
+    private FieldObject2d calculatedRobotPose;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
-    public Shooter(Supplier<Pose2d> poseSupplier) {
+    /**
+     * Creates a new Shooter subsystem.
+     * 
+     * @param poseSupplier The supplier for the robot's pose, used to get the
+     *                     distance to the hub and trench.
+     */
+    public Shooter(Supplier<Pose2d> poseSupplier, PARTsDrivetrain drivetrain,
+            Supplier<TurretState> turretSupplierState) {
         super("Shooter", RobotConstants.LOGGING);
-        if (RobotConstants.COMPETITION) debug = false;
-        
-        this.poseSupplier = poseSupplier;
+        if (RobotConstants.COMPETITION)
+            debug = false;
+
+        this.robotPoseSupplier = poseSupplier;
+        this.turretStateSupplier = turretSupplierState;
+        this.drivetrain = drivetrain;
+
+        calculatedRobotPose = Field.FIELD2D.getObject("Calculated Robot Pose");
+
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Shooter Speed", 0, true);
         }
 
         shooterPIDController = new PIDController(ShooterConstants.P, ShooterConstants.I, ShooterConstants.D);
         shooterFeedforward = new SimpleMotorFeedforward(ShooterConstants.S, ShooterConstants.V, ShooterConstants.A);
-
         shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
 
         partsNT.putSmartDashboardSendable("Toggle Shooter Debug", toggleDebug, !RobotConstants.COMPETITION);
@@ -51,11 +72,11 @@ public abstract class Shooter extends PARTsSubsystem {
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Shooter State", shooterState.toString(), RobotContainer.debug || debug);
-        partsNT.putDouble("RPM", getRPM(), RobotContainer.debug || debug);
+        partsNT.putString("Shooter State", shooterState.toString(), !RobotConstants.COMPETITION);
+        partsNT.putDouble("RPM", getRPM(), true);
         partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint(), RobotContainer.debug || debug);
-        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), RobotContainer.debug || debug);
+        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), true);
         partsNT.putDouble("Current Error", shooterPIDController.getError(), RobotContainer.debug || debug);
         partsNT.putBoolean("Shooter Debug Active", debug, !RobotConstants.COMPETITION);
     }
@@ -79,32 +100,52 @@ public abstract class Shooter extends PARTsSubsystem {
     public void periodic() {
         if (RobotContainer.debug || debug) {
             setSpeed(partsNT.getDouble("Shooter Speed", true));
-        } else {
-            Targets zone = Hub.getZone(poseSupplier.get());
-            double shooterRPM = shooterState.getZoneRPM(zone);
+        }
 
-            boolean inTrench = Trench.isUnderTrench(poseSupplier.get());
+        else {
+            Targets zone = Hub.getZone(robotPoseSupplier.get());
+            double timeOfFlight = (zone == null) ? 0 : ShooterState.getTofFromDistanceToHub(robotPoseSupplier.get());
+
+            Pose2d calcRobotPose = robotPoseSupplier.get().plus(
+                    new Transform2d(
+                            drivetrain.getXVelocity().getValue() * timeOfFlight,
+                            drivetrain.getYVelocity().getValue() * timeOfFlight,
+                            new Rotation2d()));
+
+            double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
+                    : ShooterState.getRPMFromDistanceToHub(calcRobotPose);
+
+            calculatedRobotPose.setPose(calcRobotPose);
+
+            boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
+
             if (inTrench) {
-                shooterRPM = shooterState.getZoneRPM(Targets.ZONE2);
+                shooterRPM = ShooterState.getZoneRPM(Targets.TRENCH);
             }
 
+            if (zone == null && turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
+                shooterRPM = ShooterState.getZoneRPM(Targets.BEHIND_HUB);
+            }
+
+            partsNT.putDouble("Shooting RPM", shooterRPM, true);
+            partsNT.putDouble("Shooting ToF", timeOfFlight, true);
             partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);
-            
+
             switch (shooterState) {
-                case CHARGING:
                 case DISABLED:
                 case IDLE:
                     setSpeed(0);
                     break;
                 case SHOOTING:
+                case MANUAL:
                     double voltage = 0;
 
-                    if (debug || RobotContainer.debug) {
+                    if (debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed", true);
                     }
 
                     shooterPIDController.setSetpoint(shooterRPM);
-
+                    partsNT.putBoolean("In Setpoint Range", withinSetpointRange(), true);
                     double pidCalc = shooterPIDController.calculate(getRPM(), shooterRPM);
                     double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
                             * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
@@ -129,34 +170,100 @@ public abstract class Shooter extends PARTsSubsystem {
      */
     protected abstract void setSpeed(double speed);
 
+    /**
+     * Sets the voltage of the Shooter.
+     * 
+     * @param voltage The voltage between <code>-12.0</code> and <code>12.0</code>.
+     */
     protected abstract void setVoltage(double voltage);
 
+    /**
+     * Gets the voltage of the Shooter.
+     * 
+     * @return The voltage between <code>-12.0</code> and <code>12.0</code>.
+     */
     protected abstract double getVoltage();
 
+    /**
+     * Gets the RPM of the Shooter.
+     * 
+     * @return The RPM of the Shooter.
+     */
     protected abstract double getRPM();
 
+    /**
+     * Gets the current state of the Shooter.
+     * 
+     * @return The current state of the Shooter.
+     */
     public ShooterState getState() {
         return shooterState;
     }
 
+    /**
+     * Command to set the Shooter to the {@link ShooterState#SHOOTING SHOOTING}
+     * state.
+     * 
+     * @return The command.
+     */
     public Command shoot() {
-        return PARTsCommandUtils.setCommandName("Kicker.shoot", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Shooter.shoot", this.runOnce(() -> {
             shooterState = ShooterState.SHOOTING;
         }));
     }
 
+    /**
+     * Command to set the Shooter to the {@link ShooterState#IDLE IDLE} state.
+     * 
+     * @return The command.
+     */
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Kicker.idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Shooter.idle", this.runOnce(() -> {
             shooterState = ShooterState.IDLE;
         }));
     }
 
+    /**
+     * Command to set the Shooter to the {@link ShooterState#MANUAL MANUAL} state.
+     * <p>
+     * This allows manual control of the shooter RPM.
+     * 
+     * @return The command.
+     */
+    public Command manualShoot() {
+        return PARTsCommandUtils.setCommandName("Shooter.manualShoot", this.runOnce(() -> {
+            shooterState = ShooterState.MANUAL;
+        }));
+    }
+
+    /**
+     * Gets whether the Shooter is at the setpoint RPM.
+     * 
+     * @return A boolean supplier that returns true if the Shooter is at the
+     *         setpoint RPM.
+     */
     public BooleanSupplier atSetpoint() {
         return () -> shooterPIDController.atSetpoint();
     }
 
+    /**
+     * Gets the current setpoint of the Shooter.
+     * 
+     * @return A double supplier that returns the current setpoint of the Shooter in
+     *         RPM.
+     */
     public DoubleSupplier getSetpoint() {
         return () -> shooterPIDController.getSetpoint();
+    }
+
+    /**
+     * Gets whether the Shooter is within a certain range of the setpoint RPM.
+     * 
+     * @return Boolean that returns true if the Shooter is within the setpoint
+     *         range.
+     */
+    public boolean withinSetpointRange() {
+        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 500;
     }
     // endregion
 }

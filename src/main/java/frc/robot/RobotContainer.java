@@ -4,11 +4,9 @@
 
 package frc.robot;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import com.ctre.phoenix6.SignalLogger;
-import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -23,7 +21,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.CandleConstants.CandleState;
+import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.constants.generated.TunerConstants;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import frc.robot.subsystems.Candle;
 import frc.robot.subsystems.LimelightVision;
@@ -36,12 +36,14 @@ import frc.robot.subsystems.Hopper.HopperSim;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.IntakePhys;
 import frc.robot.subsystems.Intake.IntakeSim;
+import frc.robot.subsystems.Intake.IntakeSysid;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Kicker.KickerPhys;
 import frc.robot.subsystems.Kicker.KickerSim;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
+import frc.robot.subsystems.Shooter.ShooterSysid;
 import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.Turret.TurretPhys;
 import frc.robot.subsystems.Turret.TurretSim;
@@ -58,7 +60,7 @@ import org.parts3492.partslib.command.IPARTsSubsystem;
 public class RobotContainer {
     private FieldObject2d hubFieldObject2d;
 
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
+    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
     private final PARTsCommandController operatorController = new PARTsCommandController(1,
             RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
@@ -71,9 +73,9 @@ public class RobotContainer {
 
     public static boolean debug = false;
 
-    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
-    //region Subsystems
+    // region Subsystems
 
     public final PARTsDrivetrain drivetrain = new PARTsDrivetrain(
             TunerConstants.DrivetrainConstants,
@@ -85,12 +87,12 @@ public class RobotContainer {
             drivetrain.consumerResetPose());
 
     public final Candle candle = new Candle();
+    private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose(), drivetrain)
+            : new TurretSim(drivetrain.supplierGetPose(), drivetrain);
 
-    private final Shooter shooter = Robot.isReal() ? new ShooterPhys(drivetrain.supplierGetPose())
-            : new ShooterSim(drivetrain.supplierGetPose());
-
-    private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose())
-            : new TurretSim(drivetrain.supplierGetPose());
+    private final Shooter shooter = Robot.isReal()
+            ? new ShooterPhys(drivetrain.supplierGetPose(), drivetrain, turret::getState)
+            : new ShooterSim(drivetrain.supplierGetPose(), drivetrain, turret::getState);
 
     private final Kicker kicker = Robot.isReal() ? new KickerPhys() : new KickerSim();
 
@@ -99,19 +101,21 @@ public class RobotContainer {
     private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
 
     // private final ShooterSysid shooter = new
-    // ShooterSysid(drivetrain.supplierGetPose()); //for sysid
+    // ShooterSysid(drivetrain.supplierGetPose()); // for sysid
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new
     // TurretSysid(drivetrain.supplierGetPose());
 
-    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle, drivetrain);
+    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle,
+            drivetrain);
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
             Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake, superstructure));
 
     // endregion End Subsystems
 
     public RobotContainer() {
-        if (RobotConstants.COMPETITION) debug = false;
+        if (RobotConstants.COMPETITION)
+            debug = false;
         configureDrivetrainBindings();
         configureCandleBindings();
         configureShooterBindings();
@@ -125,6 +129,17 @@ public class RobotContainer {
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D, true);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
+        partsNT.logPathPlanner((pose) -> {
+            // Do whatever you want with the pose here
+            Field.FIELD2D
+                    .getObject("target pose")
+                    .setPose(pose);
+        }, (poses) -> {
+            // Do whatever you want with the poses here
+            Field.FIELD2D
+                    .getObject("path")
+                    .setPoses(poses);
+        }, true);
 
         partsNT.putSmartDashboardSendable("Toggle Complete Debug", toggleDebug, !RobotConstants.COMPETITION);
 
@@ -163,7 +178,8 @@ public class RobotContainer {
         // driveController.b().onTrue(drivetrain.commandAlign(Field.getTag(28).getLocation().toPose2d()));
 
         /*
-         * if (RobotConstants.DEBUGGING) { //If uncommented remember to switch to new debugging variable
+         * if (RobotConstants.DEBUGGING) { //If uncommented remember to switch to new
+         * debugging variable
          * 
          * //driveController.rightTrigger()
          * // .whileTrue(drivetrain.commandPathOnTheFly(
@@ -192,33 +208,15 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
-        // driveController.a().onTrue(shooter.shoot());
-        // driveController.b().onTrue(shooter.idle());
-
-        /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-         */
     }
 
     private void configureCandleBindings() {
-
     }
 
     private void configureHopperBindings() {
-        // driveController.a().onTrue(hopper.roll());
     }
 
     private void configureTurretBindings() {
-        // driveController.a().onTrue(turret.track());
-        // driveController.b().onTrue(turret.idle());
-
         /*
          * operatorController.a().and(operatorController.rightBumper())
          * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -234,11 +232,11 @@ public class RobotContainer {
     private void configureIntakeBindings() {
         buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
         buttonBoxController.negative4Trigger().onTrue(intake.intake());
-        buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate()).onTrue(intake.intakeIdle());
-        /*driveController.x().onTrue(intake.intake());
-        driveController.y().onTrue(intake.intakeIdle());
-        driveController.rightTrigger().onTrue(intake.intakeShooting());
-        //driveController.x().onTrue(intake.home());*/
+        buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate())
+                .onTrue(intake.idle());
+        buttonBoxController.enterTrigger().onTrue(intake.home());
+        buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
+        buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
 
         /*
          * operatorController.a().and(operatorController.rightBumper())
@@ -254,11 +252,22 @@ public class RobotContainer {
     }
 
     private void configureSuperstructureBindings() {
-        buttonBoxController.handleTrigger().onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean));
+        buttonBoxController.handleTrigger()
+                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
+                        TurretState.TRACKING_HUB));
+        buttonBoxController.enginestartTrigger()
+                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
+                        TurretState.TRACKING_CORNER));
+        buttonBoxController.wipeTrigger()
+                .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
+        buttonBoxController.mapTrigger()
+                .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
+        buttonBoxController.escTrigger().whileTrue(superstructure.trenchAuto(false));
     }
 
     public void configureAutonomousCommands() {
-        autoChooser = AutoBuilder.buildAutoChooser();
+        autoChooser = new SendableChooser<>();
+        autoChooser.addOption("Outpost Auto", superstructure.outpostAuto());
         partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);
     }
 
@@ -286,7 +295,7 @@ public class RobotContainer {
     }
 
     public void setCandleDisabledState() {
-        candle.removeState(CandleState.IDLE);
+        candle.removeAllStates();
         candle.addState(CandleState.DISABLED);
     }
 
@@ -335,11 +344,6 @@ public class RobotContainer {
         hubFieldObject2d.setPose(Field.getAllianceHubPose());
         subsystems.forEach(s -> s.reset());
         CommandScheduler.getInstance().schedule(new WaitCommand(0).andThen(Commands.runOnce(() -> {
-            /*
-             * if (!RobotContainer.isBlue()) {
-             * drivetrain.resetPose(drivetrain.getPose().rotateBy(new Rotation2d(Math.PI)));
-             * }
-             */
             setMegaTagMode(MegaTagMode.MEGATAG2);
         })));
     }

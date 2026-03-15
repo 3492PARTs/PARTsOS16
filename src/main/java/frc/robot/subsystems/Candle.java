@@ -9,7 +9,6 @@ import java.util.Set;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.RobotContainer;
 import frc.robot.constants.CandleConstants;
 import frc.robot.constants.CandleConstants.CandleState;
 import org.parts3492.partslib.command.PARTsCommandUtils;
@@ -37,6 +36,10 @@ public class Candle extends PARTsCandle {
         setState();
     }
 
+    public void removeAllStates() {
+        candleStates = new HashSet<>();
+    }
+
     public CandleState getState() {
         return candleState;
     }
@@ -53,24 +56,6 @@ public class Candle extends PARTsCandle {
 
     /*---------------------------------- Custom Private Functions ---------------------------------*/
     private void setState() {
-
-        // This picks the order of states to display
-        /*if (candleStates.contains(CandleState.ELEVATOR_ERROR))
-            candleState = CandleState.ELEVATOR_ERROR;
-        else if (candleStates.contains(CandleState.CORAL_LASER_EXIT_ERROR))
-            candleState = CandleState.CORAL_LASER_EXIT_ERROR;
-        else if (candleStates.contains(CandleState.CORAL_LASER_ENTRY_ERROR))
-            candleState = CandleState.CORAL_LASER_ENTRY_ERROR;
-        else if (candleStates.contains(CandleState.CORAL_ENTERING))
-            candleState = CandleState.CORAL_ENTERING;
-        else if (candleStates.contains(CandleState.AUTO_ALIGN))
-            candleState = CandleState.AUTO_ALIGN;
-        else if (candleStates.contains(CandleState.SCORING))
-            candleState = CandleState.SCORING;
-        else if (candleStates.contains(CandleState.HAS_CORAL))
-            candleState = CandleState.HAS_CORAL;
-        else if (candleStates.contains(CandleState.FINE_GRAIN_DRIVE))
-            candleState = CandleState.FINE_GRAIN_DRIVE;*/
         if (candleStates.contains(CandleState.ACTIVE_SHOOTING))
             candleState = CandleState.ACTIVE_SHOOTING;
         else if (candleStates.contains(CandleState.SHOOTING))
@@ -86,30 +71,11 @@ public class Candle extends PARTsCandle {
     private void setStateAnimation() {
         // Maps state to animation
         switch (candleState) {
-            /*case ELEVATOR_ERROR:
-                runLarsonAnimation(Color.ORANGE, 0.75, BounceMode.Center, 7);
-                break;
-            case CORAL_LASER_EXIT_ERROR:
-                runLarsonAnimation(Color.RED, 0.75, BounceMode.Center, 7);
-                break;
-            case CORAL_LASER_ENTRY_ERROR:
-                runLarsonAnimation(Color.YELLOW, 0.75, BounceMode.Center, 7);
-                break;
-            case FINE_GRAIN_DRIVE:
-                runTwinkleAnimation(Color.ORANGE, .75, TwinklePercent.Percent30, 0);
-                break;
-            case CORAL_ENTERING:
-                runFadeAnimation(Color.PURPLE, .75);
-                break;
-            case HAS_CORAL:
-                runFadeAnimation(Color.GREEN, .75);
-                break;
-            case SCORING:
-                runRainbowAnimation();
-                break;*/
             case SHOOTING:
+                runStrobeAnimation(Color.ORANGE_RED);
                 break;
             case ACTIVE_SHOOTING:
+                runStrobeAnimation(Color.SKY_BLUE);
                 break;
             case IDLE:
                 runFadeAnimation(Color.BLUE, 100);
@@ -127,6 +93,6 @@ public class Candle extends PARTsCandle {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        super.partsNT.putString("State", candleState.toString(), RobotContainer.debug);
+        super.partsNT.putString("State", candleState.toString(), true);
     }
 }

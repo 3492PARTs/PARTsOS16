@@ -9,20 +9,25 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.RobotContainer;
 import frc.robot.constants.TurretConstants;
+import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 
 public class TurretPhys extends Turret {
     protected final TalonFX turretMotor;
 
-    public TurretPhys(Supplier<Pose2d> robotPoseSupplier) {
-        super(robotPoseSupplier);
+    public TurretPhys(Supplier<Pose2d> robotPoseSupplier, PARTsDrivetrain drivetrain) {
+        super(robotPoseSupplier, drivetrain);
 
         turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID, TurretConstants.CAN_BUS_NAME);
-        TalonFXConfiguration turretConfig = new TalonFXConfiguration();
+        TalonFXConfiguration config = new TalonFXConfiguration();
 
-        turretConfig.CurrentLimits.SupplyCurrentLimit = 70;
-        turretConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLimit = 30;
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLowerTime = 0;
 
-        turretMotor.getConfigurator().apply(turretConfig);
+        config.CurrentLimits.StatorCurrentLimit = 100;
+        config.CurrentLimits.StatorCurrentLimitEnable = true;
+
+        turretMotor.getConfigurator().apply(config);
         turretMotor.getConfigurator().setPosition(0);
         turretMotor.setNeutralMode(NeutralModeValue.Brake);
     }
@@ -30,9 +35,11 @@ public class TurretPhys extends Turret {
     @Override
     public void outputTelemetry() {
         super.outputTelemetry();
-        partsNT.putDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
 
-        partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override
@@ -43,9 +50,11 @@ public class TurretPhys extends Turret {
     @Override
     public void log() {
         super.log();
-        partsLogger.logDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Current/Turret", turretMotor.getSupplyCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
 
-        partsLogger.logDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(), RobotContainer.debug || super.debug);
+        partsLogger.logDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(),
+                RobotContainer.debug || super.debug);
     }
 
     @Override

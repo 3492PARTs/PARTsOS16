@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.TurretConstants.TurretState;
+import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 
 public class ShooterSim extends Shooter {
 
@@ -40,8 +42,8 @@ public class ShooterSim extends Shooter {
 
     FlywheelSim shooterSim;
 
-    public ShooterSim(Supplier<Pose2d> poseSupplier) {
-        super(poseSupplier);
+    public ShooterSim(Supplier <Pose2d> poseSupplier, PARTsDrivetrain drivetrain, Supplier<TurretState> turretSupplierState) {
+        super(poseSupplier, drivetrain, turretSupplierState);
 
         // MOI for flywheel, doesn't account for the shaft.
         // Density * PI * Thickness in Kg * ([Outside Radius ^ 2] - [Inside Radius ^ 2]])^2

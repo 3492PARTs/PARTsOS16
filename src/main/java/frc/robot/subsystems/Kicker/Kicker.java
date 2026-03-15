@@ -14,11 +14,12 @@ public abstract class Kicker extends PARTsSubsystem {
     private KickerState kickerState = KickerState.IDLE;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
     public Kicker() {
         super("Kicker");
-        if (RobotConstants.COMPETITION) debug = false;
+        if (RobotConstants.COMPETITION)
+            debug = false;
 
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Kicker Speed", 0, true);

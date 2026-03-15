@@ -14,6 +14,9 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.TurretConstants.TurretState;
+import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
+
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 public class ShooterSysid extends ShooterPhys {
@@ -27,8 +30,8 @@ public class ShooterSysid extends ShooterPhys {
     private SysIdRoutine routine;
 
 
-    public ShooterSysid(Supplier <Pose2d> poseSupplier) {
-        super(poseSupplier);
+    public ShooterSysid(Supplier <Pose2d> poseSupplier, PARTsDrivetrain drivetrain, Supplier<TurretState> turretSupplierState) {
+        super(poseSupplier, drivetrain, turretSupplierState);
 
         appliedVoltage = Volts.mutable(0);
 
