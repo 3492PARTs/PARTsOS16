@@ -124,7 +124,7 @@ public class IntakePhys extends Intake {
     @Override 
     public Command zeroArm() {
         return PARTsCommandUtils.setCommandName("Intake.zeroArm", Commands.runOnce(() -> {
-            pivotMotor.getConfigurator().setPosition(190);
+            pivotMotor.getConfigurator().setPosition(new PARTsUnit(190, PARTsUnitType.Angle).to(PARTsUnitType.Rotations) * IntakeConstants.PIVOT_GEAR_RATIO);
         }));
     }
 }
