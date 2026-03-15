@@ -76,7 +76,7 @@ public abstract class Shooter extends PARTsSubsystem {
         partsNT.putDouble("RPM", getRPM(), true);
         partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint(), RobotContainer.debug || debug);
-        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), true);
+        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), !RobotConstants.COMPETITION);
         partsNT.putDouble("Current Error", shooterPIDController.getError(), RobotContainer.debug || debug);
         partsNT.putBoolean("Shooter Debug Active", debug, !RobotConstants.COMPETITION);
     }
@@ -115,8 +115,9 @@ public abstract class Shooter extends PARTsSubsystem {
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
                     : ShooterState.getRPMFromDistanceToHub(calcRobotPose);
 
-            calculatedRobotPose.setPose(calcRobotPose);
-
+            if (!RobotConstants.COMPETITION) {
+                calculatedRobotPose.setPose(calcRobotPose);
+            }
             boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
 
             if (inTrench) {
@@ -145,7 +146,7 @@ public abstract class Shooter extends PARTsSubsystem {
                     }
 
                     shooterPIDController.setSetpoint(shooterRPM);
-                    partsNT.putBoolean("In Setpoint Range", withinSetpointRange(), true);
+                    partsNT.putBoolean("In Setpoint Range", withinSetpointRange(), !RobotConstants.COMPETITION);
                     double pidCalc = shooterPIDController.calculate(getRPM(), shooterRPM);
                     double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
                             * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
