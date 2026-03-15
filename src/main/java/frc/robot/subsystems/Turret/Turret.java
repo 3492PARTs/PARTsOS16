@@ -39,8 +39,8 @@ public abstract class Turret extends PARTsSubsystem {
         if (RobotConstants.COMPETITION) debug = false;
 
         if (RobotContainer.debug || debug) {
-         partsNT.putDouble("Turret Speed", 0, true);
-         partsNT.putDouble("Turret Angle", 0, true);
+         partsNT.putDouble("Turret Speed", 0, !RobotConstants.COMPETITION);
+         partsNT.putDouble("Turret Angle", 0, !RobotConstants.COMPETITION);
         }
 
         this.robotPoseSupplier = robotPoseSupplier;
@@ -61,7 +61,7 @@ public abstract class Turret extends PARTsSubsystem {
         partsNT.putDouble("Angle", getAngle(), true);
         partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Setpoint", turretPIDController.getSetpoint(), RobotContainer.debug || debug);
-        partsNT.putBoolean("At Setpoint", turretPIDController.atSetpoint(), true);
+        partsNT.putBoolean("At Setpoint", turretPIDController.atSetpoint(), !RobotConstants.COMPETITION);
         partsNT.putDouble("Current Error", turretPIDController.getPositionError(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Angle to target", getAngleToTarget(getTargetPose()), true);
         partsNT.putBoolean("Turret Debug Active", debug, !RobotConstants.COMPETITION);
@@ -212,7 +212,9 @@ public abstract class Turret extends PARTsSubsystem {
         Pose2d calculatedPose = 
                     target.plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
                             drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d()));
-        fieldTarget.setPose(calculatedPose);
+        if (!RobotConstants.COMPETITION) {
+            fieldTarget.setPose(calculatedPose);
+        }
         double angleToTarget = robotPoseSupplier.get().getRotation().getDegrees()
                 - (Math.atan2(calculatedPose.getY() - robotPoseSupplier.get().getY(),
                         calculatedPose.getX() - robotPoseSupplier.get().getX()) * 180 / Math.PI);

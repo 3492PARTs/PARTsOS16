@@ -237,7 +237,7 @@ public class RobotContainer {
         buttonBoxController.enterTrigger().onTrue(intake.home());
         buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
         buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
-
+        buttonBoxController.escTrigger().onTrue(intake.zeroArm());
         /*
          * operatorController.a().and(operatorController.rightBumper())
          * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -262,7 +262,7 @@ public class RobotContainer {
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
         buttonBoxController.mapTrigger()
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
-        buttonBoxController.escTrigger().whileTrue(superstructure.trenchAuto(false));
+        //buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
     }
 
     public void configureAutonomousCommands() {

@@ -295,6 +295,14 @@ public interface Field {
         return newPoses;
     }
 
+    public static Pose2d [] transformToOppositeAlliance(Pose2d [] poses) {
+        Pose2d [] newPoses = new Pose2d[poses.length];
+        for (int i = 0; i < poses.length; i ++) {
+                newPoses [i] = transformToOppositeAlliance(poses [i]); 
+        }
+        return newPoses;
+    }
+
     /**** EMPTY FIELD POSES ****/
 
     Pose2d EMPTY_FIELD_POSE2D = new Pose2d(new Translation2d(-1, -1), new Rotation2d());
@@ -327,6 +335,7 @@ public interface Field {
                 new Pose2d(0, offset.to(PARTsUnitType.Meter), new Rotation2d()),
                 new Pose2d(0, WIDTH - offset.to(PARTsUnitType.Meter), new Rotation2d()),
         };
+        alliancePoses = RobotContainer.isBlue() ? alliancePoses : transformToOppositeAlliance(alliancePoses);
         Pose2d corner = Trench.getNearestPose(current, alliancePoses);
         return corner;
     }
