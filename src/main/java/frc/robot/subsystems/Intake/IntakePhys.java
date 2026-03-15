@@ -2,12 +2,15 @@ package frc.robot.subsystems.Intake;
 
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+import org.parts3492.partslib.command.PARTsCommandUtils;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.IntakeConstants;
 
@@ -116,5 +119,12 @@ public class IntakePhys extends Intake {
     public PARTsUnit getPivotRotations() {
         return new PARTsUnit(pivotMotor.getPosition().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO,
                 PARTsUnitType.Rotations);
+    }
+
+    @Override 
+    public Command zeroArm() {
+        return PARTsCommandUtils.setCommandName("Intake.zeroArm", Commands.runOnce(() -> {
+            pivotMotor.getConfigurator().setPosition(190);
+        }));
     }
 }

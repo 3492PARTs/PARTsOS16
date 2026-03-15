@@ -48,7 +48,7 @@ public abstract class Intake extends PARTsSubsystem {
     // region Generic Subsystem Functions
     @Override
     public void outputTelemetry() {
-        partsNT.putDouble("Pivot Angle", getPivotRotations().to(PARTsUnitType.Angle), !RobotConstants.COMPETITION);
+        partsNT.putDouble("Pivot Angle", getPivotRotations().to(PARTsUnitType.Angle), true);
         partsNT.putDouble("Current Intake Speed", getIntakeSpeed(), RobotContainer.debug || debug);
         partsNT.putString("Intake State", intakeState.toString(), !RobotConstants.COMPETITION);
         partsNT.putBoolean("Intake Debug Active", debug, !RobotConstants.COMPETITION);
@@ -143,6 +143,8 @@ public abstract class Intake extends PARTsSubsystem {
     public abstract void setPivotVoltage(double voltage);
 
     public abstract double getPivotRotationSpeed();
+
+    public abstract Command zeroArm();
 
     public Command intake() {
         return PARTsCommandUtils.setCommandName("Intake.intake", Commands.runOnce(() -> {

@@ -264,7 +264,7 @@ public abstract class Shooter extends PARTsSubsystem {
      *         range.
      */
     public boolean withinSetpointRange() {
-        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 500;
+        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 700;
     }
     // endregion
 }

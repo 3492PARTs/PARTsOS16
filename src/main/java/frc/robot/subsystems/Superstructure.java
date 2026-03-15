@@ -54,7 +54,7 @@ public class Superstructure extends PARTsSubsystem {
     public Command shoot(BooleanSupplier end, TurretState turretState) {
         BooleanSupplier tracking = () -> ((turretState == TurretState.TRACKING_HUB
                 && Field.isInAllianceZone(drivetrain.getPose()))
-                || turretState == TurretState.TRACKING_CORNER);
+                || (turretState == TurretState.TRACKING_CORNER && !Field.isInAllianceZone(drivetrain.getPose())));
 
         Command c = Commands.sequence(
                 // Initial startup
@@ -88,7 +88,7 @@ public class Superstructure extends PARTsSubsystem {
                                                 candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)).onlyIf(() -> {
                                                     return kicker.getState() != KickerState.IDLE;
                                                 }),
-                                        () -> //shooter.withinSetpointRange() &&
+                                        () -> shooter.withinSetpointRange() &&
                                                 (shooter.getSetpoint().getAsDouble() > 0)
                                                 && turret.isValidAngle() &&
                                                 turret.withinSetpointRange() &&
@@ -157,11 +157,15 @@ public class Superstructure extends PARTsSubsystem {
         try {
             c = Commands.sequence(
                     Commands.parallel(
-                            AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftTrenchToCenter" : "RightTrenchToCenter")),
+                            AutoBuilder.followPath(
+                                    PathPlannerPath.fromPathFile(left ? "LeftTrenchToCenter" : "RightTrenchToCenter")),
                             Commands.sequence(new WaitCommand(.4), intake.intake())),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftCenterCollectBalls" : "RightCenterCollectBalls")),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench1" : "RightCenterToTrench1")),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench2" : "RightCenterToTrench2")),
+                    AutoBuilder.followPath(
+                            PathPlannerPath.fromPathFile(left ? "LeftCenterCollectBalls" : "RightCenterCollectBalls")),
+                    AutoBuilder.followPath(
+                            PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench1" : "RightCenterToTrench1")),
+                    AutoBuilder.followPath(
+                            PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench2" : "RightCenterToTrench2")),
                     Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
                             Commands.sequence(new WaitCommand(1), intake.intakeShooting())));
         } catch (FileVersionException | IOException | ParseException e) {
@@ -169,6 +173,25 @@ public class Superstructure extends PARTsSubsystem {
             e.printStackTrace();
         }
         return PARTsCommandUtils.setCommandName("Superstructure.trenchAuto", c);
+    }
+
+    public Command rightTrenchOutpostAuto() {
+        Command c = new WaitCommand(0);
+        try {
+            c = Commands.sequence(
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightTrenchToCenter")),
+                    Commands.parallel(
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightCenterCollectBalls")),
+                            intake.intake()),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightCenterToTrench1")),
+                    Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
+                            AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightTrenchForwardToOutpost")),
+                            Commands.sequence(new WaitCommand(5), intake.intakeShooting())));
+        } catch (FileVersionException | IOException | ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return PARTsCommandUtils.setCommandName("Superstructure.rightTrenchOutpostAuto", c);
     }
 
     public Command outpostAuto() {
