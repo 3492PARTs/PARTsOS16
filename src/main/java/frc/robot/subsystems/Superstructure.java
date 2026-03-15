@@ -88,7 +88,7 @@ public class Superstructure extends PARTsSubsystem {
                                                 candle.commandRemoveState(CandleState.ACTIVE_SHOOTING)).onlyIf(() -> {
                                                     return kicker.getState() != KickerState.IDLE;
                                                 }),
-                                        () -> shooter.withinSetpointRange() &&
+                                        () -> //shooter.withinSetpointRange() &&
                                                 (shooter.getSetpoint().getAsDouble() > 0)
                                                 && turret.isValidAngle() &&
                                                 turret.withinSetpointRange() &&
@@ -160,7 +160,8 @@ public class Superstructure extends PARTsSubsystem {
                             AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftTrenchToCenter" : "RightTrenchToCenter")),
                             Commands.sequence(new WaitCommand(.4), intake.intake())),
                     AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftCenterCollectBalls" : "RightCenterCollectBalls")),
-                    AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench" : "RightCenterToTrench")),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench1" : "RightCenterToTrench1")),
+                    AutoBuilder.followPath(PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench2" : "RightCenterToTrench2")),
                     Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
                             Commands.sequence(new WaitCommand(1), intake.intakeShooting())));
         } catch (FileVersionException | IOException | ParseException e) {

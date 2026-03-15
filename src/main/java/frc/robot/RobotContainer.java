@@ -262,7 +262,7 @@ public class RobotContainer {
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
         buttonBoxController.mapTrigger()
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
-        buttonBoxController.escTrigger().whileTrue(superstructure.trenchAuto(false));
+        buttonBoxController.escTrigger().whileTrue(superstructure.trenchAuto(true));
     }
 
     public void configureAutonomousCommands() {

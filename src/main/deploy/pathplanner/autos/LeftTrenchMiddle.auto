@@ -19,7 +19,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "LeftCenterToTrench"
+            "pathName": "LeftCenterToTrench1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftCenterToTrench2"
           }
         }
       ]
