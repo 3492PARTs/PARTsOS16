@@ -1,5 +1,10 @@
 package frc.robot.subsystems.Shooter;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
@@ -86,22 +91,23 @@ public class ShooterSim extends Shooter {
 
     @Override
     protected void setSpeed(double speed) {
-        leftMotor.set(speed);
+        leftSim.setSupplyVoltage(speed * RobotController.getBatteryVoltage());
     }
 
     @Override
     protected void setVoltage(double voltage) {
-        leftMotor.setVoltage(voltage);
+        leftSim.setSupplyVoltage(voltage);
     }
 
     @Override
     protected double getRPM() {
-        return leftMotor.getVelocity().getValueAsDouble() * 60;
+        return talonGearbox.getAngularVelocity().in(RPM);
     }
 
     @Override
     protected double getVoltage() {
-        return leftMotor.getSupplyVoltage().getValueAsDouble();
+        // Return sim voltage
+        return leftSim.getMotorVoltageMeasure().in(Volts);
     }
 
     @Override
@@ -114,19 +120,24 @@ public class ShooterSim extends Shooter {
         leftSim = leftMotor.getSimState();
         rightSim = rightMotor.getSimState();
 
-        leftSim.setSupplyVoltage(RobotController.getBatteryVoltage());
-        rightSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+        //leftSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+        //rightSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
         Voltage motorVoltage = leftSim.getMotorVoltageMeasure();
 
         talonGearbox.setInputVoltage(motorVoltage.in(Volts));
-        talonGearbox.update(0.020);
+        talonGearbox.update(0.02);
+
+        shooterSim.setInput(motorVoltage.in(Volts));
+        shooterSim.update(0.02);
 
         leftSim.setRawRotorPosition(talonGearbox.getAngularPosition().times(ShooterConstants.SHOOTER_GEAR_RATIO));
         leftSim.setRotorVelocity(talonGearbox.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO));
 
         rightSim.setRawRotorPosition(talonGearbox.getAngularPosition().times(ShooterConstants.SHOOTER_GEAR_RATIO));
         rightSim.setRotorVelocity(talonGearbox.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO));
+
+        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(talonGearbox.getCurrentDrawAmps()));
 
         //shooterSim.setInput(leftSim.getTorqueCurrent(), rightSim.getTorqueCurrent());
         
