@@ -3,6 +3,7 @@ package frc.robot.subsystems.Hopper;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
@@ -14,6 +15,9 @@ public abstract class Hopper extends PARTsSubsystem {
 
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
+
+
+    private Timer timer = new Timer();
 
     public Hopper() {
         super("Hopper");
@@ -56,10 +60,23 @@ public abstract class Hopper extends PARTsSubsystem {
         } else {
             switch (hopperstate) {
                 case DISABLED:
-                case ROLLING:
                 case IDLE:
+                    setSpeed(hopperstate.getSpeed());
+                    break;
+                case ROLLING:
                 case REVERSE:
                     setSpeed(hopperstate.getSpeed());
+
+                    if (timer.get() > 1 && hopperstate == HopperState.ROLLING) {
+                        timer.restart();
+                        hopperstate = HopperState.REVERSE;
+                    }
+
+                    if (timer.get() > .2 && hopperstate == HopperState.REVERSE) {
+                        timer.restart();
+                        hopperstate = HopperState.ROLLING;
+                    }
+
                     break;
                 default:
                     setSpeed(0);
@@ -84,6 +101,7 @@ public abstract class Hopper extends PARTsSubsystem {
     public Command roll() {
         return PARTsCommandUtils.setCommandName("Hopper.roll", Commands.runOnce(() -> {
             hopperstate = HopperState.ROLLING;
+            timer.restart();
         }));
     }
 
@@ -96,6 +114,7 @@ public abstract class Hopper extends PARTsSubsystem {
     public Command reverse() {
         return PARTsCommandUtils.setCommandName("Hopper.reverse", Commands.runOnce(() -> {
             hopperstate = HopperState.REVERSE;
+            timer.restart();
         }));
     }
     // endregion
