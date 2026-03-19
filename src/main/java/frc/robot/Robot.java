@@ -18,6 +18,8 @@ import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import org.parts3492.partslib.PARTsLogger;
+import org.parts3492.partslib.network.PARTsDashboard;
+import org.parts3492.partslib.network.PARTsDashboard.DashboardTab;
 import org.parts3492.partslib.network.PARTsNT;
 
 public class Robot extends TimedRobot {
@@ -81,7 +83,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousInit() {      
         if (!RobotContainer.debug) {
-            //PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
+            PARTsDashboard.setTab(DashboardTab.AUTONOMOUS);
         }
         m_robotContainer.runOnEnabled();
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
@@ -102,7 +104,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         if (!RobotContainer.debug) {
-            //PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
+            PARTsDashboard.setTab(DashboardTab.TELEOPERATED);
         }
 
         m_robotContainer.runOnEnabled();
