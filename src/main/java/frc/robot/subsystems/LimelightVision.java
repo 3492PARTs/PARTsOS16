@@ -223,7 +223,7 @@ public class LimelightVision extends PARTsSubsystem {
                         : getMegaTag1PoseEstimate(camera.getName());
 
                 inRadius = tagId != -1 && Field.isInRadius(Field.getTag(tagId).getLocation().toPose2d(),
-                        poseEstimate.pose, new PARTsUnit(12, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
+                        poseEstimate.pose, new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
                 partsNT.putDouble(camera.getName() + "/Distance",
                         tagId != -1
                                 ? Trench.getDistance(poseEstimate.pose, Field.getTag(tagId).getLocation().toPose2d())

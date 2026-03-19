@@ -214,6 +214,7 @@ public class RobotContainer {
     }
 
     private void configureHopperBindings() {
+        buttonBoxController.flashTrigger().whileTrue(hopper.reverse()).onFalse(hopper.idle());
     }
 
     private void configureTurretBindings() {
@@ -268,6 +269,9 @@ public class RobotContainer {
     public void configureAutonomousCommands() {
         autoChooser = new SendableChooser<>();
         autoChooser.addOption("Outpost Auto", superstructure.outpostAuto());
+        autoChooser.addOption("Left Trench Auto", superstructure.trenchAuto(true));
+        autoChooser.addOption("Right Trench Auto", superstructure.trenchAuto(false));
+        autoChooser.addOption("Right Trench to Outpost Auto", superstructure.rightTrenchOutpostAuto());
         partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);
     }
 

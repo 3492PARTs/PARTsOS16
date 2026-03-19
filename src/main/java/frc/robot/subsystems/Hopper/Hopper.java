@@ -91,5 +91,11 @@ public abstract class Hopper extends PARTsSubsystem {
             hopperstate = HopperState.IDLE;
         }));
     }
+
+    public Command reverse() {
+        return PARTsCommandUtils.setCommandName("Hopper.reverse", this.runOnce(() -> {
+            hopperstate = HopperState.REVERSE;
+        }));
+    }
     // endregion
 }
