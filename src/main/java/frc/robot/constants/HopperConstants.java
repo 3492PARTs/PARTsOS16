@@ -4,8 +4,8 @@ public class HopperConstants {
     public enum HopperState {
         IDLE(0),
         DISABLED(0),
-        ROLLING(1),
-        REVERSE(-1);
+        ROLLING(.7),
+        REVERSE(-.7);
         private final double speed;
 
         HopperState(double speed) {

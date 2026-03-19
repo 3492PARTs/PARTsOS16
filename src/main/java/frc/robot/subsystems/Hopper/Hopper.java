@@ -58,6 +58,7 @@ public abstract class Hopper extends PARTsSubsystem {
                 case DISABLED:
                 case ROLLING:
                 case IDLE:
+                case REVERSE:
                     setSpeed(hopperstate.getSpeed());
                     break;
                 default:
@@ -81,19 +82,19 @@ public abstract class Hopper extends PARTsSubsystem {
     }
 
     public Command roll() {
-        return PARTsCommandUtils.setCommandName("Hopper.roll", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Hopper.roll", Commands.runOnce(() -> {
             hopperstate = HopperState.ROLLING;
         }));
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Hopper.idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Hopper.idle", Commands.runOnce(() -> {
             hopperstate = HopperState.IDLE;
         }));
     }
 
     public Command reverse() {
-        return PARTsCommandUtils.setCommandName("Hopper.reverse", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Hopper.reverse", Commands.runOnce(() -> {
             hopperstate = HopperState.REVERSE;
         }));
     }
