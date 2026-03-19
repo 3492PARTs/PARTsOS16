@@ -117,7 +117,7 @@
                 "type": "Text Display",
                 "properties": {
                   "topic": "/PARTs/Shooter/RPM",
-                  "period": 0.06,
+                  "period": 0.033,
                   "data_type": "double",
                   "show_submit_button": false
                 }
@@ -350,19 +350,6 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Auto Chooser",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 448.0,
-            "height": 128.0,
-            "type": "ComboBox Chooser",
-            "properties": {
-              "topic": "/SmartDashboard/Auto Chooser",
-              "period": 0.06,
-              "sort_options": false
-            }
-          },
-          {
             "title": "field",
             "x": 0.0,
             "y": 0.0,
@@ -425,6 +412,19 @@
               "time_display_mode": "Minutes and Seconds",
               "red_start_time": 20,
               "yellow_start_time": 30
+            }
+          },
+          {
+            "title": "Auto Chooser",
+            "x": 768.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/RobotContainer/Auto Chooser",
+              "period": 0.06,
+              "sort_options": false
             }
           }
         ]
