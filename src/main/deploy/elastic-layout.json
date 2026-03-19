@@ -1,85 +1,11 @@
 {
   "version": 1.0,
-  "grid_size": 64,
+  "grid_size": 128,
   "tabs": [
     {
       "name": "Teleoperated",
       "grid_layout": {
         "layouts": [
-          {
-            "title": "Shooter",
-            "x": 640.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 384.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Shooter State",
-                "x": 640.0,
-                "y": 320.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Large Text Display",
-                "properties": {
-                  "topic": "/PARTs/Shooter/Shooter State",
-                  "period": 0.06,
-                  "data_type": "string"
-                }
-              },
-              {
-                "title": "At Setpoint",
-                "x": 704.0,
-                "y": 384.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/PARTs/Shooter/At Setpoint",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "RPM",
-                "x": 704.0,
-                "y": 384.0,
-                "width": 192.0,
-                "height": 128.0,
-                "type": "Number Bar",
-                "properties": {
-                  "topic": "/PARTs/Shooter/RPM",
-                  "period": 0.033,
-                  "data_type": "double",
-                  "min_value": 0.0,
-                  "max_value": 6000.0,
-                  "divisions": 5,
-                  "inverted": false,
-                  "orientation": "horizontal"
-                }
-              },
-              {
-                "title": "Zone",
-                "x": 832.0,
-                "y": 128.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Large Text Display",
-                "properties": {
-                  "topic": "/PARTs/PARTsDrivetrain/Zone",
-                  "period": 0.06,
-                  "data_type": "string"
-                }
-              }
-            ]
-          },
           {
             "title": "Vision",
             "x": 0.0,
@@ -133,91 +59,6 @@
             ]
           },
           {
-            "title": "Turret",
-            "x": 1024.0,
-            "y": 0.0,
-            "width": 512.0,
-            "height": 576.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Turret State",
-                "x": 1088.0,
-                "y": 64.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Large Text Display",
-                "properties": {
-                  "topic": "/PARTs/Turret/Turret State",
-                  "period": 0.06,
-                  "data_type": "string"
-                }
-              },
-              {
-                "title": "At Setpoint",
-                "x": 1088.0,
-                "y": 192.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "/PARTs/Turret/At Setpoint",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Angle",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Radial Gauge",
-                "properties": {
-                  "topic": "/PARTs/Turret/Angle",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "start_angle": -100.0,
-                  "end_angle": 100.0,
-                  "min_value": -90.0,
-                  "max_value": 90.0,
-                  "number_of_labels": 6,
-                  "wrap_value": false,
-                  "show_pointer": true,
-                  "show_ticks": false
-                }
-              },
-              {
-                "title": "Get Angle to Turret",
-                "x": 1024.0,
-                "y": 128.0,
-                "width": 256.0,
-                "height": 256.0,
-                "type": "Radial Gauge",
-                "properties": {
-                  "topic": "/PARTs/Turret/Get Angle to Turret",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "start_angle": -180.0,
-                  "end_angle": 180.0,
-                  "min_value": -180.0,
-                  "max_value": 180.0,
-                  "number_of_labels": 8,
-                  "wrap_value": false,
-                  "show_pointer": true,
-                  "show_ticks": false
-                }
-              }
-            ]
-          },
-          {
             "title": "Candle",
             "x": 320.0,
             "y": 384.0,
@@ -252,6 +93,160 @@
                   "topic": "/PARTs/Candle/Animation",
                   "period": 0.06,
                   "data_type": "string"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Shooter",
+            "x": 640.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "RPM",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/Shooter/RPM",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Shooting RPM",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/Shooter/Shooting RPM",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Shooting ToF",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/Shooter/Shooting ToF",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Zone",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/Shooter/Zone",
+                  "period": 0.06,
+                  "data_type": "string",
+                  "show_submit_button": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Turret",
+            "x": 1024.0,
+            "y": 0.0,
+            "width": 384.0,
+            "height": 384.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Angle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/Turret/Angle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Get Angle to target",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/Turret/Get Angle to target",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
+                }
+              },
+              {
+                "title": "Valid Angle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Boolean Box",
+                "properties": {
+                  "topic": "/PARTs/Turret/Valid Angle",
+                  "period": 0.06,
+                  "data_type": "boolean",
+                  "true_color": 4283215696,
+                  "false_color": 4294198070,
+                  "true_icon": "None",
+                  "false_icon": "None"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Intake",
+            "x": 1024.0,
+            "y": 384.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Pivot Angle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/PARTs/Intake/Pivot Angle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": false
                 }
               }
             ]
@@ -296,23 +291,6 @@
             }
           },
           {
-            "title": "Fine Grain Drive",
-            "x": 896.0,
-            "y": 384.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/PARTs/PARTsDrivetrain/Fine Grain Drive",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4283215696,
-              "false_color": 4294198070,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
             "title": "Battery Voltage",
             "x": 640.0,
             "y": 384.0,
@@ -349,7 +327,7 @@
           {
             "title": "Hub Active",
             "x": 896.0,
-            "y": 512.0,
+            "y": 384.0,
             "width": 128.0,
             "height": 128.0,
             "type": "Boolean Box",
@@ -884,20 +862,6 @@
             }
           },
           {
-            "title": "Pipeline name",
-            "x": 1344.0,
-            "y": 0.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/PARTs/LimelightVision/Pipeline name",
-              "period": 0.06,
-              "data_type": "string",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "pipeline",
             "x": 1024.0,
             "y": 128.0,
@@ -1003,6 +967,20 @@
               "robot_color": 4294198070,
               "trajectory_color": 4294967295,
               "show_robot_outside_widget": true
+            }
+          },
+          {
+            "title": "Pipeline name",
+            "x": 1408.0,
+            "y": 0.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/LimelightVision/Pipeline name",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
             }
           }
         ]
@@ -1869,20 +1847,6 @@
             }
           },
           {
-            "title": "Pivot Position",
-            "x": 576.0,
-            "y": 128.0,
-            "width": 128.0,
-            "height": 128.0,
-            "type": "Text Display",
-            "properties": {
-              "topic": "/PARTs/Intake/Pivot Position",
-              "period": 0.06,
-              "data_type": "double",
-              "show_submit_button": false
-            }
-          },
-          {
             "title": "Pivot Speed",
             "x": 448.0,
             "y": 128.0,
@@ -1905,6 +1869,20 @@
             "type": "Text Display",
             "properties": {
               "topic": "/PARTs/Intake/Intake Speed",
+              "period": 0.06,
+              "data_type": "double",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Pivot Angle",
+            "x": 640.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/PARTs/Intake/Pivot Angle",
               "period": 0.06,
               "data_type": "double",
               "show_submit_button": false
