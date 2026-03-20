@@ -46,7 +46,7 @@ public class ShooterConstants {
                 case ZONE5:
                     return 3800 - 150;
                 case ZONE6:
-                    return 4000 - 100;
+                    return 4000 - 30;
                 default:
                     return 0;
             }
