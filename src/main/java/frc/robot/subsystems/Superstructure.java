@@ -218,7 +218,7 @@ public class Superstructure extends PARTsSubsystem {
                                         Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
                                                         AutoBuilder.followPath(PathPlannerPath
                                                                         .fromPathFile("RightTrenchForwardToOutpost")),
-                                                        Commands.sequence(new WaitCommand(5),
+                                                        Commands.sequence(new WaitCommand(9),
                                                                         intake.intakeShooting())));
                 } catch (FileVersionException | IOException | ParseException e) {
                         // TODO Auto-generated catch block

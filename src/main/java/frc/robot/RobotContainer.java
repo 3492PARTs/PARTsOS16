@@ -219,7 +219,8 @@ public class RobotContainer {
     }
 
     private void configureHopperBindings() {
-        //buttonBoxController.flashTrigger().whileTrue(hopper.reverse()).onFalse(hopper.idle());
+        /*driveController.b().onTrue(hopper.roll());
+        driveController.x().onTrue(hopper.idle());*/
     }
 
     private void configureTurretBindings() {
