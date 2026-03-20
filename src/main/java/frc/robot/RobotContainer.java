@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -164,6 +166,9 @@ public class RobotContainer {
 
         // brakes swerve, puts modules into x configuration
         // driveController.a().whileTrue(drivetrain.commandBrake());
+
+        Pose2d outpost = new Pose2d(0.725, .636, new Rotation2d());
+        driveController.a().whileTrue(drivetrain.commandPathFindToPose(outpost));
 
         // manual module direction control
         // driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
