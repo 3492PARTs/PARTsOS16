@@ -193,7 +193,7 @@ public class Superstructure extends PARTsSubsystem {
                                                         PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench2"
                                                                         : "RightCenterToTrench2")),
                                         Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
-                                                        Commands.sequence(new WaitCommand(1),
+                                                        Commands.sequence(new WaitCommand(2),
                                                                         intake.intakeShooting())));
                 } catch (FileVersionException | IOException | ParseException e) {
                         // TODO Auto-generated catch block
