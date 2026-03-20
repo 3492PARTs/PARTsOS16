@@ -14,7 +14,7 @@ public class ShooterConstants {
         IDLE(0),
         DISABLED(0),
         SHOOTING(3500),
-        MANUAL(getZoneRPM(Targets.ZONE6));
+        MANUAL(4000);
 
         private final double rpm;
 
@@ -36,17 +36,17 @@ public class ShooterConstants {
                 case TRENCH:
                     return 3400;
                 case ZONE1:
-                    return 3000;
+                    return 3000 - 200;
                 case ZONE2:
-                    return 3200;
+                    return 3200 - 200;
                 case ZONE3:
-                    return 3400;
+                    return 3400 - 200;
                 case ZONE4:
-                    return 3600;
+                    return 3600 - 200;
                 case ZONE5:
-                    return 3800;
+                    return 3800 - 200;
                 case ZONE6:
-                    return 4000;
+                    return 4000 - 100;
                 default:
                     return 0;
             }
