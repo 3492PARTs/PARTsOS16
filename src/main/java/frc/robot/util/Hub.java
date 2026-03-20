@@ -1,6 +1,7 @@
 package frc.robot.util;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
@@ -16,7 +17,7 @@ import frc.robot.constants.RobotConstants;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Hub {
-    private static Pose2d hubPose2d = Field.getAllianceHubPose();
+    private static Supplier<Pose2d> hubPose2d = () -> Field.getAllianceHubPose();
     private static Timer timer = new Timer();
     private static boolean previousHubActive = true;
     private static PARTsNT partsNT = new PARTsNT("Hub");
@@ -50,19 +51,18 @@ public class Hub {
         }
 
         public void setFieldObject2d() {
-            hubPose2d = Field.getAllianceHubPose();
             FieldObject2d targetFieldObject2d = Field.FIELD2D.getObject(this.name());
-            Pose2d pose = new Pose2d(hubPose2d.getX() - this.radius * (RobotContainer.isBlue() ? 1 : -1),
-                    hubPose2d.getY(), hubPose2d.getRotation());
+            Pose2d pose = new Pose2d(hubPose2d.get().getX() - this.radius * (RobotContainer.isBlue() ? 1 : -1),
+                    hubPose2d.get().getY(), hubPose2d.get().getRotation());
             targetFieldObject2d.setPose(pose);
 
-            Pose2d poseRot = pose.rotateAround(hubPose2d.getTranslation(),
+            Pose2d poseRot = pose.rotateAround(hubPose2d.get().getTranslation(),
                     new Rotation2d(new PARTsUnit(45, PARTsUnitType.Angle).to(PARTsUnitType.Radian)));
 
             FieldObject2d targetFieldObject2dRotated = Field.FIELD2D.getObject(this.name() + "Rot");
             targetFieldObject2dRotated.setPose(poseRot);
 
-            Pose2d poseRotInv = pose.rotateAround(hubPose2d.getTranslation(),
+            Pose2d poseRotInv = pose.rotateAround(hubPose2d.get().getTranslation(),
                     new Rotation2d(new PARTsUnit(-45, PARTsUnitType.Angle).to(PARTsUnitType.Radian)));
             FieldObject2d targetFieldObject2dRotatedInv = Field.FIELD2D.getObject(this.name() + "RotInv");
             targetFieldObject2dRotatedInv.setPose(poseRotInv);
@@ -76,29 +76,29 @@ public class Hub {
     }
 
     public static Targets getZone(Pose2d point) {
-        if (Field.isInRadius(hubPose2d, point, Targets.DEADZONE.getRadius())) {
+        if (Field.isInRadius(hubPose2d.get(), point, Targets.DEADZONE.getRadius())) {
             return null;
-        } else if (Field.isInRadius(hubPose2d, point, Targets.ZONE1.getRadius())) {
+        } else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE1.getRadius())) {
             return Targets.ZONE1;
         }
 
-        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE2.getRadius())) {
+        else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE2.getRadius())) {
             return Targets.ZONE2;
         }
 
-        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE3.getRadius())) {
+        else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE3.getRadius())) {
             return Targets.ZONE3;
         }
 
-        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE4.getRadius())) {
+        else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE4.getRadius())) {
             return Targets.ZONE4;
         }
 
-        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE5.getRadius())) {
+        else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE5.getRadius())) {
             return Targets.ZONE5;
         }
 
-        else if (Field.isInRadius(hubPose2d, point, Targets.ZONE6.getRadius())) {
+        else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE6.getRadius())) {
             return Targets.ZONE6;
         }
 

@@ -111,12 +111,12 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        Hub.startHubActiveTimer();
+        //Hub.startHubActiveTimer();
     }
 
     @Override
     public void teleopPeriodic() {
-        Hub.outputTelemetry();
+        //Hub.outputTelemetry();
     }
 
     @Override
