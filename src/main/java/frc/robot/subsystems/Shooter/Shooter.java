@@ -120,7 +120,7 @@ public abstract class Shooter extends PARTsSubsystem {
             }
             boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
 
-            if (inTrench && drivetrain.getXVelocity().getValue() < 1.5 && drivetrain.getYVelocity().getValue() < 1.5) {
+            if (inTrench && Math.abs(drivetrain.getXVelocity().getValue()) < 1.5 && Math.abs(drivetrain.getYVelocity().getValue()) < 1.5) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.TRENCH);
             }
 
