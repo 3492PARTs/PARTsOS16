@@ -120,12 +120,16 @@ public abstract class Shooter extends PARTsSubsystem {
             }
             boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
 
-            if (inTrench) {
+            if (inTrench && drivetrain.getXVelocity().getValue() < 1.5 && drivetrain.getYVelocity().getValue() < 1.5) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.TRENCH);
             }
 
             if (zone == null && turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.BEHIND_HUB);
+            }
+
+            if (turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
+                shooterRPM += 200;
             }
 
             partsNT.putDouble("Shooting RPM", shooterRPM, true);

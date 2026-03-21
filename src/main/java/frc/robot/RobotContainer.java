@@ -167,7 +167,7 @@ public class RobotContainer {
         // brakes swerve, puts modules into x configuration
         // driveController.a().whileTrue(drivetrain.commandBrake());
 
-        Pose2d outpost = new Pose2d(0.725, .636, new Rotation2d());
+        Pose2d outpost = new Pose2d(0.690, .636, new Rotation2d());
         driveController.a().whileTrue(drivetrain.commandPathFindToPose(outpost));
 
         // manual module direction control
