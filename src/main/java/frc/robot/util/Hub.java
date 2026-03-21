@@ -26,12 +26,12 @@ public class Hub {
         BEHIND_HUB(0, 0),
         DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0),
         TRENCH(0, 0),
-        ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.65),
-        ZONE2(new PARTsUnit(11.5, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.95),
-        ZONE3(new PARTsUnit(13, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.05),
-        ZONE4(new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.15),
-        ZONE5(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.25),
-        ZONE6(new PARTsUnit(19, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.35);
+        ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.70),
+        ZONE2(new PARTsUnit(11.5, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1),
+        ZONE3(new PARTsUnit(13, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.10),
+        ZONE4(new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.20),
+        ZONE5(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.30),
+        ZONE6(new PARTsUnit(19, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.40);
 
         private double radius;
         // get actual time of flights later
