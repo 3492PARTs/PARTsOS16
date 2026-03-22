@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
@@ -12,7 +13,9 @@ import java.util.function.Supplier;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -52,7 +55,8 @@ public class ShooterSim extends Shooter {
 
         // MOI for flywheel, doesn't account for the shaft.
         // Density * PI * Thickness in Kg * ([Outside Radius ^ 2] - [Inside Radius ^ 2]])^2
-        double moi = 1.0 * Math.PI * ShooterConstants.SHOOTER_WHEEL_THICKNESS.to(PARTsUnitType.Meter) * Math.pow(
+        // gearing possibly 1/4 for 4:1 reduction?
+        double moi = 0.8 * Math.PI * ShooterConstants.SHOOTER_WHEEL_THICKNESS.to(PARTsUnitType.Meter) * Math.pow(
             (
                 Math.pow(ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter), 2) - 
                 Math.pow(ShooterConstants.SHOOTER_WHEEL_INNER_RADIUS.to(PARTsUnitType.Meter), 2)
@@ -60,7 +64,7 @@ public class ShooterSim extends Shooter {
 
         talonGearbox = new DCMotorSim(
                 LinearSystemId.createDCMotorSystem(
-                        DCMotor.getKrakenX60Foc(2), 0.0001, ShooterConstants.SHOOTER_GEAR_RATIO
+                        DCMotor.getKrakenX60Foc(2), moi, ShooterConstants.SHOOTER_GEAR_RATIO
                     ),
                 DCMotor.getKrakenX60Foc(2)
         );
@@ -86,28 +90,29 @@ public class ShooterSim extends Shooter {
         
         LinearSystem<N1, N1, N1> plant = LinearSystemId.createFlywheelSystem(talonGearbox.getGearbox(), moi, 1.0);
 
+        //LinearSystem<N1, N1, N1> plant2 = LinearSystemId.identifyVelocitySystem(ShooterConstants.V, ShooterConstants.A);
+
         shooterSim = new FlywheelSim(plant, talonGearbox.getGearbox(), 0.01);
     }
 
     @Override
     protected void setSpeed(double speed) {
-        leftSim.setSupplyVoltage(speed * RobotController.getBatteryVoltage());
+        leftMotor.setControl(new VoltageOut(speed * 12.0));
     }
 
     @Override
     protected void setVoltage(double voltage) {
-        leftSim.setSupplyVoltage(voltage);
+        leftMotor.setControl(new VoltageOut(voltage));
     }
 
     @Override
     protected double getRPM() {
-        return talonGearbox.getAngularVelocity().in(RPM);
+        return leftMotor.getVelocity().getValueAsDouble() * 60;
     }
 
     @Override
     protected double getVoltage() {
-        // Return sim voltage
-        return leftSim.getMotorVoltageMeasure().in(Volts);
+        return leftMotor.getMotorVoltage().getValueAsDouble();
     }
 
     @Override
@@ -131,11 +136,16 @@ public class ShooterSim extends Shooter {
         shooterSim.setInput(motorVoltage.in(Volts));
         shooterSim.update(0.02);
 
-        leftSim.setRawRotorPosition(talonGearbox.getAngularPosition().times(ShooterConstants.SHOOTER_GEAR_RATIO));
-        leftSim.setRotorVelocity(talonGearbox.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO));
+        //leftSim.setRawRotorPosition(talonGearbox.getAngularPosition().times(ShooterConstants.SHOOTER_GEAR_RATIO));
+        //leftSim.setRotorVelocity(talonGearbox.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO));
 
-        rightSim.setRawRotorPosition(talonGearbox.getAngularPosition().times(ShooterConstants.SHOOTER_GEAR_RATIO));
-        rightSim.setRotorVelocity(talonGearbox.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO));
+        //leftSim.setRawRotorPosition(shooterSim.);
+        leftSim.setRotorVelocity(shooterSim.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO).in(RotationsPerSecond));
+
+        //rightSim.setRawRotorPosition(talonGearbox.getAngularPosition().times(ShooterConstants.SHOOTER_GEAR_RATIO));
+        //rightSim.setRotorVelocity(talonGearbox.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO));
+
+        rightSim.setRotorVelocity(shooterSim.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO).in(RotationsPerSecond));
 
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(talonGearbox.getCurrentDrawAmps()));
 
