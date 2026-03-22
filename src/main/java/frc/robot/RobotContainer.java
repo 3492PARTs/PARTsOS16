@@ -269,6 +269,8 @@ public class RobotContainer {
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
         buttonBoxController.mapTrigger()
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
+        buttonBoxController.lightonTrigger().whileTrue(shooter.addSpeed(100)).onFalse(shooter.addSpeed(0));
+        buttonBoxController.talkonTrigger().whileTrue(shooter.addSpeed(200)).onFalse(shooter.addSpeed(0));
         //buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
     }
 

@@ -192,6 +192,7 @@ public class Superstructure extends PARTsSubsystem {
                                         AutoBuilder.followPath(
                                                         PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench2"
                                                                         : "RightCenterToTrench2")),
+                                        intake.idle(),
                                         Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
                                                         Commands.sequence(new WaitCommand(2),
                                                                         intake.intakeShooting())));

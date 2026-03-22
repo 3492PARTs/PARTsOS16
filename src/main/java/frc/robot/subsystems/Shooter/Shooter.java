@@ -40,6 +40,8 @@ public abstract class Shooter extends PARTsSubsystem {
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
+    private double offset = 0;
+
     /**
      * Creates a new Shooter subsystem.
      * 
@@ -131,6 +133,8 @@ public abstract class Shooter extends PARTsSubsystem {
             if (turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
                 shooterRPM += 200;
             }
+
+            shooterRPM += offset;
 
             partsNT.putDouble("Shooting RPM", shooterRPM, true);
             partsNT.putDouble("Shooting ToF", timeOfFlight, true);
@@ -269,6 +273,10 @@ public abstract class Shooter extends PARTsSubsystem {
      */
     public boolean withinSetpointRange() {
         return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 700;
+    }
+
+    public Command addSpeed(double d) {
+        return PARTsCommandUtils.setCommandName("Shooter.addSpeed", Commands.runOnce(() -> this.offset = d));
     }
     // endregion
 }
