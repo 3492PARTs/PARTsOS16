@@ -10,9 +10,11 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
 import frc.robot.util.Hub;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import org.parts3492.partslib.PARTsLogger;
@@ -47,12 +49,16 @@ public class Robot extends TimedRobot {
         m_robotContainer.getAlliance();
 
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
+
+        if (RobotConstants.COMPETITION) {
+            SignalLogger.enableAutoLogging(false);
+        }
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-
+        
         partsNT.putDouble("Match Time", DriverStation.getMatchTime(), true); // loop-overrun
         m_robotContainer.outputTelemetry(); // loop-overrun
         m_robotContainer.log(); // loop-overrun

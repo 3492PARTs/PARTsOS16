@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import frc.robot.RobotContainer;
+import frc.robot.constants.RobotConstants;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Hub {
@@ -178,12 +179,14 @@ public class Hub {
     }
 
     public static void putZonesOnField() {
-        Targets.DEADZONE.setFieldObject2d();
-        Targets.ZONE1.setFieldObject2d();
-        Targets.ZONE2.setFieldObject2d();
-        Targets.ZONE3.setFieldObject2d();
-        Targets.ZONE4.setFieldObject2d();
-        Targets.ZONE5.setFieldObject2d();
-        Targets.ZONE6.setFieldObject2d();
+        if (!RobotConstants.COMPETITION) {
+            Targets.DEADZONE.setFieldObject2d();
+            Targets.ZONE1.setFieldObject2d();
+            Targets.ZONE2.setFieldObject2d();
+            Targets.ZONE3.setFieldObject2d();
+            Targets.ZONE4.setFieldObject2d();
+            Targets.ZONE5.setFieldObject2d();
+            Targets.ZONE6.setFieldObject2d();
+        }
     }
 }

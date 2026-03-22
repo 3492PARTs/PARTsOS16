@@ -29,8 +29,8 @@ public abstract class Intake extends PARTsSubsystem {
             debug = false;
 
         if (RobotContainer.debug || debug) {
-            partsNT.putDouble("Intake Speed", 0, true);
-            partsNT.putDouble("Pivot Speed", 0, true);
+            partsNT.putDouble("Intake Speed", 0, !RobotConstants.COMPETITION);
+            partsNT.putDouble("Pivot Speed", 0, !RobotConstants.COMPETITION);
         }
 
         intakePIDController = new ProfiledPIDController(IntakeConstants.P, IntakeConstants.I, IntakeConstants.D,
@@ -86,8 +86,8 @@ public abstract class Intake extends PARTsSubsystem {
                     double pidCalc = intakePIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
                             intakeState.getAngle().getValue());
 
-                    partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), true);
-                    partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), true);
+                    partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), !RobotConstants.COMPETITION);
+                    partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), !RobotConstants.COMPETITION);
 
                     setPivotVoltage(pidCalc);
                     break;
@@ -108,9 +108,9 @@ public abstract class Intake extends PARTsSubsystem {
                     pidCalc = intakePIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
                             getGoal);
 
-                    partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), true);
-                    partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), true);
-                    partsNT.putDouble("Pivot Goal", getGoal, true);
+                    partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), !RobotConstants.COMPETITION);
+                    partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), !RobotConstants.COMPETITION);
+                    partsNT.putDouble("Pivot Goal", getGoal, !RobotConstants.COMPETITION);
 
                     setPivotVoltage(pidCalc);
                     break;
@@ -143,6 +143,8 @@ public abstract class Intake extends PARTsSubsystem {
     public abstract void setPivotVoltage(double voltage);
 
     public abstract double getPivotRotationSpeed();
+
+    public abstract Command zeroArm();
 
     public Command intake() {
         return PARTsCommandUtils.setCommandName("Intake.intake", Commands.runOnce(() -> {

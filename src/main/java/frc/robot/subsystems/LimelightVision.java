@@ -18,6 +18,7 @@ import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.VisionConstants;
 import frc.robot.util.Field;
 import frc.robot.util.LimelightHelpers;
+import frc.robot.util.Trench;
 import frc.robot.util.LimelightHelpers.PoseEstimate;
 
 import org.parts3492.partslib.PARTsUnit;
@@ -84,8 +85,10 @@ public class LimelightVision extends PARTsSubsystem {
         setWhitelistMode(WhitelistMode.ALL);
         setIMUMode(1);
 
-        super.partsNT.putSmartDashboardSendable("Set MT-1", commandMegaTagMode(MegaTagMode.MEGATAG1), true);
-        super.partsNT.putSmartDashboardSendable("Set MT-2", commandMegaTagMode(MegaTagMode.MEGATAG2), true);
+        super.partsNT.putSmartDashboardSendable("Set MT-1", commandMegaTagMode(MegaTagMode.MEGATAG1),
+                !RobotConstants.COMPETITION);
+        super.partsNT.putSmartDashboardSendable("Set MT-2", commandMegaTagMode(MegaTagMode.MEGATAG2),
+                !RobotConstants.COMPETITION);
     }
 
     public void setMegaTagMode(MegaTagMode mode) {
@@ -98,6 +101,7 @@ public class LimelightVision extends PARTsSubsystem {
                 setVisionMeasurementStdDevsConsumer.accept(VisionConstants.MT2_STDEVS);
                 break;
         }
+        partsNT.putString("Megatag Mode", getMTmode().toString(), true);
     }
 
     public Command commandMegaTagMode(MegaTagMode mode) {
@@ -219,8 +223,12 @@ public class LimelightVision extends PARTsSubsystem {
                         : getMegaTag1PoseEstimate(camera.getName());
 
                 inRadius = tagId != -1 && Field.isInRadius(Field.getTag(tagId).getLocation().toPose2d(),
-                        poseEstimate.pose, new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
-
+                        poseEstimate.pose, new PARTsUnit(12, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
+                partsNT.putDouble(camera.getName() + "/Distance",
+                        tagId != -1
+                                ? Trench.getDistance(poseEstimate.pose, Field.getTag(tagId).getLocation().toPose2d())
+                                : -1,
+                        !RobotConstants.COMPETITION);
                 int requiredTagCount = (megaTagMode == MegaTagMode.MEGATAG1) ? 2 : 1;
 
                 if (poseEstimate != null && poseEstimate.tagCount >= requiredTagCount && inRadius) {
@@ -244,15 +252,14 @@ public class LimelightVision extends PARTsSubsystem {
 
                 partsNT.putNumber(camera.getName() + "/tag id", tagId, !RobotConstants.COMPETITION);
                 partsNT.putNumber(camera.getName() + "/tag count", poseEstimate == null ? -1 : poseEstimate.tagCount,
-                        true);
-                partsNT.putBoolean(camera.getName() + "/In Radius", inRadius, true);
+                        !RobotConstants.COMPETITION);
+                partsNT.putBoolean(camera.getName() + "/In Radius", inRadius, !RobotConstants.COMPETITION);
             }
         }
     }
 
     @Override
     public void outputTelemetry() {
-        partsNT.putString("Megatag Mode", getMTmode().toString(), true);
         partsNT.putString("Whitelist Mode", getWhitelistMode().toString(), RobotContainer.debug);
         partsNT.putNumber("IMU Mode", imuMode, RobotContainer.debug);
     }
