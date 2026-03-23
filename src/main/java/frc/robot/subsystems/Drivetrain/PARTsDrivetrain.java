@@ -107,14 +107,6 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         private boolean isAirborne = false;
         private int airborneDebounceCycles = 0;
         private int stableDebounceCycles = 0;
-        private Pose2d frozenPose = new Pose2d();
-
-        // Tuning knobs (start here; adjust after logging)
-        private static final double G = 9.81;
-        private static final int AIRBORNE_DEBOUNCE = 3; // ~60ms at 20ms loop
-        private static final int STABLE_DEBOUNCE = 5; // ~100ms
-        private static final double AIRBORNE_G_DIFF = 0.35 * G; // enter airborne if |mag - g| > this
-        private static final double STABLE_G_DIFF = 0.15 * G; // exit airborne if |mag - g| < this
 
         public PARTsDrivetrain(
                         SwerveDrivetrainConstants DrivetrainConstants,
@@ -762,13 +754,13 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         private void updateAirborneState() {
                 double mag = getPigeonAccelMagnitudeMps2();
-                boolean airborneNow = Math.abs(mag - G) > AIRBORNE_G_DIFF;
-                boolean stableNow = Math.abs(mag - G) < STABLE_G_DIFF;
+                boolean airborneNow = Math.abs(mag - DrivetrainConstants.G) > DrivetrainConstants.AIRBORNE_G_DIFF;
+                boolean stableNow = Math.abs(mag - DrivetrainConstants.G) < DrivetrainConstants.STABLE_G_DIFF;
 
                 if (!isAirborne) {
                         if (airborneNow) {
                                 airborneDebounceCycles++;
-                                if (airborneDebounceCycles >= AIRBORNE_DEBOUNCE) {
+                                if (airborneDebounceCycles >= DrivetrainConstants.AIRBORNE_DEBOUNCE) {
                                         super.setStateStdDevs(DrivetrainConstants.AIRBORNE_STDEVS);
                                         isAirborne = true;
                                         stableDebounceCycles = 0;
@@ -781,7 +773,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         // currently airborne
                         if (stableNow) {
                                 stableDebounceCycles++;
-                                if (stableDebounceCycles >= STABLE_DEBOUNCE) {
+                                if (stableDebounceCycles >= DrivetrainConstants.STABLE_DEBOUNCE) {
                                         super.setStateStdDevs(DrivetrainConstants.STABLE_STDEVS);
                                         isAirborne = false;
                                         stableDebounceCycles = 0;
