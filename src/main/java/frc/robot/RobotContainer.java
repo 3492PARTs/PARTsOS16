@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -165,6 +167,9 @@ public class RobotContainer {
         // brakes swerve, puts modules into x configuration
         // driveController.a().whileTrue(drivetrain.commandBrake());
 
+        Pose2d outpost = new Pose2d(0.690, .636, new Rotation2d());
+        driveController.a().whileTrue(drivetrain.commandPathFindToPose(outpost));
+
         // manual module direction control
         // driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
 
@@ -214,6 +219,8 @@ public class RobotContainer {
     }
 
     private void configureHopperBindings() {
+        /*driveController.b().onTrue(hopper.roll());
+        driveController.x().onTrue(hopper.idle());*/
     }
 
     private void configureTurretBindings() {
@@ -262,12 +269,17 @@ public class RobotContainer {
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
         buttonBoxController.mapTrigger()
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
+        buttonBoxController.lightonTrigger().whileTrue(shooter.addSpeed(100)).onFalse(shooter.addSpeed(0));
+        buttonBoxController.talkonTrigger().whileTrue(shooter.addSpeed(200)).onFalse(shooter.addSpeed(0));
         //buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
     }
 
     public void configureAutonomousCommands() {
         autoChooser = new SendableChooser<>();
         autoChooser.addOption("Outpost Auto", superstructure.outpostAuto());
+        autoChooser.addOption("Left Trench Auto", superstructure.trenchAuto(true));
+        autoChooser.addOption("Right Trench Auto", superstructure.trenchAuto(false));
+        autoChooser.addOption("Right Trench to Outpost Auto", superstructure.rightTrenchOutpostAuto());
         partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);
     }
 

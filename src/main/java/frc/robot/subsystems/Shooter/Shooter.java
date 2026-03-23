@@ -40,6 +40,8 @@ public abstract class Shooter extends PARTsSubsystem {
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
+    private double offset = 0;
+
     /**
      * Creates a new Shooter subsystem.
      * 
@@ -120,13 +122,19 @@ public abstract class Shooter extends PARTsSubsystem {
             }
             boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
 
-            if (inTrench) {
+            if (inTrench && Math.abs(drivetrain.getXVelocity().getValue()) < 1.5 && Math.abs(drivetrain.getYVelocity().getValue()) < 1.5) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.TRENCH);
             }
 
             if (zone == null && turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.BEHIND_HUB);
             }
+
+            if (turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
+                shooterRPM += 200;
+            }
+
+            shooterRPM += offset;
 
             partsNT.putDouble("Shooting RPM", shooterRPM, true);
             partsNT.putDouble("Shooting ToF", timeOfFlight, true);
@@ -265,6 +273,10 @@ public abstract class Shooter extends PARTsSubsystem {
      */
     public boolean withinSetpointRange() {
         return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 700;
+    }
+
+    public Command addSpeed(double d) {
+        return PARTsCommandUtils.setCommandName("Shooter.addSpeed", Commands.runOnce(() -> this.offset = d));
     }
     // endregion
 }

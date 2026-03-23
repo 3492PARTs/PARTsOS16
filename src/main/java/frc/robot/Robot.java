@@ -18,6 +18,8 @@ import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import org.parts3492.partslib.PARTsLogger;
+import org.parts3492.partslib.network.PARTsDashboard;
+import org.parts3492.partslib.network.PARTsDashboard.DashboardTab;
 import org.parts3492.partslib.network.PARTsNT;
 
 public class Robot extends TimedRobot {
@@ -109,12 +111,12 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        Hub.startHubActiveTimer();
+        //Hub.startHubActiveTimer();
     }
 
     @Override
     public void teleopPeriodic() {
-        Hub.outputTelemetry();
+        //Hub.outputTelemetry();
     }
 
     @Override

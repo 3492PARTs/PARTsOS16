@@ -7,8 +7,8 @@ public class IntakeConstants {
     public enum IntakeState {
         IDLE(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         DISABLED(0, new PARTsUnit(0, PARTsUnitType.Angle)),
-        INTAKING(1, new PARTsUnit(190, PARTsUnitType.Angle)),
-        SHOOTING(0.5, new PARTsUnit(45, PARTsUnitType.Angle)),
+        INTAKING(1, new PARTsUnit(193, PARTsUnitType.Angle)),
+        SHOOTING(0, new PARTsUnit(45, PARTsUnitType.Angle)),
         HOME(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         MANUALPIVOT(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         HOLD(0, new PARTsUnit(0, PARTsUnitType.Angle));
