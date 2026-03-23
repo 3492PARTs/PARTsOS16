@@ -792,7 +792,6 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         }
                 }
 
-                // Optional debug telemetry if you want:
                 partsNT.putBoolean("Drivetrain/Airborne", isAirborne, !RobotConstants.COMPETITION);
                 partsNT.putDouble("Drivetrain/AccelMag", mag, !RobotConstants.COMPETITION);
         }
