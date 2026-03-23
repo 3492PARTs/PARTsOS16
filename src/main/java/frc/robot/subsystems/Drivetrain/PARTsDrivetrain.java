@@ -201,11 +201,6 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         super.periodic();
 
-        // Freeze pose while airborne so wheel encoder nonsense can't integrate into odometry.
-        if (isAirborne) {
-                resetPose(frozenPose);
-        }
-
         robotFieldObject2d.setPose(getPose());
         }
 
@@ -774,8 +769,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         if (airborneNow) {
                                 airborneDebounceCycles++;
                                 if (airborneDebounceCycles >= AIRBORNE_DEBOUNCE) {
+                                        super.setStateStdDevs(DrivetrainConstants.HUMP_STDEVS);
                                         isAirborne = true;
-                                        frozenPose = getPose();
                                         stableDebounceCycles = 0;
                                         airborneDebounceCycles = 0;
                                 }
@@ -787,6 +782,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         if (stableNow) {
                                 stableDebounceCycles++;
                                 if (stableDebounceCycles >= STABLE_DEBOUNCE) {
+                                        super.setStateStdDevs(DrivetrainConstants.FLAT_STDEVS);
                                         isAirborne = false;
                                         stableDebounceCycles = 0;
                                         airborneDebounceCycles = 0;
@@ -797,8 +793,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 }
 
                 // Optional debug telemetry if you want:
-                partsNT.putBoolean("Drivetrain/Airborne", isAirborne, RobotContainer.debug);
-                partsNT.putDouble("Drivetrain/AccelMag", mag, RobotContainer.debug);
+                partsNT.putBoolean("Drivetrain/Airborne", isAirborne, !RobotConstants.COMPETITION);
+                partsNT.putDouble("Drivetrain/AccelMag", mag, !RobotConstants.COMPETITION);
         }
         // endregion
 
