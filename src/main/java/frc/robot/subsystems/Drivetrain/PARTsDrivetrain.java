@@ -769,7 +769,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         if (airborneNow) {
                                 airborneDebounceCycles++;
                                 if (airborneDebounceCycles >= AIRBORNE_DEBOUNCE) {
-                                        super.setStateStdDevs(DrivetrainConstants.HUMP_STDEVS);
+                                        super.setStateStdDevs(DrivetrainConstants.AIRBORNE_STDEVS);
                                         isAirborne = true;
                                         stableDebounceCycles = 0;
                                         airborneDebounceCycles = 0;
@@ -782,7 +782,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                         if (stableNow) {
                                 stableDebounceCycles++;
                                 if (stableDebounceCycles >= STABLE_DEBOUNCE) {
-                                        super.setStateStdDevs(DrivetrainConstants.FLAT_STDEVS);
+                                        super.setStateStdDevs(DrivetrainConstants.STABLE_STDEVS);
                                         isAirborne = false;
                                         stableDebounceCycles = 0;
                                         airborneDebounceCycles = 0;

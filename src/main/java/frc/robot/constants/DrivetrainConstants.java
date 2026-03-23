@@ -70,7 +70,7 @@ public class DrivetrainConstants {
         // - Bigger values => "my predicted motion is uncertain"
         // - That makes the filter rely relatively more on measurement updates (e.g.,
         // vision).
-        public static final edu.wpi.first.math.Vector<N3> FLAT_STDEVS = VecBuilder.fill(kFlatXStdDevMeters,
+        public static final edu.wpi.first.math.Vector<N3> STABLE_STDEVS = VecBuilder.fill(kFlatXStdDevMeters,
                         kFlatYStdDevMeters, kFlatThetaStdDevRad);
 
         // "Hump" uncertainty: larger = we trust drivetrain odometry less.
@@ -80,6 +80,6 @@ public class DrivetrainConstants {
         private static final double kHumpThetaStdDevRad = 0.20; // ~11.5 deg
 
         // Apply std devs for hump driving (slip/bounce expected).
-        public static final edu.wpi.first.math.Vector<N3> HUMP_STDEVS = VecBuilder.fill(kHumpXStdDevMeters,
+        public static final edu.wpi.first.math.Vector<N3> AIRBORNE_STDEVS = VecBuilder.fill(kHumpXStdDevMeters,
                         kHumpYStdDevMeters, kHumpThetaStdDevRad);
 }
