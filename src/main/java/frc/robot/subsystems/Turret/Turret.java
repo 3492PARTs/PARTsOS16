@@ -16,6 +16,7 @@ import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.util.Field;
 import frc.robot.util.Hub;
+import frc.robot.util.SOTMCalculator;
 import frc.robot.util.Hub.Targets;
 
 import java.util.function.Supplier;
@@ -207,11 +208,12 @@ public abstract class Turret extends PARTsSubsystem {
 
     // region private functions
     private double getAngleToTarget(Pose2d target) {
-        Targets zone = Hub.getZone(robotPoseSupplier.get());
-        double timeOfFlight = (zone == null) ? 0 : ShooterState.getTofFromDistanceToHub(robotPoseSupplier.get());
-        Pose2d calculatedPose = 
-                    target.plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
-                            drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d()));
+        //Targets zone = Hub.getZone(robotPoseSupplier.get());
+        //double timeOfFlight = (zone == null) ? 0 : SOTMCalculator.getFlightTimeToGoal(robotPoseSupplier.get(), Field.getAllianceHubPose());
+        
+        Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
+        Pose2d calculatedPose = SOTMCalculator.getTargetPose(robotPoseSupplier.get(), robotVelocity);
+        
         if (!RobotConstants.COMPETITION) {
             fieldTarget.setPose(calculatedPose);
         }

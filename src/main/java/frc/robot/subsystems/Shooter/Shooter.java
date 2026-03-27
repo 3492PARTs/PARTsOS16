@@ -16,6 +16,7 @@ import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.util.Field;
 import frc.robot.util.Hub;
+import frc.robot.util.SOTMCalculator;
 import frc.robot.util.Trench;
 import frc.robot.util.Hub.Targets;
 
@@ -106,16 +107,14 @@ public abstract class Shooter extends PARTsSubsystem {
 
         else {
             Targets zone = Hub.getZone(robotPoseSupplier.get());
-            double timeOfFlight = (zone == null) ? 0 : ShooterState.getTofFromDistanceToHub(robotPoseSupplier.get());
+            double timeOfFlight = (zone == null) ? 0 : SOTMCalculator.getFlightTimeToGoal(robotPoseSupplier.get(), Field.getAllianceHubPose());
 
-            Pose2d calcRobotPose = robotPoseSupplier.get().plus(
-                    new Transform2d(
-                            drivetrain.getXVelocity().getValue() * timeOfFlight,
-                            drivetrain.getYVelocity().getValue() * timeOfFlight,
-                            new Rotation2d()));
+            Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
+
+            Pose2d calcRobotPose = SOTMCalculator.getTargetPose(robotPoseSupplier.get(), robotVelocity);
 
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
-                    : ShooterState.getRPMFromDistanceToHub(calcRobotPose);
+                    : SOTMCalculator.getRPMToGoal(calcRobotPose, Field.getAllianceHubPose());
 
             if (!RobotConstants.COMPETITION) {
                 calculatedRobotPose.setPose(calcRobotPose);
