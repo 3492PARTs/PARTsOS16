@@ -2,6 +2,7 @@ package frc.robot.subsystems.Turret;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -27,6 +28,7 @@ public abstract class Turret extends PARTsSubsystem {
     private TurretState turretState = TurretState.IDLE;
 
     private PIDController turretPIDController;
+    private SimpleMotorFeedforward turretFeedforward;
     private Supplier<Pose2d> robotPoseSupplier;
     private PARTsDrivetrain drivetrain;
     private FieldObject2d fieldTarget;
@@ -48,6 +50,7 @@ public abstract class Turret extends PARTsSubsystem {
         fieldTarget = Field.FIELD2D.getObject("Turret Target");
 
         turretPIDController = new PIDController(TurretConstants.P, TurretConstants.I, TurretConstants.D);
+        turretFeedforward = new SimpleMotorFeedforward(TurretConstants.S, TurretConstants.V, TurretConstants.A);
         turretPIDController.setTolerance(TurretConstants.PID_THRESHOLD);
 
         partsNT.putSmartDashboardSendable("Toggle Turret Debug", toggleDebug, !RobotConstants.COMPETITION);
@@ -89,7 +92,9 @@ public abstract class Turret extends PARTsSubsystem {
             turretPIDController.setSetpoint(partsNT.getDouble("Turret Angle", true));
             double pidCalc = turretPIDController.calculate(getAngle(), partsNT.getDouble("Turret Angle", true));
 
-            double voltage = MathUtil.clamp(pidCalc, -9, 9); 
+            double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
+
+            double voltage = MathUtil.clamp(pidCalc /* + ffCalc */, -9, 9); 
             setVoltage(voltage);
         } else {
             double voltage = 0;
