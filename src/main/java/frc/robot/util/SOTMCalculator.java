@@ -129,9 +129,11 @@ public class SOTMCalculator {
         Pose2d pose = new Pose2d();
         double tof = getFlightTimeToGoal(robotPose, Field.getAllianceHubPose());
 
-        Transform2d tofPose = new Transform2d(robotVelocity.getX() * tof,
+        Transform2d tofPose = new Transform2d(
+            robotVelocity.getX() * tof,
             robotVelocity.getY() * tof,
-            new Rotation2d());
+            new Rotation2d()
+        );
         
         pose = robotPose.plus(tofPose);
         return pose;

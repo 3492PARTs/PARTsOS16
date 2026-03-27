@@ -109,9 +109,18 @@ public abstract class Shooter extends PARTsSubsystem {
             Targets zone = Hub.getZone(robotPoseSupplier.get());
             double timeOfFlight = (zone == null) ? 0 : SOTMCalculator.getFlightTimeToGoal(robotPoseSupplier.get(), Field.getAllianceHubPose());
 
-            Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
+            //Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
 
-            Pose2d calcRobotPose = SOTMCalculator.getTargetPose(robotPoseSupplier.get(), robotVelocity);
+            //Pose2d calcRobotPose = SOTMCalculator.getTargetPose(robotPoseSupplier.get(), robotVelocity);
+
+            //Targets zone = Hub.getZone(robotPoseSupplier.get());
+            //double timeOfFlight = (zone == null) ? 0 : ShooterState.getTofFromDistanceToHub(robotPoseSupplier.get());
+
+            Pose2d calcRobotPose = robotPoseSupplier.get().plus(
+                    new Transform2d(
+                            drivetrain.getXVelocity().getValue() * timeOfFlight,
+                            drivetrain.getYVelocity().getValue() * timeOfFlight,
+                            new Rotation2d()));
 
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
                     : SOTMCalculator.getRPMToGoal(calcRobotPose, Field.getAllianceHubPose());
