@@ -212,7 +212,7 @@ public abstract class Turret extends PARTsSubsystem {
         //double timeOfFlight = (zone == null) ? 0 : SOTMCalculator.getFlightTimeToGoal(robotPoseSupplier.get(), Field.getAllianceHubPose());
         
         Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
-        Pose2d calculatedPose = SOTMCalculator.getTargetPose(robotPoseSupplier.get(), robotVelocity);
+        Pose2d calculatedPose = SOTMCalculator.getTargetPose(target, robotVelocity);
         
         if (!RobotConstants.COMPETITION) {
             fieldTarget.setPose(calculatedPose);
