@@ -56,4 +56,9 @@ public class KickerPhys extends Kicker {
     protected void setSpeed(double speed) {
         kickerMotor.set(speed);
     }
+
+    @Override
+    protected double getRPM() {
+        return kickerMotor.getVelocity().getValueAsDouble() * 60 / KickerConstants.KICKER_GEAR_RATIO;
+    }
 }

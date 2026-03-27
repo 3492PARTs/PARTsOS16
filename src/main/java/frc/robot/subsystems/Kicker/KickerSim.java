@@ -5,4 +5,9 @@ public class KickerSim extends Kicker {
     protected void setSpeed(double speed) {
         partsNT.putDouble("Our Kicker Speed", speed, true);
     }
+
+    @Override
+    protected double getRPM() {
+        return -1;
+    }
 }
