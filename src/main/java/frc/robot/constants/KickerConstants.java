@@ -18,5 +18,6 @@ public class KickerConstants {
     }
 
     public static final int KICKER_MOTOR_ID = 34;
+    public static final double KICKER_GEAR_RATIO = (4.0 / 1.0);
     public static final String CAN_BUS_NAME = "bye";
 }
