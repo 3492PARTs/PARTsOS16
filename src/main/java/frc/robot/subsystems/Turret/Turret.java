@@ -206,7 +206,7 @@ public abstract class Turret extends PARTsSubsystem {
     // region private functions
     private double getAngleToTarget(Pose2d target) {     
         Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
-        Pose2d calculatedPose = SOTMCalculator.getTargetPose(target, robotVelocity);
+        Pose2d calculatedPose = SOTMCalculator.getTargetPose(robotPoseSupplier.get(), robotVelocity);
         
         if (!RobotConstants.COMPETITION) {
             fieldTarget.setPose(calculatedPose);
