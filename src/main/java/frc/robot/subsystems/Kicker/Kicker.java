@@ -1,15 +1,23 @@
 package frc.robot.subsystems.Kicker;
 
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.KickerConstants.KickerState;
+import frc.robot.constants.KickerConstants;
 import frc.robot.constants.RobotConstants;
+import frc.robot.constants.ShooterConstants;
 
 public abstract class Kicker extends PARTsSubsystem {
+
+    private PIDController kickerPIDController;
+    private SimpleMotorFeedforward kickerFeedforward;
 
     private KickerState kickerState = KickerState.IDLE;
 
@@ -24,6 +32,10 @@ public abstract class Kicker extends PARTsSubsystem {
         if (RobotContainer.debug || debug) {
             partsNT.putDouble("Kicker Speed", 0, true);
         }
+
+        kickerPIDController = new PIDController(KickerConstants.P, KickerConstants.I, KickerConstants.D);
+        kickerFeedforward = new SimpleMotorFeedforward(KickerConstants.S, KickerConstants.V, KickerConstants.A);
+        kickerPIDController.setTolerance(KickerConstants.PID_THRESHOLD);
 
         partsNT.putSmartDashboardSendable("Toggle Kicker Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
@@ -57,10 +69,20 @@ public abstract class Kicker extends PARTsSubsystem {
             setSpeed(partsNT.getDouble("Kicker Speed", true));
         } else {
             switch (kickerState) {
-                case ROLLING:
                 case DISABLED:
                 case IDLE:
-                    setSpeed(kickerState.getSpeed());
+                    setSpeed(0);
+                    break;
+                case ROLLING:
+                    double voltage = 0;
+                    kickerPIDController.setSetpoint(kickerState.getRPM());
+                    double pidCalc = kickerPIDController.calculate(getRPM(), kickerState.getRPM());
+                    double ffCalc = kickerFeedforward.calculate((kickerPIDController.getSetpoint() * Math.PI
+                            * KickerConstants.KICKER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
+
+                    voltage = pidCalc + ffCalc;
+
+                    setVoltage(voltage);
                     break;
                 default:
                     setSpeed(0);
