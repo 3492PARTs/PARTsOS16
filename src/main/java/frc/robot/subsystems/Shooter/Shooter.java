@@ -69,6 +69,7 @@ public abstract class Shooter extends PARTsSubsystem {
         shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
 
         partsNT.putSmartDashboardSendable("Toggle Shooter Debug", toggleDebug, !RobotConstants.COMPETITION);
+        putOffsetOnNT();
     }
 
     // region Generic Subsystem Functions
@@ -81,7 +82,6 @@ public abstract class Shooter extends PARTsSubsystem {
         partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), !RobotConstants.COMPETITION);
         partsNT.putDouble("Current Error", shooterPIDController.getError(), RobotContainer.debug || debug);
         partsNT.putBoolean("Shooter Debug Active", debug, !RobotConstants.COMPETITION);
-        partsNT.putDouble("Offset", offset, true);
     }
 
     @Override
@@ -279,6 +279,7 @@ public abstract class Shooter extends PARTsSubsystem {
     public Command setSpeedOffset(DoubleSupplier d) {
         return PARTsCommandUtils.setCommandName("Shooter.addSpeed", Commands.runOnce(() -> {
             this.offset = d.getAsDouble();
+            putOffsetOnNT();
         }));
     }
 
@@ -286,4 +287,8 @@ public abstract class Shooter extends PARTsSubsystem {
         return offset;
     }
     // endregion
+
+    private void putOffsetOnNT() {
+partsNT.putDouble("Offset", offset, true);
+    }
 }
