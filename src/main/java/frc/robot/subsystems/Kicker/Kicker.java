@@ -33,6 +33,7 @@ public abstract class Kicker extends PARTsSubsystem {
     public void outputTelemetry() {
         partsNT.putString("Kicker State", kickerState.toString(), !RobotConstants.COMPETITION);
         partsNT.putBoolean("Kicker Debug Active", debug, !RobotConstants.COMPETITION);
+        partsNT.putDouble("Kicker RPM", getRPM(), !RobotConstants.COMPETITION);
     }
 
     @Override
@@ -76,6 +77,8 @@ public abstract class Kicker extends PARTsSubsystem {
      * @param speed The speed between <code>-1.0</code> and <code>1.0</code>.
      */
     protected abstract void setSpeed(double speed);
+
+    protected abstract double getRPM();
 
     public KickerState getState() {
         return kickerState;
