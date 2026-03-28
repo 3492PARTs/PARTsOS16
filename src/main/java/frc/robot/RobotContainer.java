@@ -215,9 +215,9 @@ public class RobotContainer {
     private void configureShooterBindings() {
         //buttonBoxController.lightonTrigger().whileTrue(shooter.setSpeedOffset(100)).onFalse(shooter.setSpeedOffset(0));
         //buttonBoxController.talkonTrigger().whileTrue(shooter.setSpeedOffset(200)).onFalse(shooter.setSpeedOffset(0));
-        buttonBoxController.absclickTrigger().onTrue(shooter.setSpeedOffset(()-> 0));
-        buttonBoxController.absleftTrigger().onTrue(shooter.setSpeedOffset(()-> shooter.getSpeedOffset() - 100));
-        buttonBoxController.absrightTrigger().onTrue(shooter.setSpeedOffset(()-> shooter.getSpeedOffset() + 100));
+        buttonBoxController.absClickTrigger().onTrue(shooter.setSpeedOffset(()-> 0));
+        buttonBoxController.absClockwiseTrigger().onTrue(shooter.setSpeedOffset(()-> shooter.getSpeedOffset() + 100));
+        buttonBoxController.absCounterClockwiseTrigger().onTrue(shooter.setSpeedOffset(()-> shooter.getSpeedOffset() - 100));
     }
 
     private void configureCandleBindings() {

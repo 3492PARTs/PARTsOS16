@@ -277,7 +277,9 @@ public abstract class Shooter extends PARTsSubsystem {
     }
 
     public Command setSpeedOffset(DoubleSupplier d) {
-        return PARTsCommandUtils.setCommandName("Shooter.addSpeed", Commands.runOnce(() -> this.offset = d.getAsDouble()));
+        return PARTsCommandUtils.setCommandName("Shooter.addSpeed", Commands.runOnce(() -> {
+            this.offset = d.getAsDouble();
+        }));
     }
 
     public double getSpeedOffset(){
