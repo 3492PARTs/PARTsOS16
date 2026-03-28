@@ -56,11 +56,11 @@ public class ShooterSim extends Shooter {
         // MOI for flywheel, doesn't account for the shaft.
         // Density * PI * Thickness in Kg * ([Outside Radius ^ 2] - [Inside Radius ^ 2]])^2
         // gearing possibly 1/4 for 4:1 reduction?
-        double moi = 0.8 * Math.PI * ShooterConstants.SHOOTER_WHEEL_THICKNESS.to(PARTsUnitType.Meter) * Math.pow(
+        double moi = 0.8 * ShooterConstants.SHOOTER_WHEEL_WEIGHT.to(PARTsUnitType.Kilogram) * 
             (
-                Math.pow(ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter), 2) - 
+                Math.pow(ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter), 2) + 
                 Math.pow(ShooterConstants.SHOOTER_WHEEL_INNER_RADIUS.to(PARTsUnitType.Meter), 2)
-            ), 2);
+            );
 
         talonGearbox = new DCMotorSim(
                 LinearSystemId.createDCMotorSystem(
@@ -88,9 +88,9 @@ public class ShooterSim extends Shooter {
         leftSim = leftMotor.getSimState();
         rightSim = rightMotor.getSimState();
         
-        LinearSystem<N1, N1, N1> plant = LinearSystemId.createFlywheelSystem(talonGearbox.getGearbox(), moi, 1.0);
+        LinearSystem<N1, N1, N1> plant = LinearSystemId.createFlywheelSystem(talonGearbox.getGearbox(), moi, ShooterConstants.SHOOTER_GEAR_RATIO);
 
-        //LinearSystem<N1, N1, N1> plant2 = LinearSystemId.identifyVelocitySystem(ShooterConstants.V, ShooterConstants.A);
+        //LinearSystem<N1, N1, N1> plant = LinearSystemId.identifyVelocitySystem(ShooterConstants.V, ShooterConstants.A);
 
         shooterSim = new FlywheelSim(plant, talonGearbox.getGearbox(), 0.01);
     }
@@ -120,6 +120,9 @@ public class ShooterSim extends Shooter {
         super.periodic();
     }
 
+
+    // In rotations per second
+    private double flywheelSimPosition = 0.0;
     @Override
     public void simulationPeriodic() {
         leftSim = leftMotor.getSimState();
@@ -130,24 +133,30 @@ public class ShooterSim extends Shooter {
 
         Voltage motorVoltage = leftSim.getMotorVoltageMeasure();
 
-        talonGearbox.setInputVoltage(motorVoltage.in(Volts));
-        talonGearbox.update(0.02);
+        //talonGearbox.setInputVoltage(motorVoltage.in(Volts));
+        //talonGearbox.update(0.02);
 
         shooterSim.setInput(motorVoltage.in(Volts));
         shooterSim.update(0.02);
 
+        // Default gearbox (No friction I assume since its like ~1800 rpm over the realistic speed :sob:)
         //leftSim.setRawRotorPosition(talonGearbox.getAngularPosition().times(ShooterConstants.SHOOTER_GEAR_RATIO));
         //leftSim.setRotorVelocity(talonGearbox.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO));
-
-        //leftSim.setRawRotorPosition(shooterSim.);
-        leftSim.setRotorVelocity(shooterSim.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO).in(RotationsPerSecond));
 
         //rightSim.setRawRotorPosition(talonGearbox.getAngularPosition().times(ShooterConstants.SHOOTER_GEAR_RATIO));
         //rightSim.setRotorVelocity(talonGearbox.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO));
 
+        // Flywheel
+        flywheelSimPosition += shooterSim.getAngularVelocity().in(RotationsPerSecond) * 0.02;
+
+        leftSim.setRotorVelocity(shooterSim.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO).in(RotationsPerSecond));
         rightSim.setRotorVelocity(shooterSim.getAngularVelocity().times(ShooterConstants.SHOOTER_GEAR_RATIO).in(RotationsPerSecond));
 
-        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(talonGearbox.getCurrentDrawAmps()));
+        leftSim.setRawRotorPosition(flywheelSimPosition * ShooterConstants.SHOOTER_GEAR_RATIO);
+        rightSim.setRawRotorPosition(flywheelSimPosition * ShooterConstants.SHOOTER_GEAR_RATIO);
+
+        //RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(talonGearbox.getCurrentDrawAmps()));
+        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(shooterSim.getCurrentDrawAmps()));
 
         //shooterSim.setInput(leftSim.getTorqueCurrent(), rightSim.getTorqueCurrent());
         
