@@ -80,6 +80,10 @@ public abstract class Kicker extends PARTsSubsystem {
 
     protected abstract double getRPM();
 
+    protected abstract void setVoltage(double voltage);
+
+    protected abstract double getVoltage();
+
     public KickerState getState() {
         return kickerState;
     }
