@@ -206,14 +206,14 @@ public abstract class Turret extends PARTsSubsystem {
     // region private functions
     private double getAngleToTarget(Pose2d target) {     
         Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
-        Pose2d calculatedPose = SOTMCalculator.getTargetPose(robotPoseSupplier.get(), robotVelocity);
+        Pose2d calcRobotPose = SOTMCalculator.getTargetPose(robotPoseSupplier.get(), robotVelocity);
         
         if (!RobotConstants.COMPETITION) {
-            fieldTarget.setPose(calculatedPose);
+            fieldTarget.setPose(calcRobotPose);
         }
-        double angleToTarget = robotPoseSupplier.get().getRotation().getDegrees()
-                - (Math.atan2(calculatedPose.getY() - robotPoseSupplier.get().getY(),
-                        calculatedPose.getX() - robotPoseSupplier.get().getX()) * 180 / Math.PI);
+        double angleToTarget = calcRobotPose.getRotation().getDegrees()
+                - (Math.atan2(Field.getAllianceHubPose().getY() - calcRobotPose.getY(),
+                        Field.getAllianceHubPose().getX() - calcRobotPose.getX()) * 180 / Math.PI);
         if (angleToTarget <= -180) {
             angleToTarget += 360;
         }

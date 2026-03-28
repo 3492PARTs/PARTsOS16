@@ -105,14 +105,14 @@ public abstract class Shooter extends PARTsSubsystem {
 
         else {
             Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
-            Pose2d calcTargetPose = SOTMCalculator.getTargetPose(robotPoseSupplier.get(), robotVelocity);
+            Pose2d calcRobotPose = SOTMCalculator.getTargetPose(robotPoseSupplier.get(), robotVelocity);
 
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
-                    : SOTMCalculator.getRPMToGoal(robotPoseSupplier.get(), calcTargetPose);
+                    : SOTMCalculator.getRPMToGoal(calcRobotPose, Field.getAllianceHubPose());
 
-            if (!RobotConstants.COMPETITION) {
-                calculatedRobotPose.setPose(calcTargetPose);
-            }
+            /*if (!RobotConstants.COMPETITION) {
+                calculatedRobotPose.setPose(calcRobotPose);
+            }*/
             /*boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
 
             if (inTrench && Math.abs(drivetrain.getXVelocity().getValue()) < 1.5 && Math.abs(drivetrain.getYVelocity().getValue()) < 1.5) {
