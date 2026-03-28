@@ -213,6 +213,11 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
+        //buttonBoxController.lightonTrigger().whileTrue(shooter.setSpeedOffset(100)).onFalse(shooter.setSpeedOffset(0));
+        //buttonBoxController.talkonTrigger().whileTrue(shooter.setSpeedOffset(200)).onFalse(shooter.setSpeedOffset(0));
+        buttonBoxController.absclickTrigger().onTrue(shooter.setSpeedOffset(()-> 0));
+        buttonBoxController.absleftTrigger().onTrue(shooter.setSpeedOffset(()-> shooter.getSpeedOffset() - 100));
+        buttonBoxController.absrightTrigger().onTrue(shooter.setSpeedOffset(()-> shooter.getSpeedOffset() + 100));
     }
 
     private void configureCandleBindings() {
@@ -269,8 +274,6 @@ public class RobotContainer {
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
         buttonBoxController.mapTrigger()
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
-        buttonBoxController.lightonTrigger().whileTrue(shooter.addSpeed(100)).onFalse(shooter.addSpeed(0));
-        buttonBoxController.talkonTrigger().whileTrue(shooter.addSpeed(200)).onFalse(shooter.addSpeed(0));
         //buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
     }
 
