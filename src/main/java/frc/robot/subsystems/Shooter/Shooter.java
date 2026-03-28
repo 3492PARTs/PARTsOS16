@@ -101,7 +101,8 @@ public abstract class Shooter extends PARTsSubsystem {
     @Override
     public void periodic() {
         if (RobotContainer.debug || debug) {
-            setSpeed(partsNT.getDouble("Shooter Speed", true));
+            double rpm = partsNT.getDouble("Shooter Speed", true);
+            setVoltage(calculateRPMVoltage(rpm));
         }
 
         else {
@@ -152,16 +153,7 @@ public abstract class Shooter extends PARTsSubsystem {
                     if (debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed", true);
                     }
-
-                    shooterPIDController.setSetpoint(shooterRPM);
-                    partsNT.putBoolean("In Setpoint Range", withinSetpointRange(), !RobotConstants.COMPETITION);
-                    double pidCalc = shooterPIDController.calculate(getRPM(), shooterRPM);
-                    double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
-                            * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
-
-                    voltage = pidCalc + ffCalc;
-
-                    setVoltage(voltage);
+                    setVoltage(calculateRPMVoltage(shooterRPM));
                     break;
                 default:
                     setSpeed(0);
@@ -279,4 +271,15 @@ public abstract class Shooter extends PARTsSubsystem {
         return PARTsCommandUtils.setCommandName("Shooter.addSpeed", Commands.runOnce(() -> this.offset = d));
     }
     // endregion
+
+
+    private double calculateRPMVoltage(double rpm) {
+        double pidCalc = shooterPIDController.calculate(getRPM(), rpm);
+                    double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
+                            * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
+
+                    double voltage = pidCalc + ffCalc;
+
+                    return voltage;
+    }
 }
