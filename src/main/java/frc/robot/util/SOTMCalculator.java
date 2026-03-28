@@ -1,11 +1,12 @@
 package frc.robot.util;
 
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import frc.robot.constants.ShooterConstants.ShooterState;
-import frc.robot.util.Hub.Targets;
 
 public class SOTMCalculator {
     /**
@@ -43,24 +44,14 @@ public class SOTMCalculator {
         // Cut off the shooter in the deadzone.
         // ? It's a little bit lower (0.1 feet in meters) than the actual deadzone just
         // in case the robot is slightly in the deadzone, might have to be removed.
-        table.put(Targets.DEADZONE.getRadius() - (0.03048), 0.0);
-        // End of Deadzone / Start of Zone 1
-        table.put(Targets.DEADZONE.getRadius(), ShooterState.getZoneRPM(Targets.ZONE1));
-
-        /*
-         * I don't think that we need to populate the table with these zones, but
-         * they're here just in case we do.
-         * Further testing is required though.
-         * It seems to work fine without these values in sim.
-         */
-        table.put(Targets.ZONE1.getRadius(), ShooterState.getZoneRPM(Targets.ZONE2));
-        table.put(Targets.ZONE2.getRadius(), ShooterState.getZoneRPM(Targets.ZONE3));
-        table.put(Targets.ZONE3.getRadius(), ShooterState.getZoneRPM(Targets.ZONE4));
-        table.put(Targets.ZONE4.getRadius(), ShooterState.getZoneRPM(Targets.ZONE5));
-        table.put(Targets.ZONE5.getRadius(), ShooterState.getZoneRPM(Targets.ZONE6));
-
-        // Zone 6
-        table.put(Targets.ZONE6.getRadius(), ShooterState.getZoneRPM(Targets.ZONE6));
+        table.put(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - (0.03048), 0.0);
+        table.put(new PARTsUnit(11, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3000.0);
+        table.put(new PARTsUnit(11, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3200.0);
+        table.put(new PARTsUnit(14, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3400.0);
+        table.put(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3600.0);
+        table.put(new PARTsUnit(20, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3800.0);
+        table.put(new PARTsUnit(23, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 4000.0);
+        table.put(new PARTsUnit(26, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 4200.0);
 
         return table;
     }
@@ -77,18 +68,13 @@ public class SOTMCalculator {
         InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
 
         // 0 Little less than deadzone to make sure it's set to zero like it's supposed to be.
-        table.put(Targets.DEADZONE.getRadius() - (0.03048), Targets.DEADZONE.getTimeOfFlight());
-        table.put(Targets.DEADZONE.getRadius(), Targets.ZONE1.getTimeOfFlight());
-
-        // Min
-        table.put(Targets.ZONE1.getRadius(), Targets.ZONE2.getTimeOfFlight());
-        table.put(Targets.ZONE2.getRadius(), Targets.ZONE3.getTimeOfFlight());
-        table.put(Targets.ZONE3.getRadius(), Targets.ZONE4.getTimeOfFlight());
-        table.put(Targets.ZONE4.getRadius(), Targets.ZONE5.getTimeOfFlight());
-        table.put(Targets.ZONE5.getRadius(), Targets.ZONE6.getTimeOfFlight());
-
-        // Max
-        table.put(Targets.ZONE6.getRadius(), Targets.ZONE6.getTimeOfFlight());
+        table.put(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - (0.03048), 0.7);
+        table.put(new PARTsUnit(11, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.8);
+        table.put(new PARTsUnit(14, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.9);
+        table.put(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.0);
+        table.put(new PARTsUnit(20, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.1);
+        table.put(new PARTsUnit(23, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.2);
+        table.put(new PARTsUnit(26, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.3);
 
         return table;
     }
@@ -126,7 +112,7 @@ public class SOTMCalculator {
      * @return The calculated robot pose.
      */
     public static Pose2d getTargetPose(Pose2d robotPose, Transform2d robotVelocity) {
-        Pose2d pose = new Pose2d();
+        Pose2d pose = Field.getAllianceHubPose();
         double tof = getFlightTimeToGoal(robotPose, Field.getAllianceHubPose());
 
         Transform2d tofPose = new Transform2d(

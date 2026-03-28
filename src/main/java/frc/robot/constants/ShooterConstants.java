@@ -30,18 +30,6 @@ public class ShooterConstants {
                     return 3000;
                 case TRENCH:
                     return 3400;
-                case ZONE1:
-                    return 3000 - 150;
-                case ZONE2:
-                    return 3200 - 150;
-                case ZONE3:
-                    return 3400 - 150;
-                case ZONE4:
-                    return 3600 - 150;
-                case ZONE5:
-                    return 3800 - 150;
-                case ZONE6:
-                    return 4000 - 30;
                 default:
                     return 0;
             }

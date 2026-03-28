@@ -50,7 +50,6 @@ import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.Turret.TurretPhys;
 import frc.robot.subsystems.Turret.TurretSim;
 import frc.robot.util.Field;
-import frc.robot.util.Hub;
 
 import org.parts3492.partslib.input.PARTsButtonBoxController;
 import org.parts3492.partslib.input.PARTsCommandController;
@@ -350,7 +349,6 @@ public class RobotContainer {
 
     public void runOnEnabled() {
         getAlliance(); // ensure we have the alliance
-        Hub.putZonesOnField();
         setLimelightMainMode();
         setIdleCandleState();
         hubFieldObject2d.setPose(Field.getAllianceHubPose());
