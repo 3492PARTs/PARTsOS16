@@ -102,8 +102,9 @@ public class RobotContainer {
 
     private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
 
-    // private final ShooterSysid shooter = new
-    // ShooterSysid(drivetrain.supplierGetPose()); // for sysid
+     /*private final ShooterSysid shooter = new
+     ShooterSysid(drivetrain.supplierGetPose(), drivetrain, turret::getState);*/ // for sysid
+
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new
     // TurretSysid(drivetrain.supplierGetPose());
@@ -213,6 +214,16 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
+        
+          /*operatorController.a().and(operatorController.rightBumper())
+          .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+          operatorController.b().and(operatorController.rightBumper())
+          .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+          operatorController.x().and(operatorController.rightBumper())
+          .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+          operatorController.y().and(operatorController.rightBumper())
+          .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
+         
     }
 
     private void configureCandleBindings() {
