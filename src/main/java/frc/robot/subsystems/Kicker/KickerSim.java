@@ -10,4 +10,13 @@ public class KickerSim extends Kicker {
     protected double getRPM() {
         return -1;
     }
+
+    @Override
+    protected void setVoltage(double voltage) {
+    }
+
+    @Override
+    protected double getVoltage() {
+        return -1;
+    }
 }

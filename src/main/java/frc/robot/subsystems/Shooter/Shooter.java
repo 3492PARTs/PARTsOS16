@@ -15,8 +15,7 @@ import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.util.Field;
-import frc.robot.util.Hub;
-import frc.robot.util.Trench;
+import frc.robot.util.SOTMCalculator;
 import frc.robot.util.Hub.Targets;
 
 import java.util.function.BooleanSupplier;
@@ -38,7 +37,10 @@ public abstract class Shooter extends PARTsSubsystem {
     private FieldObject2d calculatedRobotPose;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> {
+        debug = !debug;
+        partsNT.putDouble("Shooter Speed", 0, true);
+    }).ignoringDisable(true);
 
     private double offset = 0;
 
@@ -69,6 +71,7 @@ public abstract class Shooter extends PARTsSubsystem {
         shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
 
         partsNT.putSmartDashboardSendable("Toggle Shooter Debug", toggleDebug, !RobotConstants.COMPETITION);
+        putOffsetOnNT();
     }
 
     // region Generic Subsystem Functions
@@ -78,7 +81,7 @@ public abstract class Shooter extends PARTsSubsystem {
         partsNT.putDouble("RPM", getRPM(), true);
         partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint(), RobotContainer.debug || debug);
-        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), !RobotConstants.COMPETITION);
+        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), true);
         partsNT.putDouble("Current Error", shooterPIDController.getError(), RobotContainer.debug || debug);
         partsNT.putBoolean("Shooter Debug Active", debug, !RobotConstants.COMPETITION);
     }
@@ -101,44 +104,38 @@ public abstract class Shooter extends PARTsSubsystem {
     @Override
     public void periodic() {
         if (RobotContainer.debug || debug) {
-            setSpeed(partsNT.getDouble("Shooter Speed", true));
+            double rpm = partsNT.getDouble("Shooter Speed", true);
+            setVoltage(calculateRPMVoltage(rpm));
         }
 
         else {
-            Targets zone = Hub.getZone(robotPoseSupplier.get());
-            double timeOfFlight = (zone == null) ? 0 : ShooterState.getTofFromDistanceToHub(robotPoseSupplier.get());
-
-            Pose2d calcRobotPose = robotPoseSupplier.get().plus(
-                    new Transform2d(
-                            drivetrain.getXVelocity().getValue() * timeOfFlight,
-                            drivetrain.getYVelocity().getValue() * timeOfFlight,
-                            new Rotation2d()));
+            Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
+            Pose2d calcRobotPose = SOTMCalculator.collapsePose(robotPoseSupplier.get(), robotVelocity);
 
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
-                    : ShooterState.getRPMFromDistanceToHub(calcRobotPose);
+                    : SOTMCalculator.getRPMToGoal(calcRobotPose, Field.getAllianceHubPose());
 
-            if (!RobotConstants.COMPETITION) {
+            /*if (!RobotConstants.COMPETITION) {
                 calculatedRobotPose.setPose(calcRobotPose);
-            }
-            boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
+            }*/
+            /*boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
 
-            if (inTrench && Math.abs(drivetrain.getXVelocity().getValue()) < 1.5 && Math.abs(drivetrain.getYVelocity().getValue()) < 1.5) {
+            if (inTrench && Math.abs(drivetrain.getXVelocity().getValue()) < 1.5
+                    && Math.abs(drivetrain.getYVelocity().getValue()) < 1.5) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.TRENCH);
-            }
+            }*/
 
-            if (zone == null && turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
+            if (shooterRPM == 0 && turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.BEHIND_HUB);
             }
 
             if (turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
-                shooterRPM += 200;
+                shooterRPM += 400;
             }
 
             shooterRPM += offset;
 
             partsNT.putDouble("Shooting RPM", shooterRPM, true);
-            partsNT.putDouble("Shooting ToF", timeOfFlight, true);
-            partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);
 
             switch (shooterState) {
                 case DISABLED:
@@ -147,21 +144,10 @@ public abstract class Shooter extends PARTsSubsystem {
                     break;
                 case SHOOTING:
                 case MANUAL:
-                    double voltage = 0;
-
                     if (debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed", true);
                     }
-
-                    shooterPIDController.setSetpoint(shooterRPM);
-                    partsNT.putBoolean("In Setpoint Range", withinSetpointRange(), !RobotConstants.COMPETITION);
-                    double pidCalc = shooterPIDController.calculate(getRPM(), shooterRPM);
-                    double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
-                            * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
-
-                    voltage = pidCalc + ffCalc;
-
-                    setVoltage(voltage);
+                    setVoltage(calculateRPMVoltage(shooterRPM));
                     break;
                 default:
                     setSpeed(0);
@@ -272,11 +258,33 @@ public abstract class Shooter extends PARTsSubsystem {
      *         range.
      */
     public boolean withinSetpointRange() {
-        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 700;
+        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 200;
     }
 
-    public Command addSpeed(double d) {
-        return PARTsCommandUtils.setCommandName("Shooter.addSpeed", Commands.runOnce(() -> this.offset = d));
+    public Command setSpeedOffset(DoubleSupplier d) {
+        return PARTsCommandUtils.setCommandName("Shooter.addSpeed", Commands.runOnce(() -> {
+            this.offset = d.getAsDouble();
+            putOffsetOnNT();
+        }));
+    }
+
+    public double getSpeedOffset(){
+        return offset;
     }
     // endregion
+
+    private double calculateRPMVoltage(double rpm) {
+        shooterPIDController.setSetpoint(rpm);
+        double pidCalc = shooterPIDController.calculate(getRPM(), rpm);
+        double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
+                * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
+
+        double voltage = pidCalc + ffCalc;
+
+        return voltage;
+    }
+
+    private void putOffsetOnNT() {
+partsNT.putDouble("Offset", offset, true);
+    }
 }

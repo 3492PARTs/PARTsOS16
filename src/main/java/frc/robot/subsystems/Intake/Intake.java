@@ -19,7 +19,11 @@ public abstract class Intake extends PARTsSubsystem {
     IntakeState intakeState = IntakeState.IDLE;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> {
+        debug = !debug;
+        partsNT.putDouble("Intake Speed", 0, !RobotConstants.COMPETITION);
+        partsNT.putDouble("Pivot Speed", 0, !RobotConstants.COMPETITION);
+    }).ignoringDisable(true);
 
     ProfiledPIDController intakePIDController;
 
@@ -79,6 +83,7 @@ public abstract class Intake extends PARTsSubsystem {
                     setPivotSpeed(0);
                     break;
                 case INTAKING:
+                case REVERSE:
                 case HOME:
                     setIntakeSpeed(intakeState.getSpeed());
 
@@ -175,6 +180,12 @@ public abstract class Intake extends PARTsSubsystem {
     public Command home() {
         return PARTsCommandUtils.setCommandName("Intake.home", Commands.runOnce(() -> {
             intakeState = IntakeState.HOME;
+        }));
+    }
+
+    public Command reverse() {
+        return PARTsCommandUtils.setCommandName("Intake.reverse", Commands.runOnce(() -> {
+            intakeState = IntakeState.REVERSE;
         }));
     }
 

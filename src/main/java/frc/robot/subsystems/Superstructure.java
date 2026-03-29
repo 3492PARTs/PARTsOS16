@@ -71,9 +71,12 @@ public class Superstructure extends PARTsSubsystem {
                                                 candle.commandAddState(CandleState.SHOOTING))
 
                                                 .andThen(Commands.repeatingSequence(
-                                                                hopper.roll().onlyIf(() -> hopper
+                                                                new ConditionalCommand(hopper.roll().onlyIf(() -> hopper
                                                                                 .getState() != HopperState.REVERSE
                                                                                 && hopper.getState() != HopperState.ROLLING),
+                                                                                hopper.idle().onlyIf(() -> hopper
+                                                                                                .getState() != HopperState.IDLE),
+                                                                                kicker::withinSetpointRange),
 
                                                                 // Spin up the shooter if the turret is at a valid
                                                                 // angle.
@@ -115,11 +118,7 @@ public class Superstructure extends PARTsSubsystem {
                                 // a valid angle.
                                 Commands.waitUntil(() -> end.getAsBoolean()).andThen(
                                                 Commands.runOnce(() -> {
-                                                        turret.reset();
-                                                        intake.reset();
-                                                        hopper.reset();
-                                                        kicker.reset();
-                                                        shooter.reset();
+                                                        reset();
                                                         candle.removeState(CandleState.SHOOTING);
                                                         candle.removeState(CandleState.ACTIVE_SHOOTING);
                                                 })));
@@ -160,17 +159,29 @@ public class Superstructure extends PARTsSubsystem {
                                 // a valid angle.
                                 Commands.waitUntil(() -> end.getAsBoolean()).andThen(
                                                 Commands.runOnce(() -> {
-                                                        turret.reset();
-                                                        intake.reset();
-                                                        hopper.reset();
-                                                        kicker.reset();
-                                                        shooter.reset();
+                                                        reset();
                                                         candle.removeState(CandleState.SHOOTING);
                                                         candle.removeState(CandleState.ACTIVE_SHOOTING);
                                                 })));
 
                 c.addRequirements(this);
                 return PARTsCommandUtils.setCommandName("Superstructure.shoot", c);
+        }
+
+        public Command spew() {
+                return Commands.parallel(intake.reverse(), hopper.reverse());
+        }
+
+        public void reset() {
+                turret.reset();
+                intake.reset();
+                hopper.reset();
+                kicker.reset();
+                shooter.reset();
+        }
+
+        public Command resetCommand() {
+                return Commands.runOnce(() -> reset(), this);
         }
 
         public Command trenchAuto(boolean left) {
@@ -252,10 +263,6 @@ public class Superstructure extends PARTsSubsystem {
 
         @Override
         public void stop() {
-        }
-
-        @Override
-        public void reset() {
         }
 
         @Override

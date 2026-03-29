@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.CameraConstants;
 import frc.robot.constants.RobotConstants;
@@ -31,6 +32,7 @@ public class LimelightVision extends PARTsSubsystem {
     private final Supplier<Pose2d> poseSupplier;
     private final BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction;
     private final Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer;
+    private final Consumer<Pose2d> resetPoseConsumer;
 
     public enum MegaTagMode {
         MEGATAG1,
@@ -59,6 +61,8 @@ public class LimelightVision extends PARTsSubsystem {
     private int imuMode;
     private int maxTagCount;
 
+    private PoseEstimate poseEstimate = null;
+
     public LimelightVision(Supplier<Pose2d> poseSupplier,
             BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
             Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer, Consumer<Pose2d> resetPoseConsumer) {
@@ -66,6 +70,7 @@ public class LimelightVision extends PARTsSubsystem {
         this.poseSupplier = poseSupplier;
         this.addVisionMeasurementBiFunction = addVisionMeasurementBiFunction;
         this.setVisionMeasurementStdDevsConsumer = setVisionMeasurementStdDevsConsumer;
+        this.resetPoseConsumer = resetPoseConsumer;
 
         for (Camera camera : CameraConstants.LimelightCameras) {
             Pose3d robotRelativePose = camera.getLocation();
@@ -196,7 +201,6 @@ public class LimelightVision extends PARTsSubsystem {
         updateWhitelistMode();
         for (Camera camera : CameraConstants.LimelightCameras) {
             int tagId = -1;
-            PoseEstimate poseEstimate = null;
             boolean inRadius = false, data = false, accepted = false;
 
             double[] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
@@ -287,5 +291,12 @@ public class LimelightVision extends PARTsSubsystem {
                 LimelightHelpers.setPipelineIndex(camera.getName(), pipeline.getIndex());
             }
         }
+    }
+
+    public Command resetPose() {
+        return PARTsCommandUtils.setCommandName("LimelightVision.resetPose", Commands.runOnce(() -> {
+            if (poseEstimate != null)
+                resetPoseConsumer.accept(poseEstimate.pose);
+        }));
     }
 }
