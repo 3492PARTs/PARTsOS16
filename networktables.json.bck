@@ -1,0 +1,10 @@
+[
+  {
+    "name": "/Preferences/ShooterOffsetRPM",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  }
+]

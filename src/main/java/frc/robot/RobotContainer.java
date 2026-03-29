@@ -57,6 +57,7 @@ import org.parts3492.partslib.input.PARTsCommandController;
 import org.parts3492.partslib.input.PARTsController.ControllerType;
 import org.parts3492.partslib.network.PARTsDashboard;
 import org.parts3492.partslib.network.PARTsNT;
+import org.parts3492.partslib.PARTsPreferences;
 import org.parts3492.partslib.command.IPARTsSubsystem;
 
 public class RobotContainer {
@@ -68,6 +69,8 @@ public class RobotContainer {
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
 
     private PARTsNT partsNT = new PARTsNT("RobotContainer");
+
+    private PARTsPreferences partsPreferences = new PARTsPreferences();
 
     private SendableChooser<Command> autoChooser;
 
@@ -93,8 +96,8 @@ public class RobotContainer {
             : new TurretSim(drivetrain.supplierGetPose(), drivetrain);
 
     private final Shooter shooter = Robot.isReal()
-            ? new ShooterPhys(drivetrain.supplierGetPose(), drivetrain, turret::getState)
-            : new ShooterSim(drivetrain.supplierGetPose(), drivetrain, turret::getState);
+            ? new ShooterPhys(drivetrain.supplierGetPose(), drivetrain, turret::getState, partsPreferences)
+            : new ShooterSim(drivetrain.supplierGetPose(), drivetrain, turret::getState, partsPreferences);
 
     private final Kicker kicker = Robot.isReal() ? new KickerPhys() : new KickerSim();
 
@@ -215,9 +218,9 @@ public class RobotContainer {
     private void configureShooterBindings() {
         //buttonBoxController.lightonTrigger().whileTrue(shooter.setSpeedOffset(100)).onFalse(shooter.setSpeedOffset(0));
         //buttonBoxController.talkonTrigger().whileTrue(shooter.setSpeedOffset(200)).onFalse(shooter.setSpeedOffset(0));
-        buttonBoxController.absClickTrigger().onTrue(shooter.setSpeedOffset(()-> 0));
-        buttonBoxController.absClockwiseTrigger().onTrue(shooter.setSpeedOffset(()-> shooter.getSpeedOffset() + 100));
-        buttonBoxController.absCounterClockwiseTrigger().onTrue(shooter.setSpeedOffset(()-> shooter.getSpeedOffset() - 100));
+        buttonBoxController.absClickTrigger().onTrue(shooter.setOffsetRPM(()-> 0));
+        buttonBoxController.absClockwiseTrigger().onTrue(shooter.setOffsetRPM(()-> shooter.getOffsetRPM() + 100));
+        buttonBoxController.absCounterClockwiseTrigger().onTrue(shooter.setOffsetRPM(()-> shooter.getOffsetRPM() - 100));
     }
 
     private void configureCandleBindings() {

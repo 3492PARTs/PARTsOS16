@@ -17,6 +17,7 @@ import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 
+import org.parts3492.partslib.PARTsPreferences;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 public class ShooterSysid extends ShooterPhys {
@@ -30,8 +31,8 @@ public class ShooterSysid extends ShooterPhys {
     private SysIdRoutine routine;
 
 
-    public ShooterSysid(Supplier <Pose2d> poseSupplier, PARTsDrivetrain drivetrain, Supplier<TurretState> turretSupplierState) {
-        super(poseSupplier, drivetrain, turretSupplierState);
+    public ShooterSysid(Supplier <Pose2d> poseSupplier, PARTsDrivetrain drivetrain, Supplier<TurretState> turretSupplierState, PARTsPreferences partsPreferences) {
+        super(poseSupplier, drivetrain, turretSupplierState, partsPreferences);
 
         appliedVoltage = Volts.mutable(0);
 

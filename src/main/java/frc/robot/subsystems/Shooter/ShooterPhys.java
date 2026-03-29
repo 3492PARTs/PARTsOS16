@@ -2,6 +2,8 @@ package frc.robot.subsystems.Shooter;
 
 import java.util.function.Supplier;
 
+import org.parts3492.partslib.PARTsPreferences;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -20,8 +22,8 @@ public class ShooterPhys extends Shooter {
     protected final TalonFX rightMotor;
 
     public ShooterPhys(Supplier<Pose2d> poseSupplier, PARTsDrivetrain drivetrain,
-            Supplier<TurretState> turretSupplierState) {
-        super(poseSupplier, drivetrain, turretSupplierState);
+            Supplier<TurretState> turretSupplierState, PARTsPreferences partsPreferences) {
+        super(poseSupplier, drivetrain, turretSupplierState, partsPreferences);
 
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;

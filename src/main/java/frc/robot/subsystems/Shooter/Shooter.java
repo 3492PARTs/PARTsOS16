@@ -23,6 +23,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.parts3492.partslib.PARTsPreferences;
+import org.parts3492.partslib.PARTsPreferences.PARTsPreference;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
@@ -40,7 +42,8 @@ public abstract class Shooter extends PARTsSubsystem {
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
-    private double offset = 0;
+    private final PARTsPreference offsetRPMPreference;
+    private double offsetRPM;
 
     /**
      * Creates a new Shooter subsystem.
@@ -49,7 +52,7 @@ public abstract class Shooter extends PARTsSubsystem {
      *                     distance to the hub and trench.
      */
     public Shooter(Supplier<Pose2d> poseSupplier, PARTsDrivetrain drivetrain,
-            Supplier<TurretState> turretSupplierState) {
+            Supplier<TurretState> turretSupplierState, PARTsPreferences partsPreferences) {
         super("Shooter", RobotConstants.LOGGING);
         if (RobotConstants.COMPETITION)
             debug = false;
@@ -69,7 +72,9 @@ public abstract class Shooter extends PARTsSubsystem {
         shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
 
         partsNT.putSmartDashboardSendable("Toggle Shooter Debug", toggleDebug, !RobotConstants.COMPETITION);
-        putOffsetOnNT();
+        offsetRPMPreference = partsPreferences.addPreference("ShooterOffsetRPM", offsetRPM);
+        offsetRPM = offsetRPMPreference.getDouble();
+        putOffsetRPMOnNT();
     }
 
     // region Generic Subsystem Functions
@@ -135,7 +140,7 @@ public abstract class Shooter extends PARTsSubsystem {
                 shooterRPM += 200;
             }
 
-            shooterRPM += offset;
+            shooterRPM += offsetRPM;
 
             partsNT.putDouble("Shooting RPM", shooterRPM, true);
             partsNT.putDouble("Shooting ToF", timeOfFlight, true);
@@ -276,19 +281,20 @@ public abstract class Shooter extends PARTsSubsystem {
         return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 700;
     }
 
-    public Command setSpeedOffset(DoubleSupplier d) {
-        return PARTsCommandUtils.setCommandName("Shooter.addSpeed", Commands.runOnce(() -> {
-            this.offset = d.getAsDouble();
-            putOffsetOnNT();
+    public Command setOffsetRPM(DoubleSupplier d) {
+        return PARTsCommandUtils.setCommandName("Shooter.setOffsetRPM", Commands.runOnce(() -> {
+            this.offsetRPM = d.getAsDouble();
+            offsetRPMPreference.setDouble(offsetRPM);
+            putOffsetRPMOnNT();
         }));
     }
 
-    public double getSpeedOffset(){
-        return offset;
+    public double getOffsetRPM(){
+        return offsetRPM;
     }
     // endregion
 
-    private void putOffsetOnNT() {
-partsNT.putDouble("Offset", offset, true);
+    private void putOffsetRPMOnNT() {
+        partsNT.putDouble("Offset", offsetRPM, true);
     }
 }

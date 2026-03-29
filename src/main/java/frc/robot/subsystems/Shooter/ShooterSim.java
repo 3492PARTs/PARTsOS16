@@ -2,6 +2,7 @@ package frc.robot.subsystems.Shooter;
 
 import java.util.function.Supplier;
 
+import org.parts3492.partslib.PARTsPreferences;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 import com.revrobotics.PersistMode;
@@ -34,8 +35,8 @@ public class ShooterSim extends Shooter {
     SparkRelativeEncoderSim motorEncoder;
     FlywheelSim shooterSim;
 
-    public ShooterSim(Supplier <Pose2d> poseSupplier, PARTsDrivetrain drivetrain, Supplier<TurretState> turretSupplierState) {
-        super(poseSupplier, drivetrain, turretSupplierState);
+    public ShooterSim(Supplier <Pose2d> poseSupplier, PARTsDrivetrain drivetrain, Supplier<TurretState> turretSupplierState, PARTsPreferences partsPreferences) {
+        super(poseSupplier, drivetrain, turretSupplierState, partsPreferences);
         maxGearbox = DCMotor.getNEO(2);
 
         SparkMaxConfig shooterConfig = new SparkMaxConfig();
@@ -53,6 +54,8 @@ public class ShooterSim extends Shooter {
         LinearSystem<N1, N1, N1> plant = LinearSystemId.createFlywheelSystem(maxGearbox, moi, 1.064);
 
         shooterSim = new FlywheelSim(plant, maxGearbox, 0.01);
+
+        partsNT.putSmartDashboardSendable("RPM Offset 100", setOffsetRPM(() -> 100), true);
     }
 
     @Override
