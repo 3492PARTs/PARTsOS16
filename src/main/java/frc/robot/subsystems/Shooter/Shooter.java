@@ -71,6 +71,7 @@ public abstract class Shooter extends PARTsSubsystem {
         shooterPIDController.setTolerance(ShooterConstants.PID_THRESHOLD);
 
         partsNT.putSmartDashboardSendable("Toggle Shooter Debug", toggleDebug, !RobotConstants.COMPETITION);
+        putOffsetOnNT();
     }
 
     // region Generic Subsystem Functions
@@ -260,8 +261,15 @@ public abstract class Shooter extends PARTsSubsystem {
         return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 200;
     }
 
-    public Command addSpeed(double d) {
-        return PARTsCommandUtils.setCommandName("Shooter.addSpeed", Commands.runOnce(() -> this.offset = d));
+    public Command setSpeedOffset(DoubleSupplier d) {
+        return PARTsCommandUtils.setCommandName("Shooter.addSpeed", Commands.runOnce(() -> {
+            this.offset = d.getAsDouble();
+            putOffsetOnNT();
+        }));
+    }
+
+    public double getSpeedOffset(){
+        return offset;
     }
     // endregion
 
@@ -274,5 +282,9 @@ public abstract class Shooter extends PARTsSubsystem {
         double voltage = pidCalc + ffCalc;
 
         return voltage;
+    }
+
+    private void putOffsetOnNT() {
+partsNT.putDouble("Offset", offset, true);
     }
 }
