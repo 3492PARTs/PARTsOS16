@@ -24,7 +24,7 @@ public class KickerConstants {
     public static final double KICKER_GEAR_RATIO = (4.0 / 1.0);
     public static final String CAN_BUS_NAME = "bye";
 
-    public static final PARTsUnit KICKER_WHEEL_RADIUS = new PARTsUnit(1.0, PARTsUnitType.Inch);
+    public static final PARTsUnit KICKER_WHEEL_RADIUS = new PARTsUnit(1.125, PARTsUnitType.Inch);
 
     // PID Controller
     public static final double P = 0;

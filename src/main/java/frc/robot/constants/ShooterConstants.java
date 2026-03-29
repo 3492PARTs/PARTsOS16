@@ -171,7 +171,7 @@ public class ShooterConstants {
     public static final PARTsUnit SHOOTER_WEEL_WEIGHT = new PARTsUnit(4, PARTsUnitType.Pound);
 
     // PID Controller
-    public static final double P = 0.0005;
+    public static final double P = 0.005; 
     public static final double I = 0;
     public static final double D = 0;
     public static final int PID_THRESHOLD = 50;

@@ -37,7 +37,7 @@ public abstract class Shooter extends PARTsSubsystem {
     private PARTsDrivetrain drivetrain;
     private FieldObject2d calculatedRobotPose;
 
-    protected boolean debug = false;
+    protected boolean debug = true;
     private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
     private double offset = 0;
