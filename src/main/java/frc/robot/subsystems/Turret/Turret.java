@@ -32,15 +32,20 @@ public abstract class Turret extends PARTsSubsystem {
     private FieldObject2d fieldTarget;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> {
+        debug = !debug;
+        partsNT.putDouble("Turret Speed", 0, !RobotConstants.COMPETITION);
+        partsNT.putDouble("Turret Angle", 0, !RobotConstants.COMPETITION);
+    }).ignoringDisable(true);
 
     public Turret(Supplier<Pose2d> robotPoseSupplier, PARTsDrivetrain drivetrain) {
         super("Turret", RobotConstants.LOGGING);
-        if (RobotConstants.COMPETITION) debug = false;
+        if (RobotConstants.COMPETITION)
+            debug = false;
 
         if (RobotContainer.debug || debug) {
-         partsNT.putDouble("Turret Speed", 0, !RobotConstants.COMPETITION);
-         partsNT.putDouble("Turret Angle", 0, !RobotConstants.COMPETITION);
+            partsNT.putDouble("Turret Speed", 0, !RobotConstants.COMPETITION);
+            partsNT.putDouble("Turret Angle", 0, !RobotConstants.COMPETITION);
         }
 
         this.robotPoseSupplier = robotPoseSupplier;
@@ -89,7 +94,7 @@ public abstract class Turret extends PARTsSubsystem {
             turretPIDController.setSetpoint(partsNT.getDouble("Turret Angle", true));
             double pidCalc = turretPIDController.calculate(getAngle(), partsNT.getDouble("Turret Angle", true));
 
-            double voltage = MathUtil.clamp(pidCalc, -9, 9); 
+            double voltage = MathUtil.clamp(pidCalc, -9, 9);
             setVoltage(voltage);
         } else {
             double voltage = 0;
@@ -107,7 +112,8 @@ public abstract class Turret extends PARTsSubsystem {
                         double pidCalc = turretPIDController.calculate(getAngle(), getAngleToTarget(target));
 
                         partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
-                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(), RobotContainer.debug || debug);
+                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(),
+                                RobotContainer.debug || debug);
 
                         voltage = MathUtil.clamp(pidCalc, -9, 9);
 
@@ -116,20 +122,21 @@ public abstract class Turret extends PARTsSubsystem {
                         setSpeed(0);
                     }
                     break;
-                
-                    case LEFT_CORNER:
-                    case RIGHT_CORNER:
-                        turretPIDController.setSetpoint(turretState.getAngle());
-                        double pidCalc = turretPIDController.calculate(getAngle(), turretState.getAngle());
 
-                        partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
-                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(), RobotContainer.debug || debug);
+                case LEFT_CORNER:
+                case RIGHT_CORNER:
+                    turretPIDController.setSetpoint(turretState.getAngle());
+                    double pidCalc = turretPIDController.calculate(getAngle(), turretState.getAngle());
 
-                        voltage = MathUtil.clamp(pidCalc, -9, 9);
+                    partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
+                    partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(),
+                            RobotContainer.debug || debug);
 
-                        setVoltage(voltage);
+                    voltage = MathUtil.clamp(pidCalc, -9, 9);
+
+                    setVoltage(voltage);
                     break;
-                
+
                 default:
                     setSpeed(0);
                     break;
@@ -199,7 +206,8 @@ public abstract class Turret extends PARTsSubsystem {
     }
 
     public Pose2d getTargetPose() {
-        return turretState == TurretState.TRACKING_HUB ? Field.getAllianceHubPose() : Field.getNearestAllianceCorner(robotPoseSupplier.get());
+        return turretState == TurretState.TRACKING_HUB ? Field.getAllianceHubPose()
+                : Field.getNearestAllianceCorner(robotPoseSupplier.get());
 
     }
 
@@ -209,9 +217,8 @@ public abstract class Turret extends PARTsSubsystem {
     private double getAngleToTarget(Pose2d target) {
         Targets zone = Hub.getZone(robotPoseSupplier.get());
         double timeOfFlight = (zone == null) ? 0 : ShooterState.getTofFromDistanceToHub(robotPoseSupplier.get());
-        Pose2d calculatedPose = 
-                    target.plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
-                            drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d()));
+        Pose2d calculatedPose = target.plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
+                drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d()));
         if (!RobotConstants.COMPETITION) {
             fieldTarget.setPose(calculatedPose);
         }
@@ -220,8 +227,7 @@ public abstract class Turret extends PARTsSubsystem {
                         calculatedPose.getX() - robotPoseSupplier.get().getX()) * 180 / Math.PI);
         if (angleToTarget <= -180) {
             angleToTarget += 360;
-        }
-        else if (angleToTarget >= 180) {
+        } else if (angleToTarget >= 180) {
             angleToTarget -= 360;
         }
         return angleToTarget;

@@ -19,7 +19,11 @@ public abstract class Intake extends PARTsSubsystem {
     IntakeState intakeState = IntakeState.IDLE;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> {
+        debug = !debug;
+        partsNT.putDouble("Intake Speed", 0, !RobotConstants.COMPETITION);
+        partsNT.putDouble("Pivot Speed", 0, !RobotConstants.COMPETITION);
+    }).ignoringDisable(true);
 
     ProfiledPIDController intakePIDController;
 
