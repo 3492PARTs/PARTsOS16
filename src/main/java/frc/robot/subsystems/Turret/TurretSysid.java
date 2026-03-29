@@ -1,7 +1,7 @@
 package frc.robot.subsystems.Turret;
 
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
@@ -48,7 +48,7 @@ public class TurretSysid extends TurretPhys {
                                     .angularPosition(pivotAngle.mut_replace(
                                             getAngle() * Math.PI / 180, Radians))
                                     .angularVelocity(
-                                            pivotVelocity.mut_replace(super.turretMotor.getVelocity().getValueAsDouble(), RotationsPerSecond));
+                                            pivotVelocity.mut_replace(super.turretMotor.getVelocity().getValueAsDouble() * Math.PI, RadiansPerSecond));
                         },
                         this));
     }

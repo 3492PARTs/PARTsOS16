@@ -14,7 +14,10 @@ public abstract class Hopper extends PARTsSubsystem {
     private HopperState hopperstate = HopperState.IDLE;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> {
+        debug = !debug;
+        partsNT.putDouble("Hopper Speed", 0, true);
+    }).ignoringDisable(true);
 
 
     private Timer timer = new Timer();
@@ -67,7 +70,7 @@ public abstract class Hopper extends PARTsSubsystem {
                 case REVERSE:
                     setSpeed(hopperstate.getSpeed());
 
-                    if (timer.get() > 4 && hopperstate == HopperState.ROLLING) {
+                    if (timer.get() > 1.5 && hopperstate == HopperState.ROLLING) {
                         timer.restart();
                         hopperstate = HopperState.REVERSE;
                     }

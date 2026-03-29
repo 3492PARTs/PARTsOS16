@@ -169,6 +169,7 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                 new PARTsUnit(getPose().getRotation().getDegrees(), PARTsUnitType.Angle).getValue(),
                                 RobotContainer.debug);
                 partsNT.putBoolean("Controlled Rotation Enabled", isControlledRotationEnabled, RobotContainer.debug);
+                partsNT.putDouble("Swerve Current", frontRightModule.getDriveMotor().getStatorCurrent().getValueAsDouble(), RobotContainer.debug);
         }
 
         @Override
