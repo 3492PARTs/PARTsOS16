@@ -116,7 +116,7 @@ public abstract class Kicker extends PARTsSubsystem {
     }
     
     public boolean withinSetpointRange() {
-        return Math.abs(kickerPIDController.getSetpoint() - getRPM()) < 500;
+        return Math.abs(kickerPIDController.getSetpoint() - getRPM()) < 300;
     }
 
     private double calculateRPMVoltage(double rpm) {

@@ -27,13 +27,13 @@ public class KickerConstants {
     public static final PARTsUnit KICKER_WHEEL_RADIUS = new PARTsUnit(1.125, PARTsUnitType.Inch);
 
     // PID Controller
-    public static final double P = 0.005;
+    public static final double P = 0.005; //0.005
     public static final double I = 0;
     public static final double D = 0;
-    public static final int PID_THRESHOLD = 100;
+    public static final int PID_THRESHOLD = 50;
 
     // Feedforward
     public static final double S = 0.21056;
-    public static final double V = 2.7203;
+    public static final double V = 2; //2.5
     public static final double A = 0.08161;
 }
