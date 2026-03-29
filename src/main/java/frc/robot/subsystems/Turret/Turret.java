@@ -30,6 +30,7 @@ public abstract class Turret extends PARTsSubsystem {
     private Supplier<Pose2d> robotPoseSupplier;
     private PARTsDrivetrain drivetrain;
     private FieldObject2d fieldTarget;
+    private FieldObject2d projectedRobotPose;
 
     protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(() -> {
@@ -51,6 +52,7 @@ public abstract class Turret extends PARTsSubsystem {
         this.robotPoseSupplier = robotPoseSupplier;
         this.drivetrain = drivetrain;
         fieldTarget = Field.FIELD2D.getObject("Turret Target");
+        projectedRobotPose = Field.FIELD2D.getObject("Projected Robot Pose");
 
         turretPIDController = new PIDController(TurretConstants.P, TurretConstants.I, TurretConstants.D);
         turretFeedforward = new SimpleMotorFeedforward(TurretConstants.S, TurretConstants.V, TurretConstants.A);
@@ -110,6 +112,7 @@ public abstract class Turret extends PARTsSubsystem {
                 case TRACKING_HUB:
                 case TRACKING_CORNER:
                     Pose2d target = getTargetPose();
+                    fieldTarget.setPose(target);
                     if (isValidAngle()) {
                         turretPIDController.setSetpoint(getAngleToTarget(target));
                         double pidCalc = turretPIDController.calculate(getAngle(), getAngleToTarget(target));
@@ -226,11 +229,11 @@ public abstract class Turret extends PARTsSubsystem {
         Pose2d calcRobotPose = SOTMCalculator.collapsePose(robotPoseSupplier.get(), robotVelocity);
         
         if (!RobotConstants.COMPETITION) {
-            fieldTarget.setPose(calcRobotPose);
+            projectedRobotPose.setPose(calcRobotPose);
         }
         double angleToTarget = calcRobotPose.getRotation().getDegrees()
-                - (Math.atan2(Field.getAllianceHubPose().getY() - calcRobotPose.getY(),
-                        Field.getAllianceHubPose().getX() - calcRobotPose.getX()) * 180 / Math.PI);
+                - (Math.atan2(target.getY() - calcRobotPose.getY(),
+                        target.getX() - calcRobotPose.getX()) * 180 / Math.PI);
         if (angleToTarget <= -180) {
             angleToTarget += 360;
         } else if (angleToTarget >= 180) {
