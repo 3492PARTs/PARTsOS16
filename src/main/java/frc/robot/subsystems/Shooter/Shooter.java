@@ -38,7 +38,10 @@ public abstract class Shooter extends PARTsSubsystem {
     private FieldObject2d calculatedRobotPose;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> {
+        debug = !debug;
+        partsNT.putDouble("Shooter Speed", 0, true);
+    }).ignoringDisable(true);
 
     private double offset = 0;
 

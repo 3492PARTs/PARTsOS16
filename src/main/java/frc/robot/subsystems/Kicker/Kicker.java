@@ -22,7 +22,10 @@ public abstract class Kicker extends PARTsSubsystem {
     private KickerState kickerState = KickerState.IDLE;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> {
+        debug = !debug;
+        partsNT.putDouble("Kicker Speed", 0, true);
+    }).ignoringDisable(true);
 
     public Kicker() {
         super("Kicker");
