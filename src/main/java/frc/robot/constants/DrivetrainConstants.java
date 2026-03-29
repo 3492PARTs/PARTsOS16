@@ -37,8 +37,8 @@ public class DrivetrainConstants {
         public static final double G = 9.81;
         public static final int AIRBORNE_DEBOUNCE = 3; // ~60ms at 20ms loop
         public static final int STABLE_DEBOUNCE = 5; // ~100ms
-        public static final double AIRBORNE_G_DIFF = 0.35 * G; // enter airborne if |mag - g| > this
-        public static final double STABLE_G_DIFF = 0.15 * G; // exit airborne if |mag - g| < this
+        public static final double AIRBORNE_G_DIFF = 2.4; // enter airborne if |mag - g| > this
+        public static final double STABLE_G_DIFF = 2.2; // exit airborne if |mag - g| < this
 
         /*
          * “During each predict/update cycle,

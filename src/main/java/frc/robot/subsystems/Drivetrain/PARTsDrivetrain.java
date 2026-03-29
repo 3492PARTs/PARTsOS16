@@ -755,8 +755,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         private void updateAirborneState() {
                 double mag = getPigeonAccelMagnitudeMps2();
-                boolean airborneNow = Math.abs(mag - DrivetrainConstants.G) > DrivetrainConstants.AIRBORNE_G_DIFF;
-                boolean stableNow = Math.abs(mag - DrivetrainConstants.G) < DrivetrainConstants.STABLE_G_DIFF;
+                boolean airborneNow = Math.abs(mag) > DrivetrainConstants.AIRBORNE_G_DIFF;
+                boolean stableNow = Math.abs(mag) < DrivetrainConstants.STABLE_G_DIFF;
 
                 if (!isAirborne) {
                         if (airborneNow) {
@@ -786,6 +786,8 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 }
 
                 partsNT.putBoolean("Drivetrain/Airborne", isAirborne, !RobotConstants.COMPETITION);
+                partsNT.putBoolean("Drivetrain/stableNow", stableNow, !RobotConstants.COMPETITION);
+                partsNT.putBoolean("Drivetrain/AirborneNow", airborneNow, !RobotConstants.COMPETITION);
                 partsNT.putDouble("Drivetrain/AccelMag", mag, !RobotConstants.COMPETITION);
         }
         // endregion
