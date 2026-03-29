@@ -37,7 +37,7 @@ public abstract class Shooter extends PARTsSubsystem {
     private PARTsDrivetrain drivetrain;
     private FieldObject2d calculatedRobotPose;
 
-    protected boolean debug = true;
+    protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
 
     private double offset = 0;
@@ -264,7 +264,7 @@ public abstract class Shooter extends PARTsSubsystem {
      *         range.
      */
     public boolean withinSetpointRange() {
-        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 700;
+        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 300;
     }
 
     public Command addSpeed(double d) {
