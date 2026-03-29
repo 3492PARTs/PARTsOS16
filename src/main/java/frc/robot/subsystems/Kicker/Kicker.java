@@ -1,20 +1,31 @@
 package frc.robot.subsystems.Kicker;
 
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.KickerConstants.KickerState;
+import frc.robot.constants.KickerConstants;
 import frc.robot.constants.RobotConstants;
+import frc.robot.constants.ShooterConstants;
 
 public abstract class Kicker extends PARTsSubsystem {
+
+    private PIDController kickerPIDController;
+    private SimpleMotorFeedforward kickerFeedforward;
 
     private KickerState kickerState = KickerState.IDLE;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> {
+        debug = !debug;
+        partsNT.putDouble("Kicker Speed", 0, true);
+    }).ignoringDisable(true);
 
     public Kicker() {
         super("Kicker");
@@ -25,6 +36,10 @@ public abstract class Kicker extends PARTsSubsystem {
             partsNT.putDouble("Kicker Speed", 0, true);
         }
 
+        kickerPIDController = new PIDController(KickerConstants.P, KickerConstants.I, KickerConstants.D);
+        kickerFeedforward = new SimpleMotorFeedforward(KickerConstants.S, KickerConstants.V, KickerConstants.A);
+        kickerPIDController.setTolerance(KickerConstants.PID_THRESHOLD);
+
         partsNT.putSmartDashboardSendable("Toggle Kicker Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
 
@@ -33,6 +48,7 @@ public abstract class Kicker extends PARTsSubsystem {
     public void outputTelemetry() {
         partsNT.putString("Kicker State", kickerState.toString(), !RobotConstants.COMPETITION);
         partsNT.putBoolean("Kicker Debug Active", debug, !RobotConstants.COMPETITION);
+        partsNT.putDouble("Kicker RPM", getRPM(), !RobotConstants.COMPETITION);
     }
 
     @Override
@@ -53,13 +69,16 @@ public abstract class Kicker extends PARTsSubsystem {
     @Override
     public void periodic() {
         if (RobotContainer.debug || debug) {
-            setSpeed(partsNT.getDouble("Kicker Speed", true));
+            double rpm = partsNT.getDouble("Kicker Speed", true);
+            setVoltage(calculateRPMVoltage(rpm));
         } else {
             switch (kickerState) {
-                case ROLLING:
                 case DISABLED:
                 case IDLE:
-                    setSpeed(kickerState.getSpeed());
+                    setSpeed(0);
+                    break;
+                case ROLLING:
+                    setVoltage(calculateRPMVoltage(kickerState.getRPM()));
                     break;
                 default:
                     setSpeed(0);
@@ -77,6 +96,12 @@ public abstract class Kicker extends PARTsSubsystem {
      */
     protected abstract void setSpeed(double speed);
 
+    protected abstract double getRPM();
+
+    protected abstract void setVoltage(double voltage);
+
+    protected abstract double getVoltage();
+
     public KickerState getState() {
         return kickerState;
     }
@@ -91,6 +116,21 @@ public abstract class Kicker extends PARTsSubsystem {
         return PARTsCommandUtils.setCommandName("Kicker.idle", this.runOnce(() -> {
             kickerState = KickerState.IDLE;
         }));
+    }
+    
+    public boolean withinSetpointRange() {
+        return Math.abs(kickerPIDController.getSetpoint() - getRPM()) < 300;
+    }
+
+    private double calculateRPMVoltage(double rpm) {
+        kickerPIDController.setSetpoint(rpm);
+        double pidCalc = kickerPIDController.calculate(getRPM(), rpm);
+        double ffCalc = kickerFeedforward.calculate((kickerPIDController.getSetpoint() * Math.PI
+                * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
+
+        double voltage = pidCalc + ffCalc;
+
+        return voltage;
     }
     // endregion
 }

@@ -2,6 +2,7 @@ package frc.robot.subsystems.Turret;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -25,20 +26,26 @@ public abstract class Turret extends PARTsSubsystem {
     private TurretState turretState = TurretState.IDLE;
 
     private PIDController turretPIDController;
+    private SimpleMotorFeedforward turretFeedforward;
     private Supplier<Pose2d> robotPoseSupplier;
     private PARTsDrivetrain drivetrain;
     private FieldObject2d fieldTarget;
 
     protected boolean debug = false;
-    private Command toggleDebug = Commands.runOnce(()-> debug = !debug).ignoringDisable(true);
+    private Command toggleDebug = Commands.runOnce(() -> {
+        debug = !debug;
+        partsNT.putDouble("Turret Speed", 0, !RobotConstants.COMPETITION);
+        partsNT.putDouble("Turret Angle", 0, !RobotConstants.COMPETITION);
+    }).ignoringDisable(true);
 
     public Turret(Supplier<Pose2d> robotPoseSupplier, PARTsDrivetrain drivetrain) {
         super("Turret", RobotConstants.LOGGING);
-        if (RobotConstants.COMPETITION) debug = false;
+        if (RobotConstants.COMPETITION)
+            debug = false;
 
         if (RobotContainer.debug || debug) {
-         partsNT.putDouble("Turret Speed", 0, !RobotConstants.COMPETITION);
-         partsNT.putDouble("Turret Angle", 0, !RobotConstants.COMPETITION);
+            partsNT.putDouble("Turret Speed", 0, !RobotConstants.COMPETITION);
+            partsNT.putDouble("Turret Angle", 0, !RobotConstants.COMPETITION);
         }
 
         this.robotPoseSupplier = robotPoseSupplier;
@@ -46,6 +53,7 @@ public abstract class Turret extends PARTsSubsystem {
         fieldTarget = Field.FIELD2D.getObject("Turret Target");
 
         turretPIDController = new PIDController(TurretConstants.P, TurretConstants.I, TurretConstants.D);
+        turretFeedforward = new SimpleMotorFeedforward(TurretConstants.S, TurretConstants.V, TurretConstants.A);
         turretPIDController.setTolerance(TurretConstants.PID_THRESHOLD);
 
         partsNT.putSmartDashboardSendable("Toggle Turret Debug", toggleDebug, !RobotConstants.COMPETITION);
@@ -87,7 +95,9 @@ public abstract class Turret extends PARTsSubsystem {
             turretPIDController.setSetpoint(partsNT.getDouble("Turret Angle", true));
             double pidCalc = turretPIDController.calculate(getAngle(), partsNT.getDouble("Turret Angle", true));
 
-            double voltage = MathUtil.clamp(pidCalc, -9, 9); 
+            double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
+
+            double voltage = MathUtil.clamp(pidCalc /* + ffCalc */, -9, 9); 
             setVoltage(voltage);
         } else {
             double voltage = 0;
@@ -105,29 +115,35 @@ public abstract class Turret extends PARTsSubsystem {
                         double pidCalc = turretPIDController.calculate(getAngle(), getAngleToTarget(target));
 
                         partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
-                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(), RobotContainer.debug || debug);
+                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(),
+                                RobotContainer.debug || debug);
 
-                        voltage = MathUtil.clamp(pidCalc, -9, 9);
+                        double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint() * Math.PI / 180);
+
+                        voltage = MathUtil.clamp(pidCalc /* + ffCalc */, -9, 9); 
 
                         setVoltage(voltage);
                     } else {
                         setSpeed(0);
                     }
                     break;
-                
-                    case LEFT_CORNER:
-                    case RIGHT_CORNER:
-                        turretPIDController.setSetpoint(turretState.getAngle());
-                        double pidCalc = turretPIDController.calculate(getAngle(), turretState.getAngle());
 
-                        partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
-                        partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(), RobotContainer.debug || debug);
+                case LEFT_CORNER:
+                case RIGHT_CORNER:
+                    turretPIDController.setSetpoint(turretState.getAngle());
+                    double pidCalc = turretPIDController.calculate(getAngle(), turretState.getAngle());
 
-                        voltage = MathUtil.clamp(pidCalc, -9, 9);
+                    partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
+                    partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(),
+                            RobotContainer.debug || debug);
 
-                        setVoltage(voltage);
+                        double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint() * Math.PI / 180);
+
+                        voltage = MathUtil.clamp(pidCalc /* + ffCalc */, -9, 9); 
+
+                    setVoltage(voltage);
                     break;
-                
+
                 default:
                     setSpeed(0);
                     break;
@@ -197,7 +213,8 @@ public abstract class Turret extends PARTsSubsystem {
     }
 
     public Pose2d getTargetPose() {
-        return turretState == TurretState.TRACKING_HUB ? Field.getAllianceHubPose() : Field.getNearestAllianceCorner(robotPoseSupplier.get());
+        return turretState == TurretState.TRACKING_HUB ? Field.getAllianceHubPose()
+                : Field.getNearestAllianceCorner(robotPoseSupplier.get());
 
     }
 
@@ -216,8 +233,7 @@ public abstract class Turret extends PARTsSubsystem {
                         Field.getAllianceHubPose().getX() - calcRobotPose.getX()) * 180 / Math.PI);
         if (angleToTarget <= -180) {
             angleToTarget += 360;
-        }
-        else if (angleToTarget >= 180) {
+        } else if (angleToTarget >= 180) {
             angleToTarget -= 360;
         }
         return angleToTarget;
