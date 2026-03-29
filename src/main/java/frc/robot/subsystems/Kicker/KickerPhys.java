@@ -20,7 +20,7 @@ public class KickerPhys extends Kicker {
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
         config.CurrentLimits.SupplyCurrentLowerTime = 0;
 
-        config.CurrentLimits.StatorCurrentLimit = 80;
+        config.CurrentLimits.StatorCurrentLimit = 45;
         config.CurrentLimits.StatorCurrentLimitEnable = true;
 
         kickerMotor = new TalonFX(KickerConstants.KICKER_MOTOR_ID, KickerConstants.CAN_BUS_NAME);
@@ -60,5 +60,15 @@ public class KickerPhys extends Kicker {
     @Override
     protected double getRPM() {
         return kickerMotor.getVelocity().getValueAsDouble() * 60 / KickerConstants.KICKER_GEAR_RATIO;
+    }
+
+    @Override
+    protected void setVoltage(double voltage) {
+        kickerMotor.setVoltage(voltage);
+    }
+
+    @Override
+    protected double getVoltage() {
+        return kickerMotor.getSupplyVoltage().getValueAsDouble();
     }
 }

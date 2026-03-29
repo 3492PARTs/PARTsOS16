@@ -31,6 +31,11 @@ public class TurretConstants {
     public static final double D = 0;
     public static final int PID_THRESHOLD = 1;
 
+    // Feedforward
+    public static final double S = 0.1;
+    public static final double V = 0.1;
+    public static final double A = 0.1;
+
     public static final double TURRET_MAX_VELOCITY = 12000;
     public static final double TURRET_MAX_ACCELERATION = 6000;
 }
