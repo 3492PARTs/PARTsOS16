@@ -130,7 +130,7 @@ public abstract class Shooter extends PARTsSubsystem {
             }
 
             if (turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
-                shooterRPM += 200;
+                shooterRPM += 400;
             }
 
             shooterRPM += offset;
