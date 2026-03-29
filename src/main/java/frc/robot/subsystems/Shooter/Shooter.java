@@ -81,7 +81,7 @@ public abstract class Shooter extends PARTsSubsystem {
         partsNT.putDouble("RPM", getRPM(), true);
         partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
         partsNT.putDouble("Get Setpoint", shooterPIDController.getSetpoint(), RobotContainer.debug || debug);
-        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), !RobotConstants.COMPETITION);
+        partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), true);
         partsNT.putDouble("Current Error", shooterPIDController.getError(), RobotContainer.debug || debug);
         partsNT.putBoolean("Shooter Debug Active", debug, !RobotConstants.COMPETITION);
     }
@@ -126,7 +126,8 @@ public abstract class Shooter extends PARTsSubsystem {
             }
             boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
 
-            if (inTrench && Math.abs(drivetrain.getXVelocity().getValue()) < 1.5 && Math.abs(drivetrain.getYVelocity().getValue()) < 1.5) {
+            if (inTrench && Math.abs(drivetrain.getXVelocity().getValue()) < 1.5
+                    && Math.abs(drivetrain.getYVelocity().getValue()) < 1.5) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.TRENCH);
             }
 
@@ -151,8 +152,6 @@ public abstract class Shooter extends PARTsSubsystem {
                     break;
                 case SHOOTING:
                 case MANUAL:
-                    double voltage = 0;
-
                     if (debug) {
                         shooterRPM = partsNT.getDouble("Shooter Speed", true);
                     }
@@ -267,7 +266,7 @@ public abstract class Shooter extends PARTsSubsystem {
      *         range.
      */
     public boolean withinSetpointRange() {
-        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 700;
+        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 200;
     }
 
     public Command addSpeed(double d) {
@@ -275,14 +274,14 @@ public abstract class Shooter extends PARTsSubsystem {
     }
     // endregion
 
-
     private double calculateRPMVoltage(double rpm) {
+        shooterPIDController.setSetpoint(rpm);
         double pidCalc = shooterPIDController.calculate(getRPM(), rpm);
-                    double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
-                            * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
+        double ffCalc = shooterFeedforward.calculate((shooterPIDController.getSetpoint() * Math.PI
+                * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
 
-                    double voltage = pidCalc + ffCalc;
+        double voltage = pidCalc + ffCalc;
 
-                    return voltage;
+        return voltage;
     }
 }

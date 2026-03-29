@@ -12,14 +12,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.constants.RobotConstants;
 import frc.robot.subsystems.LimelightVision.MegaTagMode;
-import frc.robot.util.Hub;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import org.parts3492.partslib.PARTsLogger;
-import org.parts3492.partslib.network.PARTsDashboard;
-import org.parts3492.partslib.network.PARTsDashboard.DashboardTab;
 import org.parts3492.partslib.network.PARTsNT;
 
 public class Robot extends TimedRobot {

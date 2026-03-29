@@ -42,6 +42,7 @@ import frc.robot.subsystems.Intake.IntakeSysid;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Kicker.KickerPhys;
 import frc.robot.subsystems.Kicker.KickerSim;
+import frc.robot.subsystems.Kicker.KickerSysid;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
@@ -109,6 +110,8 @@ public class RobotContainer {
     // private final TurretSysid turret = new
     // TurretSysid(drivetrain.supplierGetPose());
 
+    //private final KickerSysid kicker = new KickerSysid();
+
     private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle,
             drivetrain);
     private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
@@ -126,6 +129,7 @@ public class RobotContainer {
         configureAutonomousCommands();
         configureIntakeBindings();
         configureHopperBindings();
+        configureKickerBindings();
         configureSuperstructureBindings();
         operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
         operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
@@ -232,6 +236,17 @@ public class RobotContainer {
     private void configureHopperBindings() {
         /*driveController.b().onTrue(hopper.roll());
         driveController.x().onTrue(hopper.idle());*/
+    }
+
+    private void configureKickerBindings() {
+        /*operatorController.a().and(operatorController.rightBumper())
+          .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+          operatorController.b().and(operatorController.rightBumper())
+          .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+          operatorController.x().and(operatorController.rightBumper())
+          .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kForward));
+          operatorController.y().and(operatorController.rightBumper())
+          .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
     }
 
     private void configureTurretBindings() {

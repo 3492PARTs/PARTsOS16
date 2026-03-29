@@ -71,9 +71,9 @@ public class Superstructure extends PARTsSubsystem {
                                                 candle.commandAddState(CandleState.SHOOTING))
 
                                                 .andThen(Commands.repeatingSequence(
-                                                                hopper.roll().onlyIf(() -> hopper
+                                                                new ConditionalCommand(hopper.roll().onlyIf(() -> hopper
                                                                                 .getState() != HopperState.REVERSE
-                                                                                && hopper.getState() != HopperState.ROLLING),
+                                                                                && hopper.getState() != HopperState.ROLLING), hopper.idle().onlyIf(() -> hopper.getState() != HopperState.IDLE), kicker::withinSetpointRange),
 
                                                                 // Spin up the shooter if the turret is at a valid
                                                                 // angle.

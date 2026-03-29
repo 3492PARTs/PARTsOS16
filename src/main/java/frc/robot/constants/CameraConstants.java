@@ -54,7 +54,7 @@ public interface CameraConstants {
             new Camera(CameraName.RIGHT_FRONT_ANGLE_CAMERA.getCameraName(),
                     new Pose3d(PARTsUnit.InchesToMeters.apply(13.0), -PARTsUnit.InchesToMeters.apply(10.0),
                             PARTsUnit.InchesToMeters.apply(14.0),
-                            new Rotation3d(0, Units.degreesToRadians(40),
+                            new Rotation3d(0, Units.degreesToRadians(26.03),
                                     -Units.degreesToRadians(45))),
                     true)
     };
