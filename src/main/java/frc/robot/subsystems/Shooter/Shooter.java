@@ -109,7 +109,7 @@ public abstract class Shooter extends PARTsSubsystem {
 
         else {
             Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
-            Pose2d calcRobotPose = SOTMCalculator.getTargetPose(robotPoseSupplier.get(), robotVelocity);
+            Pose2d calcRobotPose = SOTMCalculator.collapsePose(robotPoseSupplier.get(), robotVelocity);
 
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
                     : SOTMCalculator.getRPMToGoal(calcRobotPose, Field.getAllianceHubPose());

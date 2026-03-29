@@ -9,6 +9,15 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 public class SOTMCalculator {
+
+    public static class PoseTof {
+        Pose2d pose;
+        double tof;
+        public PoseTof (Pose2d pose, double tof) {
+            this.pose = pose;
+            this.tof = tof;
+        }
+    }
     /**
      * Key = Distance (Meters)
      * <p>
@@ -44,15 +53,14 @@ public class SOTMCalculator {
         // Cut off the shooter in the deadzone.
         // ? It's a little bit lower (0.1 feet in meters) than the actual deadzone just
         // in case the robot is slightly in the deadzone, might have to be removed.
-        table.put(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - (0.03048), 0.0);
-        table.put(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3000.0);
-        table.put(new PARTsUnit(11, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3200.0);
-        table.put(new PARTsUnit(11, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3400.0);
-        table.put(new PARTsUnit(14, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3600.0);
-        table.put(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3800.0);
-        table.put(new PARTsUnit(20, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 4000.0);
-        table.put(new PARTsUnit(23, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 4200.0);
-        table.put(new PARTsUnit(26, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 4400.0);
+        table.put(new PARTsUnit(9.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - (0.03048), 0.0);
+        table.put(new PARTsUnit(9.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 2550.0);
+        table.put(new PARTsUnit(12.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 2825.0);
+        table.put(new PARTsUnit(15.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3125.0);
+        table.put(new PARTsUnit(18.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3400.0);
+        table.put(new PARTsUnit(21.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3700.0);
+        table.put(new PARTsUnit(24.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3950.0);
+        table.put(new PARTsUnit(26.8125, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 4250.0);
 
         return table;
     }
@@ -70,13 +78,13 @@ public class SOTMCalculator {
 
         // 0 Little less than deadzone to make sure it's set to zero like it's supposed to be.
         table.put(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - (0.03048), 0.0);
-        table.put(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.7);
-        table.put(new PARTsUnit(11, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.8);
-        table.put(new PARTsUnit(14, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.9);
-        table.put(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.0);
-        table.put(new PARTsUnit(20, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.1);
-        table.put(new PARTsUnit(23, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.2);
-        table.put(new PARTsUnit(26, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.3);
+        table.put(new PARTsUnit(9.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.91);
+        table.put(new PARTsUnit(12.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.03);
+        table.put(new PARTsUnit(15.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.12);
+        table.put(new PARTsUnit(18.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.21);
+        table.put(new PARTsUnit(21.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.29);
+        table.put(new PARTsUnit(24.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.43);
+        table.put(new PARTsUnit(26.8125, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.48);
 
         return table;
     }
@@ -113,17 +121,26 @@ public class SOTMCalculator {
      * @param robotVelocity The supplied robot velocity.
      * @return The calculated robot pose.
      */
-    public static Pose2d getTargetPose(Pose2d robotPose, Transform2d robotVelocity) {
+    public static Pose2d getTargetPose(Pose2d robotPose, Transform2d robotVelocity, double tof) {
         Pose2d pose = new Pose2d();
-        double tof = getFlightTimeToGoal(robotPose, Field.getAllianceHubPose());
 
         Transform2d tofPose = new Transform2d(
             robotVelocity.getX() * tof,
             robotVelocity.getY() * tof,
             new Rotation2d()
         );
-        
+
         pose = robotPose.plus(tofPose);
         return pose;
+    }
+
+    public static Pose2d collapsePose(Pose2d robotPose, Transform2d robotVelocity) {
+        Pose2d temp  = robotPose;
+        for (int i = 0; i < 5; i ++) {
+            double tof = getFlightTimeToGoal(temp, Field.getAllianceHubPose());
+            temp = getTargetPose(robotPose, robotVelocity, tof);
+        }
+        
+        return temp;
     }
 }
