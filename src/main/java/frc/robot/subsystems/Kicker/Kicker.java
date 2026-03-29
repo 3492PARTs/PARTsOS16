@@ -66,7 +66,8 @@ public abstract class Kicker extends PARTsSubsystem {
     @Override
     public void periodic() {
         if (RobotContainer.debug || debug) {
-            setSpeed(partsNT.getDouble("Kicker Speed", true));
+            double rpm = partsNT.getDouble("Kicker Speed", true);
+            setVoltage(calculateRPMVoltage(rpm));
         } else {
             switch (kickerState) {
                 case DISABLED:
@@ -74,16 +75,7 @@ public abstract class Kicker extends PARTsSubsystem {
                     setSpeed(0);
                     break;
                 case ROLLING:
-                    double voltage = 0;
-                    kickerPIDController.setSetpoint(kickerState.getRPM());
-                    double pidCalc = kickerPIDController.calculate(getRPM(), kickerState.getRPM());
-                    double ffCalc = kickerFeedforward.calculate((kickerPIDController.getSetpoint() * Math.PI
-                            * KickerConstants.KICKER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
-
-                    voltage = pidCalc + ffCalc;
-
-                    //setVoltage(voltage);
-                    setSpeed(1);
+                    setVoltage(calculateRPMVoltage(kickerState.getRPM()));
                     break;
                 default:
                     setSpeed(0);
@@ -121,6 +113,21 @@ public abstract class Kicker extends PARTsSubsystem {
         return PARTsCommandUtils.setCommandName("Kicker.idle", this.runOnce(() -> {
             kickerState = KickerState.IDLE;
         }));
+    }
+    
+    public boolean withinSetpointRange() {
+        return Math.abs(kickerPIDController.getSetpoint() - getRPM()) < 500;
+    }
+
+    private double calculateRPMVoltage(double rpm) {
+        kickerPIDController.setSetpoint(rpm);
+        double pidCalc = kickerPIDController.calculate(getRPM(), rpm);
+        double ffCalc = kickerFeedforward.calculate((kickerPIDController.getSetpoint() * Math.PI
+                * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
+
+        double voltage = pidCalc + ffCalc;
+
+        return voltage;
     }
     // endregion
 }

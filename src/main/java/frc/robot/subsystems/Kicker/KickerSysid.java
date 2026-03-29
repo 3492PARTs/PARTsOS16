@@ -18,9 +18,9 @@ public class KickerSysid extends KickerPhys {
     
      private MutVoltage appliedVoltage;
 
-    private MutDistance shooterPosition;
+    private MutDistance kickerPosition;
 
-    private MutLinearVelocity shooterVelocity;
+    private MutLinearVelocity kickerVelocity;
 
     private SysIdRoutine routine;
 
@@ -30,9 +30,9 @@ public class KickerSysid extends KickerPhys {
 
         appliedVoltage = Volts.mutable(0);
 
-        shooterPosition = Inches.mutable(0);
+        kickerPosition = Inches.mutable(0);
 
-        shooterVelocity = InchesPerSecond.mutable(0);
+        kickerVelocity = InchesPerSecond.mutable(0);
 
         routine = new SysIdRoutine(
                 new SysIdRoutine.Config(), //ElevatorConstants.kSysIDConfig,
@@ -42,9 +42,9 @@ public class KickerSysid extends KickerPhys {
                             log.motor("shootermotor1")
                                     .voltage(appliedVoltage.mut_replace(
                                             super.kickerMotor.getMotorVoltage().getValueAsDouble(), Volts))
-                                    .linearPosition(shooterPosition.mut_replace(
+                                    .linearPosition(kickerPosition.mut_replace(
                                             super.kickerMotor.getPosition().getValueAsDouble() * Math.PI * KickerConstants.KICKER_WHEEL_RADIUS.to(PARTsUnitType.Inch) * 2, Inches))
-                                    .linearVelocity(shooterVelocity.mut_replace(
+                                    .linearVelocity(kickerVelocity.mut_replace(
                                             (super.getRPM() * Math.PI * KickerConstants.KICKER_WHEEL_RADIUS.to(PARTsUnitType.Inch) * 2) / 60, InchesPerSecond));
                         },
                         this));

@@ -72,7 +72,7 @@ public abstract class Hopper extends PARTsSubsystem {
                         hopperstate = HopperState.REVERSE;
                     }
 
-                    if (timer.get() > .1 && hopperstate == HopperState.REVERSE) {
+                    if (timer.get() > .2 && hopperstate == HopperState.REVERSE) {
                         timer.restart();
                         hopperstate = HopperState.ROLLING;
                     }
