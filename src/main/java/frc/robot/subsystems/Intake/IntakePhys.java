@@ -50,7 +50,7 @@ public class IntakePhys extends Intake {
 
         pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);
         pivotMotor.getConfigurator().apply(pivotConfig);
-        pivotMotor.setNeutralMode(NeutralModeValue.Brake);
+        pivotMotor.setNeutralMode(NeutralModeValue.Coast);
 
         // Home the pivot position.
         pivotMotor.getConfigurator().setPosition(0);
