@@ -397,12 +397,21 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 return new PARTsUnit(super.getState().Speeds.vyMetersPerSecond, PARTsUnitType.MetersPerSecond);
         }
 
+        public PARTsUnit getVelocity() {
+                double val = Math.hypot(getXVelocity().getValue(), getYVelocity().getValue());
+                return new PARTsUnit(val, PARTsUnitType.MetersPerSecond);
+        }
+
         public double getXAngularVelocity() {
                 return getPigeon2().getAngularVelocityXDevice().getValueAsDouble();
         }
 
         public double getYAngularVelocity() {
                 return getPigeon2().getAngularVelocityYDevice().getValueAsDouble();
+        }
+
+        public PARTsUnit getAngularVelocity() {
+                return new PARTsUnit(super.getState().Speeds.omegaRadiansPerSecond, PARTsUnitType.RadiansPerSecond);
         }
 
         public Command commandPathFindToPath(String pathname) {

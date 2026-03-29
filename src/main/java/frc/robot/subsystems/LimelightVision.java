@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -18,8 +20,10 @@ import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.constants.VisionConstants;
 import frc.robot.util.Field;
 import frc.robot.util.LimelightHelpers;
+import frc.robot.util.PARTsVisionFilter;
 import frc.robot.util.Trench;
 import frc.robot.util.LimelightHelpers.PoseEstimate;
+import frc.robot.util.PARTsVisionFilter.PARTsVisionMeasurement;
 
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
@@ -29,7 +33,9 @@ import org.parts3492.partslib.command.PARTsSubsystem;
 public class LimelightVision extends PARTsSubsystem {
 
     private final Supplier<Pose2d> poseSupplier;
-    private final BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction;
+    private final Supplier<PARTsUnit> robotVelocitySupplier;
+    private final Supplier<PARTsUnit> robotAngularVelocitySupplier;
+    private final BiConsumer<Pose2d, Double> addVisionMeasurementConsumer;
     private final Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer;
 
     public enum MegaTagMode {
@@ -60,12 +66,16 @@ public class LimelightVision extends PARTsSubsystem {
     private int maxTagCount;
 
     public LimelightVision(Supplier<Pose2d> poseSupplier,
-            BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
-            Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer, Consumer<Pose2d> resetPoseConsumer) {
+            BiConsumer<Pose2d, Double> addVisionMeasurementConsumer,
+            Consumer<Vector<N3>> setVisionMeasurementStdDevsConsumer,
+            Supplier<PARTsUnit> robotVelocitySupplier,
+            Supplier<PARTsUnit> robotAngularVelocitySupplier) {
         super("LimelightVision");
         this.poseSupplier = poseSupplier;
-        this.addVisionMeasurementBiFunction = addVisionMeasurementBiFunction;
+        this.addVisionMeasurementConsumer = addVisionMeasurementConsumer;
         this.setVisionMeasurementStdDevsConsumer = setVisionMeasurementStdDevsConsumer;
+        this.robotVelocitySupplier = robotVelocitySupplier;
+        this.robotAngularVelocitySupplier = robotAngularVelocitySupplier;
 
         for (Camera camera : CameraConstants.LimelightCameras) {
             Pose3d robotRelativePose = camera.getLocation();
@@ -180,24 +190,15 @@ public class LimelightVision extends PARTsSubsystem {
         return LimelightHelpers.getTV(cameraName);
     }
 
-    public static int getVisibleTagId(String cameraName) {
-        try {
-            double[] targetArray = LimelightHelpers.getT2DArray(cameraName);
-            return (int) targetArray[9];
-        } catch (ArrayIndexOutOfBoundsException a) {
-            return -1;
-        }
-    }
-
     @Override
     public void periodic() {
         this.maxTagCount = 0;
 
         updateWhitelistMode();
         for (Camera camera : CameraConstants.LimelightCameras) {
-            int tagId = -1;
-            PoseEstimate poseEstimate = null;
-            boolean inRadius = false, data = false, accepted = false;
+            int tagId = -1, tagCount = 0;
+            Pose2d pose = null;
+            boolean data = false;
 
             double[] hw = LimelightHelpers.getLimelightDoubleArrayEntry("limelight", "hw").get();
             partsNT.putDouble(camera.getName() + "/temp", hw.length > 0 ? hw[0] : -1, !RobotConstants.COMPETITION); // loop-overrun
@@ -216,44 +217,30 @@ public class LimelightVision extends PARTsSubsystem {
                         0,
                         0);
 
-                tagId = (int) getVisibleTagId(camera.getName());
-
-                poseEstimate = (megaTagMode == MegaTagMode.MEGATAG2)
-                        ? getMegaTag2PoseEstimate(camera.getName())
-                        : getMegaTag1PoseEstimate(camera.getName());
-
-                inRadius = tagId != -1 && Field.isInRadius(Field.getTag(tagId).getLocation().toPose2d(),
-                        poseEstimate.pose, new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter));
-                partsNT.putDouble(camera.getName() + "/Distance",
-                        tagId != -1
-                                ? Trench.getDistance(poseEstimate.pose, Field.getTag(tagId).getLocation().toPose2d())
-                                : -1,
-                        !RobotConstants.COMPETITION);
-                int requiredTagCount = (megaTagMode == MegaTagMode.MEGATAG1) ? 2 : 1;
-
-                if (poseEstimate != null && poseEstimate.tagCount >= requiredTagCount && inRadius) {
+                Optional<PARTsVisionMeasurement> measurement = PARTsVisionFilter.getTrustedMeasurement(camera.getName(), megaTagMode, poseSupplier.get(), robotVelocitySupplier.get(), robotAngularVelocitySupplier.get());
+                
+                if (measurement.isPresent()) {
+                    setVisionMeasurementStdDevsConsumer.accept(measurement.get().stdDevs());
+                    addVisionMeasurementConsumer.accept(measurement.get().pose(), measurement.get().timestampSec());
                     data = true;
-                    accepted = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
-                            poseEstimate.timestampSeconds);
-
-                    maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
+                    pose = measurement.get().pose();
+                    tagCount = measurement.get().tagCount();
                 }
 
                 partsNT.putBoolean(camera.getName() + "/Has Data", data, !RobotConstants.COMPETITION); // loop-overrun
-                partsNT.putBoolean(camera.getName() + "/Accepted Data", accepted, !RobotConstants.COMPETITION); // loop-overrun
+                //partsNT.putBoolean(camera.getName() + "/Accepted Data", accepted, !RobotConstants.COMPETITION); // loop-overrun
 
-                partsNT.putNumber(camera.getName() + "/X", poseEstimate == null ? -1 : poseEstimate.pose.getX(),
+                partsNT.putNumber(camera.getName() + "/X", pose == null ? -1 : pose.getX(),
                         !RobotConstants.COMPETITION); // loop-overrun
-                partsNT.putNumber(camera.getName() + "/Y", poseEstimate == null ? -1 : poseEstimate.pose.getY(),
+                partsNT.putNumber(camera.getName() + "/Y", pose == null ? -1 : pose.getY(),
                         !RobotConstants.COMPETITION); // loop-overrun
                 partsNT.putNumber(camera.getName() + "/Rotation (deg)",
-                        poseEstimate == null ? -1 : poseEstimate.pose.getRotation().getDegrees(),
+                        pose == null ? -1 : pose.getRotation().getDegrees(),
                         !RobotConstants.COMPETITION); // loop-overrun
 
                 partsNT.putNumber(camera.getName() + "/tag id", tagId, !RobotConstants.COMPETITION);
-                partsNT.putNumber(camera.getName() + "/tag count", poseEstimate == null ? -1 : poseEstimate.tagCount,
+                partsNT.putNumber(camera.getName() + "/tag count", tagCount,
                         !RobotConstants.COMPETITION);
-                partsNT.putBoolean(camera.getName() + "/In Radius", inRadius, !RobotConstants.COMPETITION);
             }
         }
     }
