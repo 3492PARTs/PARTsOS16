@@ -42,6 +42,7 @@ import frc.robot.subsystems.Intake.IntakeSysid;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Kicker.KickerPhys;
 import frc.robot.subsystems.Kicker.KickerSim;
+import frc.robot.subsystems.Kicker.KickerSysid;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterPhys;
 import frc.robot.subsystems.Shooter.ShooterSim;
@@ -50,7 +51,6 @@ import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.Turret.TurretPhys;
 import frc.robot.subsystems.Turret.TurretSim;
 import frc.robot.util.Field;
-import frc.robot.util.Hub;
 
 import org.parts3492.partslib.input.PARTsButtonBoxController;
 import org.parts3492.partslib.input.PARTsCommandController;
@@ -102,11 +102,14 @@ public class RobotContainer {
 
     private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
 
-    // private final ShooterSysid shooter = new
-    // ShooterSysid(drivetrain.supplierGetPose()); // for sysid
+     /*private final ShooterSysid shooter = new
+     ShooterSysid(drivetrain.supplierGetPose(), drivetrain, turret::getState);*/ // for sysid
+
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
     // private final TurretSysid turret = new
     // TurretSysid(drivetrain.supplierGetPose());
+
+    //private final KickerSysid kicker = new KickerSysid();
 
     private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle,
             drivetrain);
@@ -125,6 +128,7 @@ public class RobotContainer {
         configureAutonomousCommands();
         configureIntakeBindings();
         configureHopperBindings();
+        configureKickerBindings();
         configureSuperstructureBindings();
         operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
         operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
@@ -213,6 +217,16 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
+        
+          /*operatorController.a().and(operatorController.rightBumper())
+          .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+          operatorController.b().and(operatorController.rightBumper())
+          .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+          operatorController.x().and(operatorController.rightBumper())
+          .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+          operatorController.y().and(operatorController.rightBumper())
+          .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
+         
         //buttonBoxController.lightonTrigger().whileTrue(shooter.setSpeedOffset(100)).onFalse(shooter.setSpeedOffset(0));
         //buttonBoxController.talkonTrigger().whileTrue(shooter.setSpeedOffset(200)).onFalse(shooter.setSpeedOffset(0));
         buttonBoxController.absClickTrigger().onTrue(shooter.setSpeedOffset(()-> 0));
@@ -226,6 +240,17 @@ public class RobotContainer {
     private void configureHopperBindings() {
         /*driveController.b().onTrue(hopper.roll());
         driveController.x().onTrue(hopper.idle());*/
+    }
+
+    private void configureKickerBindings() {
+        /*operatorController.a().and(operatorController.rightBumper())
+          .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+          operatorController.b().and(operatorController.rightBumper())
+          .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+          operatorController.x().and(operatorController.rightBumper())
+          .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kForward));
+          operatorController.y().and(operatorController.rightBumper())
+          .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
     }
 
     private void configureTurretBindings() {
@@ -353,7 +378,6 @@ public class RobotContainer {
 
     public void runOnEnabled() {
         getAlliance(); // ensure we have the alliance
-        Hub.putZonesOnField();
         setLimelightMainMode();
         setIdleCandleState();
         hubFieldObject2d.setPose(Field.getAllianceHubPose());

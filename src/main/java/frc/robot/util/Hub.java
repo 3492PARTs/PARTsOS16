@@ -1,56 +1,23 @@
 package frc.robot.util;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
-import org.parts3492.partslib.PARTsUnit;
-import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.network.PARTsNT;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
-import frc.robot.RobotContainer;
-import frc.robot.constants.RobotConstants;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Hub {
-    private static Supplier<Pose2d> hubPose2d = () -> Field.getAllianceHubPose();
     private static Timer timer = new Timer();
     private static boolean previousHubActive = true;
     private static PARTsNT partsNT = new PARTsNT("Hub");
 
     public static enum Targets {
-        BEHIND_HUB(0, 0),
-        DEADZONE(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0),
-        TRENCH(0, 0),
-        ZONE1(new PARTsUnit(10, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.70),
-        ZONE2(new PARTsUnit(11.5, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1),
-        ZONE3(new PARTsUnit(13, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.10),
-        ZONE4(new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.20),
-        ZONE5(new PARTsUnit(17, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.30),
-        ZONE6(new PARTsUnit(19, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.40);
+        BEHIND_HUB(),
+        TRENCH();
 
-        private double radius;
-        // get actual time of flights later
-        private double timeOfFlight;
-
-        Targets(double radius, double timeOfFlight) {
-            this.radius = radius;
-            this.timeOfFlight = timeOfFlight;
-        }
-
-        public double getRadius() {
-            return radius;
-        }
-
-        public double getTimeOfFlight() {
-            return timeOfFlight;
-        }
-
-        public void setFieldObject2d() {
+        /*public void setFieldObject2d() {
             FieldObject2d targetFieldObject2d = Field.FIELD2D.getObject(this.name());
             Pose2d pose = new Pose2d(hubPose2d.get().getX() - this.radius * (RobotContainer.isBlue() ? 1 : -1),
                     hubPose2d.get().getY(), hubPose2d.get().getRotation());
@@ -66,45 +33,13 @@ public class Hub {
                     new Rotation2d(new PARTsUnit(-45, PARTsUnitType.Angle).to(PARTsUnitType.Radian)));
             FieldObject2d targetFieldObject2dRotatedInv = Field.FIELD2D.getObject(this.name() + "RotInv");
             targetFieldObject2dRotatedInv.setPose(poseRotInv);
-        }
+        }*/
     }
 
     public static void outputTelemetry() {
         partsNT.putBoolean("Hub Active", Hub.isHubActive(), true);
         partsNT.putDouble("Time Left", timer.get() <= 25 ? 25 - timer.get() : 0, true);
         checkHubActivity();
-    }
-
-    public static Targets getZone(Pose2d point) {
-        if (Field.isInRadius(hubPose2d.get(), point, Targets.DEADZONE.getRadius())) {
-            return null;
-        } else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE1.getRadius())) {
-            return Targets.ZONE1;
-        }
-
-        else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE2.getRadius())) {
-            return Targets.ZONE2;
-        }
-
-        else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE3.getRadius())) {
-            return Targets.ZONE3;
-        }
-
-        else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE4.getRadius())) {
-            return Targets.ZONE4;
-        }
-
-        else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE5.getRadius())) {
-            return Targets.ZONE5;
-        }
-
-        else if (Field.isInRadius(hubPose2d.get(), point, Targets.ZONE6.getRadius())) {
-            return Targets.ZONE6;
-        }
-
-        else {
-            return null;
-        }
     }
 
     public static boolean isHubActive() {
@@ -176,17 +111,5 @@ public class Hub {
             timer.restart();
         }
         previousHubActive = Hub.isHubActive();
-    }
-
-    public static void putZonesOnField() {
-        if (!RobotConstants.COMPETITION) {
-            Targets.DEADZONE.setFieldObject2d();
-            Targets.ZONE1.setFieldObject2d();
-            Targets.ZONE2.setFieldObject2d();
-            Targets.ZONE3.setFieldObject2d();
-            Targets.ZONE4.setFieldObject2d();
-            Targets.ZONE5.setFieldObject2d();
-            Targets.ZONE6.setFieldObject2d();
-        }
     }
 }
