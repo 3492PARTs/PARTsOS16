@@ -83,6 +83,7 @@ public abstract class Intake extends PARTsSubsystem {
                     setPivotSpeed(0);
                     break;
                 case INTAKING:
+                case REVERSE:
                 case HOME:
                     setIntakeSpeed(intakeState.getSpeed());
 
@@ -179,6 +180,12 @@ public abstract class Intake extends PARTsSubsystem {
     public Command home() {
         return PARTsCommandUtils.setCommandName("Intake.home", Commands.runOnce(() -> {
             intakeState = IntakeState.HOME;
+        }));
+    }
+
+    public Command reverse() {
+        return PARTsCommandUtils.setCommandName("Intake.reverse", Commands.runOnce(() -> {
+            intakeState = IntakeState.REVERSE;
         }));
     }
 
