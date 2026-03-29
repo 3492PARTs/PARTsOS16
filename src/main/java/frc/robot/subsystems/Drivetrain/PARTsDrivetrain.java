@@ -103,6 +103,11 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         private boolean isControlledRotationEnabled = false;
 
+        // --- Airborne / pose-freeze gating ---
+        private boolean isAirborne = false;
+        private int airborneDebounceCycles = 0;
+        private int stableDebounceCycles = 0;
+
         public PARTsDrivetrain(
                         SwerveDrivetrainConstants DrivetrainConstants,
                         SwerveModuleConstants<?, ?, ?>... modules) {
@@ -185,8 +190,11 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
 
         @Override
         public void periodic() {
-                super.periodic();
-                robotFieldObject2d.setPose(getPose());
+        updateAirborneState();
+
+        super.periodic();
+
+        robotFieldObject2d.setPose(getPose());
         }
 
         // endregion
@@ -554,13 +562,14 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
         }
 
         public boolean acceptVisionMeasurement(Pose2d measurement, double timestamp) {
-                // accept values rotating less than
-                // 2*pi rad/s = 360 deg/s
-                if (Math.max(Math.abs(getXAngularVelocity()), Math.abs(getYAngularVelocity())) < 2 * Math.PI) {
-                        super.addVisionMeasurement(measurement, timestamp);
-                        return true;
-                }
-                return false;
+        if (isAirborne) return false;
+
+        // accept values rotating less than 2*pi rad/s = 360 deg/s
+        if (Math.max(Math.abs(getXAngularVelocity()), Math.abs(getYAngularVelocity())) < 2 * Math.PI) {
+                super.addVisionMeasurement(measurement, timestamp);
+                return true;
+        }
+        return false;
         }
         // endregion
 
@@ -734,6 +743,53 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                 partsNT = new PARTsNT(this);
                 partsLogger = new PARTsLogger(this, RobotConstants.LOGGING);
         }
+
+        private double getPigeonAccelMagnitudeMps2() {
+                // Phoenix 6 Pigeon2 accel signals are in m/s^2.
+                // If your API differs, adjust these three lines only.
+                double ax = getPigeon2().getAccelerationX().getValueAsDouble();
+                double ay = getPigeon2().getAccelerationY().getValueAsDouble();
+                double az = getPigeon2().getAccelerationZ().getValueAsDouble();
+                return Math.sqrt(ax * ax + ay * ay + az * az);
+        }
+
+        private void updateAirborneState() {
+                double mag = getPigeonAccelMagnitudeMps2();
+                boolean airborneNow = Math.abs(mag) > DrivetrainConstants.AIRBORNE_G_DIFF;
+                boolean stableNow = Math.abs(mag) < DrivetrainConstants.STABLE_G_DIFF;
+
+                if (!isAirborne) {
+                        if (airborneNow) {
+                                airborneDebounceCycles++;
+                                if (airborneDebounceCycles >= DrivetrainConstants.AIRBORNE_DEBOUNCE) {
+                                        super.setStateStdDevs(DrivetrainConstants.AIRBORNE_STDEVS);
+                                        isAirborne = true;
+                                        stableDebounceCycles = 0;
+                                        airborneDebounceCycles = 0;
+                                }
+                        } else {
+                                airborneDebounceCycles = 0;
+                        }
+                } else {
+                        // currently airborne
+                        if (stableNow) {
+                                stableDebounceCycles++;
+                                if (stableDebounceCycles >= DrivetrainConstants.STABLE_DEBOUNCE) {
+                                        super.setStateStdDevs(DrivetrainConstants.STABLE_STDEVS);
+                                        isAirborne = false;
+                                        stableDebounceCycles = 0;
+                                        airborneDebounceCycles = 0;
+                                }
+                        } else {
+                                stableDebounceCycles = 0;
+                        }
+                }
+
+                partsNT.putBoolean("Drivetrain/Airborne", isAirborne, !RobotConstants.COMPETITION);
+                partsNT.putBoolean("Drivetrain/stableNow", stableNow, !RobotConstants.COMPETITION);
+                partsNT.putBoolean("Drivetrain/AirborneNow", airborneNow, !RobotConstants.COMPETITION);
+                partsNT.putDouble("Drivetrain/AccelMag", mag, !RobotConstants.COMPETITION);
+        }
         // endregion
 
         // region Override Functions
@@ -778,9 +834,13 @@ public class PARTsDrivetrain extends CommandSwerveDrivetrain implements IPARTsSu
                                                                                         .robotRelativeForcesYNewtons())),
                                         new PPHolonomicDriveController(
                                                         // PID constants for translation
-                                                        new PIDConstants(DrivetrainConstants.RANGE_X_P, DrivetrainConstants.RANGE_I, DrivetrainConstants.RANGE_D),
+                                                        new PIDConstants(DrivetrainConstants.RANGE_X_P,
+                                                                        DrivetrainConstants.RANGE_I,
+                                                                        DrivetrainConstants.RANGE_D),
                                                         // PID constants for rotation
-                                                        new PIDConstants(DrivetrainConstants.THETA_P, DrivetrainConstants.THETA_I, DrivetrainConstants.THETA_D)),
+                                                        new PIDConstants(DrivetrainConstants.THETA_P,
+                                                                        DrivetrainConstants.THETA_I,
+                                                                        DrivetrainConstants.THETA_D)),
                                         config,
                                         // Assume the path needs to be flipped for Red vs Blue, this is normally the
                                         // case
