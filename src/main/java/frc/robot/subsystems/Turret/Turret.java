@@ -12,12 +12,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
-import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.util.Field;
-import frc.robot.util.Hub;
-import frc.robot.util.Hub.Targets;
+import frc.robot.util.SOTMCalculator;
 
 import java.util.function.Supplier;
 
@@ -223,17 +221,16 @@ public abstract class Turret extends PARTsSubsystem {
     // endregion
 
     // region private functions
-    private double getAngleToTarget(Pose2d target) {
-        Targets zone = Hub.getZone(robotPoseSupplier.get());
-        double timeOfFlight = (zone == null) ? 0 : ShooterState.getTofFromDistanceToHub(robotPoseSupplier.get());
-        Pose2d calculatedPose = target.plus(new Transform2d(drivetrain.getXVelocity().getValue() * timeOfFlight,
-                drivetrain.getYVelocity().getValue() * timeOfFlight, new Rotation2d()));
+    private double getAngleToTarget(Pose2d target) {     
+        Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
+        Pose2d calcRobotPose = SOTMCalculator.collapsePose(robotPoseSupplier.get(), robotVelocity);
+        
         if (!RobotConstants.COMPETITION) {
-            fieldTarget.setPose(calculatedPose);
+            fieldTarget.setPose(calcRobotPose);
         }
-        double angleToTarget = robotPoseSupplier.get().getRotation().getDegrees()
-                - (Math.atan2(calculatedPose.getY() - robotPoseSupplier.get().getY(),
-                        calculatedPose.getX() - robotPoseSupplier.get().getX()) * 180 / Math.PI);
+        double angleToTarget = calcRobotPose.getRotation().getDegrees()
+                - (Math.atan2(Field.getAllianceHubPose().getY() - calcRobotPose.getY(),
+                        Field.getAllianceHubPose().getX() - calcRobotPose.getX()) * 180 / Math.PI);
         if (angleToTarget <= -180) {
             angleToTarget += 360;
         } else if (angleToTarget >= 180) {

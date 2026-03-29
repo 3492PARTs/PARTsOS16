@@ -70,7 +70,7 @@ public abstract class Hopper extends PARTsSubsystem {
                 case REVERSE:
                     setSpeed(hopperstate.getSpeed());
 
-                    if (timer.get() > 100 && hopperstate == HopperState.ROLLING) {
+                    if (timer.get() > 1.5 && hopperstate == HopperState.ROLLING) {
                         timer.restart();
                         hopperstate = HopperState.REVERSE;
                     }

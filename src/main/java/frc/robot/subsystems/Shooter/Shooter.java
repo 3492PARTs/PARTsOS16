@@ -15,8 +15,7 @@ import frc.robot.constants.ShooterConstants.ShooterState;
 import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.util.Field;
-import frc.robot.util.Hub;
-import frc.robot.util.Trench;
+import frc.robot.util.SOTMCalculator;
 import frc.robot.util.Hub.Targets;
 
 import java.util.function.BooleanSupplier;
@@ -109,29 +108,23 @@ public abstract class Shooter extends PARTsSubsystem {
         }
 
         else {
-            Targets zone = Hub.getZone(robotPoseSupplier.get());
-            double timeOfFlight = (zone == null) ? 0 : ShooterState.getTofFromDistanceToHub(robotPoseSupplier.get());
-
-            Pose2d calcRobotPose = robotPoseSupplier.get().plus(
-                    new Transform2d(
-                            drivetrain.getXVelocity().getValue() * timeOfFlight,
-                            drivetrain.getYVelocity().getValue() * timeOfFlight,
-                            new Rotation2d()));
+            Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
+            Pose2d calcRobotPose = SOTMCalculator.collapsePose(robotPoseSupplier.get(), robotVelocity);
 
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
-                    : ShooterState.getRPMFromDistanceToHub(calcRobotPose);
+                    : SOTMCalculator.getRPMToGoal(calcRobotPose, Field.getAllianceHubPose());
 
-            if (!RobotConstants.COMPETITION) {
+            /*if (!RobotConstants.COMPETITION) {
                 calculatedRobotPose.setPose(calcRobotPose);
-            }
-            boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
+            }*/
+            /*boolean inTrench = Trench.isUnderTrench(robotPoseSupplier.get());
 
             if (inTrench && Math.abs(drivetrain.getXVelocity().getValue()) < 1.5
                     && Math.abs(drivetrain.getYVelocity().getValue()) < 1.5) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.TRENCH);
-            }
+            }*/
 
-            if (zone == null && turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
+            if (shooterRPM == 0 && turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
                 shooterRPM = ShooterState.getZoneRPM(Targets.BEHIND_HUB);
             }
 
@@ -142,8 +135,6 @@ public abstract class Shooter extends PARTsSubsystem {
             shooterRPM += offset;
 
             partsNT.putDouble("Shooting RPM", shooterRPM, true);
-            partsNT.putDouble("Shooting ToF", timeOfFlight, true);
-            partsNT.putString("Zone", inTrench ? "Trench" : zone == null ? "No zone" : zone.toString(), true);
 
             switch (shooterState) {
                 case DISABLED:
