@@ -82,7 +82,8 @@ public abstract class Kicker extends PARTsSubsystem {
 
                     voltage = pidCalc + ffCalc;
 
-                    setVoltage(voltage);
+                    //setVoltage(voltage);
+                    setSpeed(1);
                     break;
                 default:
                     setSpeed(0);
