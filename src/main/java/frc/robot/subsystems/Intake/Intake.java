@@ -94,7 +94,7 @@ public abstract class Intake extends PARTsSubsystem {
                     partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), !RobotConstants.COMPETITION);
                     partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), !RobotConstants.COMPETITION);
 
-                    setPivotVoltage(pidCalc);
+                    setPivotVoltage(intakePIDController.atGoal() ? 0: pidCalc);
                     break;
                 case MANUALPIVOT:
                     break;
