@@ -299,6 +299,8 @@ public class RobotContainer {
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
         buttonBoxController.mapTrigger()
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
+        buttonBoxController.negative3Trigger().onTrue(superstructure.spew()).onFalse(superstructure.resetCommand());
+
         //buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
     }
 
