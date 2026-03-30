@@ -53,7 +53,8 @@ public class SOTMCalculator {
         // Cut off the shooter in the deadzone.
         // ? It's a little bit lower (0.1 feet in meters) than the actual deadzone just
         // in case the robot is slightly in the deadzone, might have to be removed.
-        table.put(new PARTsUnit(9.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - (0.03048), 0.0);
+        table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - (0.03), 0.0);
+        table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 2525.0);
         table.put(new PARTsUnit(9.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 2550.0);
         table.put(new PARTsUnit(12.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 2825.0);
         table.put(new PARTsUnit(15.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 3125.0);
@@ -77,7 +78,8 @@ public class SOTMCalculator {
         InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
 
         // 0 Little less than deadzone to make sure it's set to zero like it's supposed to be.
-        table.put(new PARTsUnit(8, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - (0.03048), 0.0);
+        table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - (0.03), 0.0);
+        table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.90);
         table.put(new PARTsUnit(9.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 0.91);
         table.put(new PARTsUnit(12.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.03);
         table.put(new PARTsUnit(15.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter), 1.12);
