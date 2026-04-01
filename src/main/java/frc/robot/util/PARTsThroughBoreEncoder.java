@@ -4,9 +4,15 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 
 public class PARTsThroughBoreEncoder {
-    private final DutyCycle duty;
+  private final DutyCycle duty;
   private final double offsetDeg;
 
+  /**
+   * Create a new Through Bore Encoder.
+   * 
+   * @param dioPort   THe Digital IO port of the encoder.
+   * @param offsetDeg The starting offset of the encoder in degrees.
+   */
   public PARTsThroughBoreEncoder(int dioPort, double offsetDeg) {
     this.duty = new DutyCycle(new DigitalInput(dioPort));
     this.offsetDeg = offsetDeg;
@@ -21,7 +27,8 @@ public class PARTsThroughBoreEncoder {
     double angle = d * 360.0;
 
     angle %= 360.0;
-    if (angle < 0) angle += 360.0;
+    if (angle < 0)
+      angle += 360.0;
     return angle;
   }
 
@@ -29,7 +36,8 @@ public class PARTsThroughBoreEncoder {
   public double getAngleDeg() {
     double angle = getAbsoluteAngleDeg() - offsetDeg;
     angle %= 360.0;
-    if (angle < 0) angle += 360.0;
+    if (angle < 0)
+      angle += 360.0;
     return angle;
   }
 }
