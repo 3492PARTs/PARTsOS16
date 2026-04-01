@@ -48,6 +48,8 @@ public class TurretPhys extends Turret {
 
         partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(),
                 RobotContainer.debug || super.debug);
+
+        partsNT.putDouble("TurretRawAngle", absEncoder.getAbsoluteAngleDeg(), true);
     }
 
     @Override
@@ -67,7 +69,8 @@ public class TurretPhys extends Turret {
 
     @Override
     protected double getAngle() {
-        //return turretMotor.getPosition().getValueAsDouble() * 360 / TurretConstants.TURRET_GEAR_RATIO;
+        // return turretMotor.getPosition().getValueAsDouble() * 360 /
+        // TurretConstants.TURRET_GEAR_RATIO;
         return absEncoder.getAngleDeg() / TurretConstants.TURRET_GEAR_RATIO;
     }
 
