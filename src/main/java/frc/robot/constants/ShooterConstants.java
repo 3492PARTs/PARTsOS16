@@ -9,7 +9,7 @@ public class ShooterConstants {
         IDLE(0),
         DISABLED(0),
         SHOOTING(3500),
-        MANUAL(4000);
+        MANUAL(3350);
 
         private final double rpm;
 

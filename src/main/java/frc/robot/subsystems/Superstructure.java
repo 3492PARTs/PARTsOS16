@@ -152,7 +152,7 @@ public class Superstructure extends PARTsSubsystem {
                                                                                                 .onlyIf(() -> {
                                                                                                         return kicker.getState() != KickerState.IDLE;
                                                                                                 }),
-                                                                                () -> turret.atSetpoint()))
+                                                                                () -> turret.atSetpoint() && shooter.withinSetpointRange()))
                                                                 .until(end)),
 
                                 // Make sure to cancel and reset if we're forced to end or the turret is not at
