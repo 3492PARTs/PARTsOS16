@@ -19,6 +19,7 @@ import frc.robot.util.SOTMCalculator;
 
 import java.util.function.Supplier;
 
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
@@ -112,7 +113,6 @@ public abstract class Turret extends PARTsSubsystem {
                 case TRACKING_HUB:
                 case TRACKING_CORNER:
                     Pose2d target = getTargetPose();
-                    fieldTarget.setPose(target);
                     if (isValidAngle()) {
                         turretPIDController.setSetpoint(getAngleToTarget(target));
                         double pidCalc = turretPIDController.calculate(getAngle(), getAngleToTarget(target));
@@ -216,9 +216,10 @@ public abstract class Turret extends PARTsSubsystem {
     }
 
     public Pose2d getTargetPose() {
-        return turretState == TurretState.TRACKING_HUB ? Field.getAllianceHubPose()
+        Pose2d target = turretState == TurretState.TRACKING_HUB ? Field.getAllianceHubPose()
                 : Field.getNearestAllianceCorner(robotPoseSupplier.get());
-
+        fieldTarget.setPose(target);
+        return target;
     }
 
     // endregion
@@ -226,14 +227,14 @@ public abstract class Turret extends PARTsSubsystem {
     // region private functions
     protected double getAngleToTarget(Pose2d target) {     
         Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
-        Pose2d calcRobotPose = SOTMCalculator.collapsePose(robotPoseSupplier.get(), robotVelocity);
+        Pose2d calcTurretPose = SOTMCalculator.collapsePose(robotPoseSupplier.get().plus(new Transform2d(TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 0, new Rotation2d())), robotVelocity);
         
         if (!RobotConstants.COMPETITION) {
-            projectedRobotPose.setPose(calcRobotPose);
+            projectedRobotPose.setPose(calcTurretPose);
         }
-        double angleToTarget = calcRobotPose.getRotation().getDegrees()
-                - (Math.atan2(target.getY() - calcRobotPose.getY(),
-                        target.getX() - calcRobotPose.getX()) * 180 / Math.PI);
+        double angleToTarget = calcTurretPose.getRotation().getDegrees()
+                - (Math.atan2(target.getY() - calcTurretPose.getY(),
+                        target.getX() - calcTurretPose.getX()) * 180 / Math.PI);
         if (angleToTarget <= -180) {
             angleToTarget += 360;
         } else if (angleToTarget >= 180) {

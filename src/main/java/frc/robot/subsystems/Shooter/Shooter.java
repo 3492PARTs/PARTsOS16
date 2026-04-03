@@ -12,6 +12,7 @@ import frc.robot.RobotContainer;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants.ShooterState;
+import frc.robot.constants.TurretConstants;
 import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.util.Field;
@@ -110,10 +111,10 @@ public abstract class Shooter extends PARTsSubsystem {
 
         else {
             Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
-            Pose2d calcRobotPose = SOTMCalculator.collapsePose(robotPoseSupplier.get(), robotVelocity);
+            Pose2d calcTurretPose = SOTMCalculator.collapsePose(robotPoseSupplier.get().plus(new Transform2d(TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 0, new Rotation2d())), robotVelocity);
 
             double shooterRPM = (shooterState == ShooterState.MANUAL) ? shooterState.getRPM()
-                    : SOTMCalculator.getRPMToGoal(calcRobotPose, Field.getAllianceHubPose());
+                    : SOTMCalculator.getRPMToGoal(calcTurretPose, Field.getAllianceHubPose());
 
             /*if (!RobotConstants.COMPETITION) {
                 calculatedRobotPose.setPose(calcRobotPose);

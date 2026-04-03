@@ -26,7 +26,7 @@ public class TurretConstants {
     public static final int TURRET_MOTOR_ID = 39;
     public static final String CAN_BUS_NAME = "bye";
     /** The turret gear ratio. The total ratio is {@code 10/1}. */
-    public static final double TURRET_GEAR_RATIO = (200.0 / 20.0);
+    public static final double TURRET_GEAR_RATIO = (200.0 / 20.0) * (4.0 / 1.0);
 
     // Abs. Encoder
 
@@ -57,4 +57,6 @@ public class TurretConstants {
 
     public static final double TURRET_MAX_VELOCITY = 12000;
     public static final double TURRET_MAX_ACCELERATION = 6000;
+
+    public static final PARTsUnit TURRET_OFFSET_CENTER = new PARTsUnit(8, PARTsUnitType.Inch);
 }

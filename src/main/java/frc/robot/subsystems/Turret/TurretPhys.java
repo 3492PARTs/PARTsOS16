@@ -70,9 +70,9 @@ public class TurretPhys extends Turret {
 
     @Override
     protected double getAngle() {
-        // return turretMotor.getPosition().getValueAsDouble() * 360 /
-        // TurretConstants.TURRET_GEAR_RATIO;
-        return absEncoder.getAccumulatedAngle().getValue() / TurretConstants.TURRET_GEAR_RATIO;
+         return turretMotor.getPosition().getValueAsDouble() * 360 /
+         TurretConstants.TURRET_GEAR_RATIO;
+        //return absEncoder.getAccumulatedAngle().getValue() / TurretConstants.TURRET_GEAR_RATIO;
     }
 
     @Override
