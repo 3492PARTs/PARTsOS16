@@ -6,10 +6,13 @@ import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 import frc.robot.RobotContainer;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.constants.HopperConstants;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.IntakeConstants.IntakeState;
 import frc.robot.constants.RobotConstants;
@@ -18,14 +21,17 @@ public abstract class Intake extends PARTsSubsystem {
 
     IntakeState intakeState = IntakeState.IDLE;
 
-    protected boolean debug = false;
+    protected boolean debug = true;
     private Command toggleDebug = Commands.runOnce(() -> {
         debug = !debug;
         partsNT.putDouble("Intake Speed", 0, !RobotConstants.COMPETITION);
         partsNT.putDouble("Pivot Speed", 0, !RobotConstants.COMPETITION);
     }).ignoringDisable(true);
 
-    ProfiledPIDController intakePIDController;
+    ProfiledPIDController pivotPIDController;
+
+    PIDController intakePIDController;
+    SimpleMotorFeedforward intakeFeedforward;    
 
     public Intake() {
         super("Intake");
@@ -37,10 +43,14 @@ public abstract class Intake extends PARTsSubsystem {
             partsNT.putDouble("Pivot Speed", 0, !RobotConstants.COMPETITION);
         }
 
-        intakePIDController = new ProfiledPIDController(IntakeConstants.P, IntakeConstants.I, IntakeConstants.D,
+        pivotPIDController = new ProfiledPIDController(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D,
                 new TrapezoidProfile.Constraints(IntakeConstants.INTAKE_MAX_VELOCITY,
                         IntakeConstants.INTAKE_MAX_ACCELERATION));
-        intakePIDController.setTolerance(IntakeConstants.PID_THRESHOLD);
+        pivotPIDController.setTolerance(IntakeConstants.PIVOT_PID_THRESHOLD);
+
+
+        intakePIDController = new PIDController(IntakeConstants.INTAKE_P, IntakeConstants.INTAKE_I, IntakeConstants.INTAKE_D);
+        intakeFeedforward = new SimpleMotorFeedforward(IntakeConstants.IntakeS, IntakeConstants.IntakeV, IntakeConstants.IntakeA);
 
         partsNT.putSmartDashboardSendable("Toggle Intake Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
@@ -54,6 +64,7 @@ public abstract class Intake extends PARTsSubsystem {
     public void outputTelemetry() {
         partsNT.putDouble("Pivot Angle", getPivotRotations().to(PARTsUnitType.Angle), true);
         partsNT.putDouble("Current Intake Speed", getIntakeSpeed(), RobotContainer.debug || debug);
+        partsNT.putDouble("Intake RPM", getIntakeRPM(), debug);
         partsNT.putString("Intake State", intakeState.toString(), !RobotConstants.COMPETITION);
         partsNT.putBoolean("Intake Debug Active", debug, !RobotConstants.COMPETITION);
     }
@@ -71,7 +82,7 @@ public abstract class Intake extends PARTsSubsystem {
     @Override
     public void periodic() {
         if (RobotContainer.debug || debug) {
-            setIntakeSpeed(partsNT.getDouble("Intake Speed", true));
+            setIntakeVoltage(calculateRPMVoltage(partsNT.getDouble("Intake Speed", true)));
             setPivotSpeed(partsNT.getDouble("Pivot Speed", true));
         } 
         
@@ -79,41 +90,43 @@ public abstract class Intake extends PARTsSubsystem {
             switch (intakeState) {
                 case IDLE:
                 case DISABLED:
-                    setIntakeSpeed(intakeState.getSpeed());
+                    setIntakeSpeed(intakeState.getRPM());
                     setPivotSpeed(0);
                     break;
                 case INTAKING:
                 case REVERSE:
                 case HOME:
-                    setIntakeSpeed(intakeState.getSpeed());
+                    setIntakeSpeed(intakeState.getRPM());
 
-                    intakePIDController.setGoal(intakeState.getAngle().getValue());
-                    double pidCalc = intakePIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
+                    calculateRPMVoltage(intakeState.getRPM());
+
+                    pivotPIDController.setGoal(intakeState.getAngle().getValue());
+                    double pidCalc = pivotPIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
                             intakeState.getAngle().getValue());
 
-                    partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), !RobotConstants.COMPETITION);
+                    partsNT.putBoolean("At goal", pivotPIDController.atSetpoint(), !RobotConstants.COMPETITION);
                     partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), !RobotConstants.COMPETITION);
 
-                    setPivotVoltage(intakePIDController.atGoal() ? 0: pidCalc);
+                    setPivotVoltage(pivotPIDController.atGoal() ? 0: pidCalc);
                     break;
                 case MANUALPIVOT:
                     break;
                 case SHOOTING:
-                    setIntakeSpeed(intakeState.getSpeed());
+                    setIntakeSpeed(intakeState.getRPM());
 
-                    double getGoal = intakePIDController.getGoal().position;
-                    if (getGoal == 40 && intakePIDController.atGoal()) {
+                    double getGoal = pivotPIDController.getGoal().position;
+                    if (getGoal == 40 && pivotPIDController.atGoal()) {
                         getGoal = 90;
-                    } else if (getGoal == 90 && intakePIDController.atGoal()) {
+                    } else if (getGoal == 90 && pivotPIDController.atGoal()) {
                         getGoal = 40;
                     } else if (getGoal != 90 && getGoal != 40) {
                         getGoal = 40;
                     }
-                    intakePIDController.setGoal(getGoal);
-                    pidCalc = intakePIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
+                    pivotPIDController.setGoal(getGoal);
+                    pidCalc = pivotPIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
                             getGoal);
 
-                    partsNT.putBoolean("At goal", intakePIDController.atSetpoint(), !RobotConstants.COMPETITION);
+                    partsNT.putBoolean("At goal", pivotPIDController.atSetpoint(), !RobotConstants.COMPETITION);
                     partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), !RobotConstants.COMPETITION);
                     partsNT.putDouble("Pivot Goal", getGoal, !RobotConstants.COMPETITION);
 
@@ -143,9 +156,13 @@ public abstract class Intake extends PARTsSubsystem {
 
     public abstract double getIntakeSpeed();
 
+    public abstract double getIntakeRPM();
+
     public abstract PARTsUnit getPivotRotations();
 
     public abstract void setPivotVoltage(double voltage);
+
+    public abstract void setIntakeVoltage(double voltage);
 
     public abstract double getPivotRotationSpeed();
 
@@ -194,6 +211,18 @@ public abstract class Intake extends PARTsSubsystem {
             intakeState = IntakeState.MANUALPIVOT;
             setPivotSpeed(speed);
         }));
+    }
+
+    // Intake roller same as hopper roller.
+    private double calculateRPMVoltage(double rpm) {
+        intakePIDController.setSetpoint(rpm);
+        double pidCalc = intakePIDController.calculate(getIntakeRPM(), rpm);
+        double ffCalc = intakeFeedforward.calculate((intakePIDController.getSetpoint() * Math.PI
+                * HopperConstants.HOPPER_ROLLER_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
+
+        double voltage = pidCalc + ffCalc;
+
+        return voltage;
     }
     // endregion
 }

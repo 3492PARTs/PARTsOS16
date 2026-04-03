@@ -40,6 +40,7 @@ import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.IntakePhys;
 import frc.robot.subsystems.Intake.IntakeSim;
 import frc.robot.subsystems.Intake.IntakeSysid;
+import frc.robot.subsystems.Intake.PivotSysid;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Kicker.KickerPhys;
 import frc.robot.subsystems.Kicker.KickerSim;
@@ -105,7 +106,8 @@ public class RobotContainer {
      /*private final ShooterSysid shooter = new
      ShooterSysid(drivetrain.supplierGetPose(), drivetrain, turret::getState);*/ // for sysid
 
-    // private final IntakeSysid intake = new IntakeSysid(); //for sysid
+    // private final PivotSysid intake = new PivotSysid(); //for 
+    //private final IntakeSysid intake = new IntakeSysid();
     //private final HopperSysid hopper = new HopperSysid(); 
     // private final TurretSysid turret = new
     // TurretSysid(drivetrain.supplierGetPose());
@@ -284,16 +286,19 @@ public class RobotContainer {
         buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
         buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
         buttonBoxController.escTrigger().onTrue(intake.zeroArm());
-        /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-         */
+
+         // Intake SysID
+         /*
+         operatorController.a().and(operatorController.rightBumper())
+          .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+          operatorController.b().and(operatorController.rightBumper())
+          .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+          operatorController.x().and(operatorController.rightBumper())
+          .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+          operatorController.y().and(operatorController.rightBumper())
+          .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+          */
+         
 
     }
 

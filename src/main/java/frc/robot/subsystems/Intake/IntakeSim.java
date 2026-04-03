@@ -39,4 +39,13 @@ public class IntakeSim extends Intake {
     public Command zeroArm() {
         return new WaitCommand(0);
     }
+
+    @Override
+    public double getIntakeRPM() {
+        return 0;
+    }
+
+    @Override
+    public void setIntakeVoltage(double voltage) {
+    }
 }
