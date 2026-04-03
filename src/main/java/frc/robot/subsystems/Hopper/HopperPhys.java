@@ -54,4 +54,20 @@ public class HopperPhys extends Hopper {
     protected void setSpeed(double speed) {
         hopperMotor.set(speed);
     }
+
+    @Override
+    protected double getRPM() {
+        // TODO Auto-generated method stub
+       return hopperMotor.getVelocity().getValueAsDouble() * 60 / HopperConstants.HOPPER_GEAR_RATIO;
+    }
+
+    @Override
+    protected void setVoltage(double voltage) {
+        hopperMotor.setVoltage(voltage);
+    }
+    
+    @Override
+    protected double getVoltage() {
+       return hopperMotor.getSupplyVoltage().getValueAsDouble();
+    }
 }

@@ -35,6 +35,7 @@ import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Hopper.HopperPhys;
 import frc.robot.subsystems.Hopper.HopperSim;
+import frc.robot.subsystems.Hopper.HopperSysid;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.IntakePhys;
 import frc.robot.subsystems.Intake.IntakeSim;
@@ -62,9 +63,8 @@ import org.parts3492.partslib.command.IPARTsSubsystem;
 public class RobotContainer {
     private FieldObject2d hubFieldObject2d;
 
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.XBOX);
-    private final PARTsCommandController operatorController = new PARTsCommandController(1,
-            RobotConstants.ALLOW_AUTO_CONTROLLER_DETECTION);
+    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
+    private final PARTsCommandController operatorController = new PARTsCommandController(1, ControllerType.DS5);
     private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
 
     private PARTsNT partsNT = new PARTsNT("RobotContainer");
@@ -106,6 +106,7 @@ public class RobotContainer {
      ShooterSysid(drivetrain.supplierGetPose(), drivetrain, turret::getState);*/ // for sysid
 
     // private final IntakeSysid intake = new IntakeSysid(); //for sysid
+    //private final HopperSysid hopper = new HopperSysid(); 
     // private final TurretSysid turret = new
     // TurretSysid(drivetrain.supplierGetPose());
 
@@ -172,7 +173,7 @@ public class RobotContainer {
         // driveController.a().whileTrue(drivetrain.commandBrake());
 
         Pose2d outpost = new Pose2d(0.690, .636, new Rotation2d());
-        driveController.a().whileTrue(drivetrain.commandPathFindToPose(outpost));
+        //driveController.a().whileTrue(drivetrain.commandPathFindToPose(outpost));
 
         // manual module direction control
         // driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
@@ -238,6 +239,14 @@ public class RobotContainer {
     }
 
     private void configureHopperBindings() {
+        /* operatorController.a().and(operatorController.rightBumper())
+          .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+          operatorController.b().and(operatorController.rightBumper())
+          .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+          operatorController.x().and(operatorController.rightBumper())
+          .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kForward));
+          operatorController.y().and(operatorController.rightBumper())
+          .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kReverse));
         /*driveController.b().onTrue(hopper.roll());
         driveController.x().onTrue(hopper.idle());*/
     }
