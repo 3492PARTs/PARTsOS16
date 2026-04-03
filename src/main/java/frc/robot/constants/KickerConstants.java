@@ -34,6 +34,6 @@ public class KickerConstants {
 
     // Feedforward
     public static final double S = 0.21056;
-    public static final double V = 2; //2.5
+    public static final double V = 2.65; //2.5
     public static final double A = 0.08161;
 }

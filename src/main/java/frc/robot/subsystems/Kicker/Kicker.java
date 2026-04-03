@@ -126,7 +126,7 @@ public abstract class Kicker extends PARTsSubsystem {
         kickerPIDController.setSetpoint(rpm);
         double pidCalc = kickerPIDController.calculate(getRPM(), rpm);
         double ffCalc = kickerFeedforward.calculate((kickerPIDController.getSetpoint() * Math.PI
-                * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
+                * KickerConstants.KICKER_WHEEL_RADIUS.to(PARTsUnitType.Meter) * 2) / 60);
 
         double voltage = pidCalc + ffCalc;
 
