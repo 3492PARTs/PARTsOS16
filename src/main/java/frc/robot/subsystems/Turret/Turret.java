@@ -100,7 +100,7 @@ public abstract class Turret extends PARTsSubsystem {
 
             double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
 
-            double voltage = MathUtil.clamp(pidCalc /* + ffCalc */, -1, 1); 
+            double voltage = MathUtil.clamp(pidCalc /* + ffCalc */, -9, 9); 
             setVoltage(voltage);
         } else {
             double voltage = 0;
