@@ -42,7 +42,7 @@ public class TurretConstants {
      * PARTsThroughBoreEncoder} takes in the angle in degrees, it's still good
      * practice to use units.
      */
-    public static final PARTsUnit TURRET_OFFSET_ANGLE = new PARTsUnit(0, PARTsUnitType.Angle);
+    public static final PARTsUnit TURRET_OFFSET_ANGLE = new PARTsUnit(118.9, PARTsUnitType.Angle);
 
     // PID Controller
     public static final double P = 0.3;
