@@ -9,8 +9,8 @@ public class TurretConstants {
         IDLE(0),
         TRACKING_HUB(-1),
         TRACKING_CORNER(-1),
-        LEFT_CORNER(45),
-        RIGHT_CORNER(-45);
+        LEFT_CORNER(40),
+        RIGHT_CORNER(-40);
 
         private final double angle;
 
