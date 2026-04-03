@@ -1,5 +1,8 @@
 package frc.robot.constants;
 
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+
 public class TurretConstants {
     public enum TurretState {
         DISABLED(0),
@@ -22,8 +25,24 @@ public class TurretConstants {
 
     public static final int TURRET_MOTOR_ID = 39;
     public static final String CAN_BUS_NAME = "bye";
-    /** The turret gear ratio. The total ratio is {@code 40/1}. */
-    public static final double TURRET_GEAR_RATIO = (200.0 / 1.0) * (1.0 / 20.0) * (4.0 / 1.0);
+    /** The turret gear ratio. The total ratio is {@code 10/1}. */
+    public static final double TURRET_GEAR_RATIO = (200.0 / 20.0);
+
+    // Abs. Encoder
+
+    /**
+     * The digital I/O Port of the Through Bore Encoder used for the Turret.
+     * <p/>
+     * TODO: Get proper DIO port.
+     */
+    public static final int TURRET_ENCODER_PORT = 0;
+
+    /**
+     * Even knowing that the {@link frc.robot.util.PARTsThroughBoreEncoder
+     * PARTsThroughBoreEncoder} takes in the angle in degrees, it's still good
+     * practice to use units.
+     */
+    public static final PARTsUnit TURRET_OFFSET_ANGLE = new PARTsUnit(118.9, PARTsUnitType.Angle);
 
     // PID Controller
     public static final double P = 0.3;

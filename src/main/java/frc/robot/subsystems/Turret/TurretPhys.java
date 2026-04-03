@@ -2,6 +2,8 @@ package frc.robot.subsystems.Turret;
 
 import java.util.function.Supplier;
 
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -10,15 +12,21 @@ import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.RobotContainer;
 import frc.robot.constants.TurretConstants;
 import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
+import frc.robot.util.PARTsThroughBoreEncoder;
 
 public class TurretPhys extends Turret {
+
     protected final TalonFX turretMotor;
+    protected final PARTsThroughBoreEncoder absEncoder;
 
     public TurretPhys(Supplier<Pose2d> robotPoseSupplier, PARTsDrivetrain drivetrain) {
         super(robotPoseSupplier, drivetrain);
 
         turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID, TurretConstants.CAN_BUS_NAME);
         TalonFXConfiguration config = new TalonFXConfiguration();
+
+        absEncoder = new PARTsThroughBoreEncoder(TurretConstants.TURRET_ENCODER_PORT,
+                TurretConstants.TURRET_OFFSET_ANGLE.to(PARTsUnitType.Angle));
 
         config.CurrentLimits.SupplyCurrentLimit = 30;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -40,6 +48,9 @@ public class TurretPhys extends Turret {
 
         partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(),
                 RobotContainer.debug || super.debug);
+
+        partsNT.putDouble("TurretRawAngle", absEncoder.getAbsoluteAngleDeg(), true);
+        partsNT.putDouble("TurretAccumulatedAngle", absEncoder.getAccumulatedAngle().getValue(), true);
     }
 
     @Override
@@ -59,7 +70,9 @@ public class TurretPhys extends Turret {
 
     @Override
     protected double getAngle() {
-        return turretMotor.getPosition().getValueAsDouble() * 360 / TurretConstants.TURRET_GEAR_RATIO;
+        // return turretMotor.getPosition().getValueAsDouble() * 360 /
+        // TurretConstants.TURRET_GEAR_RATIO;
+        return absEncoder.getAccumulatedAngle().getValue() / TurretConstants.TURRET_GEAR_RATIO;
     }
 
     @Override
