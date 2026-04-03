@@ -57,4 +57,6 @@ public class TurretConstants {
 
     public static final double TURRET_MAX_VELOCITY = 12000;
     public static final double TURRET_MAX_ACCELERATION = 6000;
+
+    public static final PARTsUnit TURRET_OFFSET_CENTER = new PARTsUnit(8, PARTsUnitType.Inch);
 }
