@@ -17,7 +17,7 @@ import frc.robot.util.PARTsThroughBoreEncoder;
 public class TurretPhys extends Turret {
 
     protected final TalonFX turretMotor;
-    protected final PARTsThroughBoreEncoder absEncoder;
+    //protected final PARTsThroughBoreEncoder absEncoder;
 
     public TurretPhys(Supplier<Pose2d> robotPoseSupplier, PARTsDrivetrain drivetrain) {
         super(robotPoseSupplier, drivetrain);
@@ -25,8 +25,8 @@ public class TurretPhys extends Turret {
         turretMotor = new TalonFX(TurretConstants.TURRET_MOTOR_ID, TurretConstants.CAN_BUS_NAME);
         TalonFXConfiguration config = new TalonFXConfiguration();
 
-        absEncoder = new PARTsThroughBoreEncoder(TurretConstants.TURRET_ENCODER_PORT,
-                TurretConstants.TURRET_OFFSET_ANGLE.to(PARTsUnitType.Angle));
+        /*absEncoder = new PARTsThroughBoreEncoder(TurretConstants.TURRET_ENCODER_PORT,
+                TurretConstants.TURRET_OFFSET_ANGLE.to(PARTsUnitType.Angle));*/
 
         config.CurrentLimits.SupplyCurrentLimit = 30;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -49,8 +49,8 @@ public class TurretPhys extends Turret {
         partsNT.putDouble("Output/Turret", turretMotor.getStatorCurrent().getValueAsDouble(),
                 RobotContainer.debug || super.debug);
 
-        partsNT.putDouble("TurretRawAngle", absEncoder.getAbsoluteAngleDeg(), true);
-        partsNT.putDouble("TurretAccumulatedAngle", absEncoder.getAccumulatedAngle().getValue(), true);
+        //partsNT.putDouble("TurretRawAngle", absEncoder.getAbsoluteAngleDeg(), true);
+        //partsNT.putDouble("TurretAccumulatedAngle", absEncoder.getAccumulatedAngle().getValue(), true);
     }
 
     @Override

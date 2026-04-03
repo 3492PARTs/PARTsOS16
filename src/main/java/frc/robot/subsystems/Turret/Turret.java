@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
+import frc.robot.constants.HopperConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
 import frc.robot.constants.TurretConstants.TurretState;
@@ -94,14 +95,7 @@ public abstract class Turret extends PARTsSubsystem {
     @Override
     public void periodic() {
         if (RobotContainer.debug || debug) {
-            setSpeed(partsNT.getDouble("Turret Speed", true));
-            turretPIDController.setSetpoint(partsNT.getDouble("Turret Angle", true));
-            double pidCalc = turretPIDController.calculate(getAngle(), partsNT.getDouble("Turret Angle", true));
-
-            double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint());
-
-            double voltage = MathUtil.clamp(pidCalc /* + ffCalc */, -9, 9); 
-            setVoltage(voltage);
+            setVoltage(calculateVoltage(partsNT.getDouble("Turret Angle", true)));
         } else {
             double voltage = 0;
 
@@ -114,18 +108,11 @@ public abstract class Turret extends PARTsSubsystem {
                 case TRACKING_CORNER:
                     Pose2d target = getTargetPose();
                     if (isValidAngle()) {
-                        turretPIDController.setSetpoint(getAngleToTarget(target));
-                        double pidCalc = turretPIDController.calculate(getAngle(), getAngleToTarget(target));
-
                         partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
                         partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(),
                                 RobotContainer.debug || debug);
 
-                        double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint() * Math.PI / 180);
-
-                        voltage = MathUtil.clamp(pidCalc /* + ffCalc */, -9, 9); 
-
-                        setVoltage(voltage);
+                        setVoltage(calculateVoltage(getAngleToTarget(target)));
                     } else {
                         setSpeed(0);
                     }
@@ -133,18 +120,11 @@ public abstract class Turret extends PARTsSubsystem {
 
                 case LEFT_CORNER:
                 case RIGHT_CORNER:
-                    turretPIDController.setSetpoint(turretState.getAngle());
-                    double pidCalc = turretPIDController.calculate(getAngle(), turretState.getAngle());
-
                     partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
                     partsNT.putBoolean("Turret at setpoint", turretPIDController.atSetpoint(),
                             RobotContainer.debug || debug);
 
-                        double ffCalc = turretFeedforward.calculate(turretPIDController.getSetpoint() * Math.PI / 180);
-
-                        voltage = MathUtil.clamp(pidCalc /* + ffCalc */, -9, 9); 
-
-                    setVoltage(voltage);
+                    setVoltage(calculateVoltage(turretState.getAngle()));
                     break;
 
                 default:
@@ -212,7 +192,7 @@ public abstract class Turret extends PARTsSubsystem {
     }
 
     public boolean withinSetpointRange() {
-        return Math.abs(turretPIDController.getSetpoint() - getAngle()) < 5;
+        return Math.abs(turretPIDController.getSetpoint() - getAngle()) < 3;
     }
 
     public Pose2d getTargetPose() {
@@ -220,6 +200,14 @@ public abstract class Turret extends PARTsSubsystem {
                 : Field.getNearestAllianceCorner(robotPoseSupplier.get());
         fieldTarget.setPose(target);
         return target;
+    }
+
+    private double calculateVoltage(double angle) {
+        turretPIDController.setSetpoint(angle);
+        double pidCalc = turretPIDController.calculate(getAngle(), angle);
+        //double ffCalc = (turretPIDController.atSetpoint()) ? 0 : turretFeedforward.calculate(turretPIDController.getSetpoint() * Math.PI / 180);
+        double voltage = pidCalc;
+        return MathUtil.clamp(voltage, -8, 8);
     }
 
     // endregion
@@ -242,5 +230,7 @@ public abstract class Turret extends PARTsSubsystem {
         }
         return angleToTarget;
     }
+
+
     // endregion private functions
 }

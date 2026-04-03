@@ -21,7 +21,7 @@ public abstract class Intake extends PARTsSubsystem {
 
     IntakeState intakeState = IntakeState.IDLE;
 
-    protected boolean debug = true;
+    protected boolean debug = false;
     private Command toggleDebug = Commands.runOnce(() -> {
         debug = !debug;
         partsNT.putDouble("Intake Speed", 0, !RobotConstants.COMPETITION);
@@ -96,9 +96,7 @@ public abstract class Intake extends PARTsSubsystem {
                 case INTAKING:
                 case REVERSE:
                 case HOME:
-                    setIntakeSpeed(intakeState.getRPM());
-
-                    calculateRPMVoltage(intakeState.getRPM());
+                    setIntakeVoltage(calculateRPMVoltage(intakeState.getRPM()));
 
                     pivotPIDController.setGoal(intakeState.getAngle().getValue());
                     double pidCalc = pivotPIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
@@ -112,7 +110,7 @@ public abstract class Intake extends PARTsSubsystem {
                 case MANUALPIVOT:
                     break;
                 case SHOOTING:
-                    setIntakeSpeed(intakeState.getRPM());
+                    setIntakeVoltage(calculateRPMVoltage(intakeState.getRPM()));
 
                     double getGoal = pivotPIDController.getGoal().position;
                     if (getGoal == 40 && pivotPIDController.atGoal()) {

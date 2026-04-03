@@ -52,6 +52,7 @@ import frc.robot.subsystems.Shooter.ShooterSysid;
 import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.Turret.TurretPhys;
 import frc.robot.subsystems.Turret.TurretSim;
+import frc.robot.subsystems.Turret.TurretSysid;
 import frc.robot.util.Field;
 
 import org.parts3492.partslib.input.PARTsButtonBoxController;
@@ -93,6 +94,8 @@ public class RobotContainer {
     private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose(), drivetrain)
             : new TurretSim(drivetrain.supplierGetPose(), drivetrain);
 
+    //private final TurretSysid turret = new TurretSysid(drivetrain.supplierGetPose(), drivetrain);
+
     private final Shooter shooter = Robot.isReal()
             ? new ShooterPhys(drivetrain.supplierGetPose(), drivetrain, turret::getState)
             : new ShooterSim(drivetrain.supplierGetPose(), drivetrain, turret::getState);
@@ -109,8 +112,7 @@ public class RobotContainer {
     // private final PivotSysid intake = new PivotSysid(); //for 
     //private final IntakeSysid intake = new IntakeSysid();
     //private final HopperSysid hopper = new HopperSysid(); 
-    // private final TurretSysid turret = new
-    // TurretSysid(drivetrain.supplierGetPose());
+    
 
     //private final KickerSysid kicker = new KickerSysid();
 
@@ -265,16 +267,18 @@ public class RobotContainer {
     }
 
     private void configureTurretBindings() {
+        
         /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-         */
+        operatorController.a().and(operatorController.rightBumper())
+            .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        operatorController.b().and(operatorController.rightBumper())
+            .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        operatorController.x().and(operatorController.rightBumper())
+            .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        operatorController.y().and(operatorController.rightBumper())
+            .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        */
+         
     }
 
     private void configureIntakeBindings() {

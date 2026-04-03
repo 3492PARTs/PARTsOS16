@@ -44,11 +44,11 @@ public class TurretSysid extends TurretPhys {
                             log.motor("turret")
                                     .voltage(
                                             appliedVoltage.mut_replace(
-                                                    super.turretMotor.getStatorCurrent().getValueAsDouble(), Volts))
+                                                    super.turretMotor.getMotorVoltage().getValueAsDouble(), Volts))
                                     .angularPosition(pivotAngle.mut_replace(
-                                            getAngle() * Math.PI / 180, Radians))
+                                            getAngle() * (Math.PI / 180), Radians))
                                     .angularVelocity(
-                                            pivotVelocity.mut_replace(super.turretMotor.getVelocity().getValueAsDouble() * Math.PI, RadiansPerSecond));
+                                            pivotVelocity.mut_replace(super.turretMotor.getVelocity().getValueAsDouble() * (Math.PI * 2), RadiansPerSecond));
                         },
                         this));
     }
