@@ -192,7 +192,7 @@ public abstract class Turret extends PARTsSubsystem {
     }
 
     public boolean withinSetpointRange() {
-        return Math.abs(turretPIDController.getSetpoint() - getAngle()) < 3;
+        return Math.abs(turretPIDController.getSetpoint() - getAngle()) < 5;
     }
 
     public Pose2d getTargetPose() {

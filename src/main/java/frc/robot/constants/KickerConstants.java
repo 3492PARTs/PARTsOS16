@@ -30,7 +30,7 @@ public class KickerConstants {
     public static final double P = 0.005; //0.005
     public static final double I = 0;
     public static final double D = 0;
-    public static final int PID_THRESHOLD = 50;
+    public static final int PID_THRESHOLD = 25;
 
     // Feedforward
     public static final double S = 0.21056;

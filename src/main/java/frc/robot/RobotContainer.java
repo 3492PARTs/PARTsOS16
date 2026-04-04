@@ -135,8 +135,8 @@ public class RobotContainer {
         configureHopperBindings();
         configureKickerBindings();
         configureSuperstructureBindings();
-        operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
-        operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
+        //operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
+        //operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D, true);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
@@ -253,6 +253,8 @@ public class RobotContainer {
           .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kReverse));
         /*driveController.b().onTrue(hopper.roll());
         driveController.x().onTrue(hopper.idle());*/
+
+        buttonBoxController.negative2Trigger().whileTrue(hopper.reverse()).onFalse(hopper.idle());
     }
 
     private void configureKickerBindings() {
@@ -289,7 +291,8 @@ public class RobotContainer {
         buttonBoxController.enterTrigger().onTrue(intake.home());
         buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
         buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
-        buttonBoxController.escTrigger().onTrue(intake.zeroArm());
+        buttonBoxController.positive1Trigger().onTrue(intake.zeroArm());
+        buttonBoxController.negative1Trigger().onTrue(intake.oneNinetyArm());
 
          // Intake SysID
          /*
@@ -328,6 +331,8 @@ public class RobotContainer {
         autoChooser.addOption("Left Trench Auto", superstructure.trenchAuto(true));
         autoChooser.addOption("Right Trench Auto", superstructure.trenchAuto(false));
         autoChooser.addOption("Right Trench to Outpost Auto", superstructure.rightTrenchOutpostAuto());
+        autoChooser.addOption("Left Ramp To Depot Auto", superstructure.rampDepotAuto());
+        autoChooser.addOption("Right Trench to Outpost Auto Test", superstructure.rightTrenchOutpostAutoTest());
         partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);
     }
 

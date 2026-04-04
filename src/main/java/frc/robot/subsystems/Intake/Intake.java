@@ -164,6 +164,8 @@ public abstract class Intake extends PARTsSubsystem {
 
     public abstract double getPivotRotationSpeed();
 
+    public abstract Command oneNinetyArm();
+
     public abstract Command zeroArm();
 
     public Command intake() {

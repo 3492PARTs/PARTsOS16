@@ -7,8 +7,8 @@ public class IntakeConstants {
     public enum IntakeState {
         IDLE(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         DISABLED(0, new PARTsUnit(0, PARTsUnitType.Angle)),
-        INTAKING(6000, new PARTsUnit(193, PARTsUnitType.Angle)),
-        REVERSE(-6000, new PARTsUnit(193, PARTsUnitType.Angle)),
+        INTAKING(5500, new PARTsUnit(193, PARTsUnitType.Angle)),
+        REVERSE(-5500, new PARTsUnit(193, PARTsUnitType.Angle)),
         SHOOTING(0, new PARTsUnit(45, PARTsUnitType.Angle)),
         HOME(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         MANUALPIVOT(0, new PARTsUnit(0, PARTsUnitType.Angle)),
@@ -53,7 +53,7 @@ public class IntakeConstants {
     public static final double INTAKE_P = 0.0005;
     public static final double INTAKE_I = 0;
     public static final double INTAKE_D = 0;
-    public static final int INTAKE_PID_THRESHOLD = 100;
+    public static final int INTAKE_PID_THRESHOLD = 25;
 
     public static final double INTAKE_MAX_VELOCITY = 800;
     public static final double INTAKE_MAX_ACCELERATION = 1000;
