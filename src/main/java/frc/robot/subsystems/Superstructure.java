@@ -275,6 +275,22 @@ public class Superstructure extends PARTsSubsystem {
                 return PARTsCommandUtils.setCommandName("Superstructure.LeftRampToDepot", c);
         }
 
+        public Command rightTrenchOutpostAutoTest() {
+                Command c = new WaitCommand(0);
+                try {
+                        c = Commands.sequence(
+                                        Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("RightTrenchForwardToOutpost")),
+                                                        Commands.sequence(new WaitCommand(9),
+                                                                        intake.intakeShooting())));
+                } catch (FileVersionException | IOException | ParseException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                }
+                return PARTsCommandUtils.setCommandName("Superstructure.rightTrenchOutpostAutoTest", c);
+        }
+
         @Override
         public void outputTelemetry() {
         }
