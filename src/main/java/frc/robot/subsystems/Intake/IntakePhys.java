@@ -144,4 +144,9 @@ public class IntakePhys extends Intake {
             pivotPIDController.reset(getPivotRotations().to(PARTsUnitType.Angle));
         }));
     }
+
+    @Override
+    public double getPivotVoltage() {
+        return pivotMotor.getStatorCurrent().getValueAsDouble();
+    }
 }

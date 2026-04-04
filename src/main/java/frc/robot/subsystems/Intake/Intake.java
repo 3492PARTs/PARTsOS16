@@ -11,7 +11,9 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.constants.HopperConstants;
 import frc.robot.constants.IntakeConstants;
 import frc.robot.constants.IntakeConstants.IntakeState;
@@ -31,7 +33,7 @@ public abstract class Intake extends PARTsSubsystem {
     ProfiledPIDController pivotPIDController;
 
     PIDController intakePIDController;
-    SimpleMotorFeedforward intakeFeedforward;    
+    SimpleMotorFeedforward intakeFeedforward;
 
     public Intake() {
         super("Intake");
@@ -43,14 +45,16 @@ public abstract class Intake extends PARTsSubsystem {
             partsNT.putDouble("Pivot Speed", 0, !RobotConstants.COMPETITION);
         }
 
-        pivotPIDController = new ProfiledPIDController(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D,
+        pivotPIDController = new ProfiledPIDController(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I,
+                IntakeConstants.PIVOT_D,
                 new TrapezoidProfile.Constraints(IntakeConstants.INTAKE_MAX_VELOCITY,
                         IntakeConstants.INTAKE_MAX_ACCELERATION));
         pivotPIDController.setTolerance(IntakeConstants.PIVOT_PID_THRESHOLD);
 
-
-        intakePIDController = new PIDController(IntakeConstants.INTAKE_P, IntakeConstants.INTAKE_I, IntakeConstants.INTAKE_D);
-        intakeFeedforward = new SimpleMotorFeedforward(IntakeConstants.IntakeS, IntakeConstants.IntakeV, IntakeConstants.IntakeA);
+        intakePIDController = new PIDController(IntakeConstants.INTAKE_P, IntakeConstants.INTAKE_I,
+                IntakeConstants.INTAKE_D);
+        intakeFeedforward = new SimpleMotorFeedforward(IntakeConstants.IntakeS, IntakeConstants.IntakeV,
+                IntakeConstants.IntakeA);
 
         partsNT.putSmartDashboardSendable("Toggle Intake Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
@@ -84,9 +88,11 @@ public abstract class Intake extends PARTsSubsystem {
         if (RobotContainer.debug || debug) {
             setIntakeVoltage(calculateRPMVoltage(partsNT.getDouble("Intake Speed", true)));
             setPivotSpeed(partsNT.getDouble("Pivot Speed", true));
-        } 
-        
+        }
+
         else {
+            monitorArmVoltage(1);
+
             switch (intakeState) {
                 case IDLE:
                 case DISABLED:
@@ -105,7 +111,8 @@ public abstract class Intake extends PARTsSubsystem {
                     partsNT.putBoolean("At goal", pivotPIDController.atSetpoint(), !RobotConstants.COMPETITION);
                     partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), !RobotConstants.COMPETITION);
 
-                    setPivotVoltage(pivotPIDController.atGoal() ? 0: pidCalc);
+                    setPivotVoltage(pivotPIDController.atGoal() ? 0 : pidCalc);
+
                     break;
                 case MANUALPIVOT:
                     break;
@@ -117,7 +124,8 @@ public abstract class Intake extends PARTsSubsystem {
                         getGoal = intakeState.getAngle().getValue() + 30;
                     } else if (getGoal == intakeState.getAngle().getValue() + 30 && pivotPIDController.atGoal()) {
                         getGoal = intakeState.getAngle().getValue();
-                    } else if (getGoal != intakeState.getAngle().getValue() && getGoal != intakeState.getAngle().getValue() + 30) {
+                    } else if (getGoal != intakeState.getAngle().getValue()
+                            && getGoal != intakeState.getAngle().getValue() + 30) {
                         getGoal = intakeState.getAngle().getValue();
                     }
                     pivotPIDController.setGoal(getGoal);
@@ -159,6 +167,8 @@ public abstract class Intake extends PARTsSubsystem {
     public abstract PARTsUnit getPivotRotations();
 
     public abstract void setPivotVoltage(double voltage);
+
+    public abstract double getPivotVoltage();
 
     public abstract void setIntakeVoltage(double voltage);
 
@@ -223,6 +233,15 @@ public abstract class Intake extends PARTsSubsystem {
         double voltage = pidCalc + ffCalc;
 
         return voltage;
+    }
+
+    private void monitorArmVoltage(double threshold) {
+        if (getPivotVoltage() > threshold) {
+            CommandScheduler.getInstance().schedule(
+                    home().andThen(new WaitUntilCommand(() -> getPivotVoltage() > threshold)).andThen(idle())
+                            .andThen(zeroArm())
+                            .andThen(intake()).andThen(oneNinetyArm()));
+        }
     }
     // endregion
 }

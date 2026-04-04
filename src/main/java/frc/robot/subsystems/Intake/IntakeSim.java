@@ -53,4 +53,9 @@ public class IntakeSim extends Intake {
     public Command zeroArm() {
         return new WaitCommand(0);
     }
+
+    @Override
+    public double getPivotVoltage() {
+        return 0;
+    }
 }
