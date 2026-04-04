@@ -1,57 +1,59 @@
 package frc.robot.subsystems.Intake;
 
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.MutAngle;
-import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.units.measure.MutDistance;
+import edu.wpi.first.units.measure.MutLinearVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.constants.HopperConstants;
+
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 public class IntakeSysid extends IntakePhys {
+    
+     private MutVoltage appliedVoltage;
 
-    private MutVoltage appliedVoltage;
+    private MutDistance intakePosition;
 
-    private MutAngle pivotAngle;
-
-    private MutAngularVelocity pivotVelocity;
+    private MutLinearVelocity intakeVelocity;
 
     private SysIdRoutine routine;
+
 
     public IntakeSysid() {
         super();
 
         appliedVoltage = Volts.mutable(0);
 
-        pivotAngle = Units.Radian.mutable(0);
+        intakePosition = Inches.mutable(0);
 
-        pivotVelocity = Units.RadiansPerSecond.mutable(0);
+        intakeVelocity = InchesPerSecond.mutable(0);
 
+        //? The hopper roller and the intake roller are both the same, so the hopper roller is used here.
         routine = new SysIdRoutine(
-                new SysIdRoutine.Config(),
+                new SysIdRoutine.Config(), //ElevatorConstants.kSysIDConfig,
                 new SysIdRoutine.Mechanism(
-                        (voltage) -> this.setPivotVoltage(voltage.in(Volts)),
-
-                        log -> {
-                            // Record a frame for the shooter motor.
-                            log.motor("pivotarm")
-                                    .voltage(
-                                            appliedVoltage.mut_replace(
-                                                    super.pivotMotor.getMotorVoltage().getValueAsDouble(), Volts))
-                                    .angularPosition(pivotAngle.mut_replace(
-                                            -getPivotRotations().getValue(), Rotations))
-                                    .angularVelocity(
-                                            pivotVelocity.mut_replace(getPivotRotationSpeed(), RotationsPerSecond));
+                        (Voltage v) -> super.setIntakeVoltage(v.in(Volts)),
+                        (log) -> {
+                            log.motor("IntakeMotor")
+                                    .voltage(appliedVoltage.mut_replace(
+                                            super.intakeMotor.getMotorVoltage().getValueAsDouble(), Volts))
+                                    .linearPosition(intakePosition.mut_replace(
+                                            super.intakeMotor.getPosition().getValueAsDouble() * Math.PI * HopperConstants.HOPPER_ROLLER_RADIUS.to(PARTsUnitType.Inch) * 2, Inches))
+                                    .linearVelocity(intakeVelocity.mut_replace(
+                                            (super.getIntakeRPM() * Math.PI * HopperConstants.HOPPER_ROLLER_RADIUS.to(PARTsUnitType.Inch) * 2) / 60, InchesPerSecond));
                         },
                         this));
     }
 
     @Override
     public void periodic() {
-        // dummy to stop super periodic from running
+        //dummy to stop super periodic from running
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

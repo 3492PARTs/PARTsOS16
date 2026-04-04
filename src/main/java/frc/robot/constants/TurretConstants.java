@@ -45,15 +45,15 @@ public class TurretConstants {
     public static final PARTsUnit TURRET_OFFSET_ANGLE = new PARTsUnit(118.9, PARTsUnitType.Angle);
 
     // PID Controller
-    public static final double P = 0.3;
+    public static final double P = 0.1; //0.3
     public static final double I = 0;
     public static final double D = 0;
     public static final int PID_THRESHOLD = 1;
 
     // Feedforward
-    public static final double S = 0.1;
-    public static final double V = 0.1;
-    public static final double A = 0.1;
+    public static final double S = 0.58061;
+    public static final double V = 0;
+    public static final double A = 0;
 
     public static final double TURRET_MAX_VELOCITY = 12000;
     public static final double TURRET_MAX_ACCELERATION = 6000;

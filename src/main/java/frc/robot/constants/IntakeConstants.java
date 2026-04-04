@@ -7,23 +7,23 @@ public class IntakeConstants {
     public enum IntakeState {
         IDLE(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         DISABLED(0, new PARTsUnit(0, PARTsUnitType.Angle)),
-        INTAKING(1, new PARTsUnit(193, PARTsUnitType.Angle)),
-        REVERSE(-1, new PARTsUnit(193, PARTsUnitType.Angle)),
+        INTAKING(6000, new PARTsUnit(193, PARTsUnitType.Angle)),
+        REVERSE(-6000, new PARTsUnit(193, PARTsUnitType.Angle)),
         SHOOTING(0, new PARTsUnit(45, PARTsUnitType.Angle)),
         HOME(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         MANUALPIVOT(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         HOLD(0, new PARTsUnit(0, PARTsUnitType.Angle));
 
-        private double speed;
+        private double RPM;
         private PARTsUnit angle;
 
         private IntakeState(double speed, PARTsUnit angle) {
-            this.speed = speed;
+            this.RPM = speed;
             this.angle = angle;
         }
 
-        public double getSpeed() {
-            return speed;
+        public double getRPM() {
+            return RPM;
         }
 
         public PARTsUnit getAngle() {
@@ -42,12 +42,24 @@ public class IntakeConstants {
     /** The pivot gear ratio. The total is {@code 36/1}. */
     public static final double PIVOT_GEAR_RATIO = (12.0 / 1.0) * (3.0 / 1.0);
 
+    public static final double INTAKE_GEAR_RATIO = (2/1); 
+
     // PID Controller
-    public static final double P = 0.18;
-    public static final double I = 0;
-    public static final double D = 0;
-    public static final int PID_THRESHOLD = 3;
+    public static final double PIVOT_P = 0.18;
+    public static final double PIVOT_I = 0;
+    public static final double PIVOT_D = 0;
+    public static final int PIVOT_PID_THRESHOLD = 3;
+
+    public static final double INTAKE_P = 0.0005;
+    public static final double INTAKE_I = 0;
+    public static final double INTAKE_D = 0;
+    public static final int INTAKE_PID_THRESHOLD = 100;
 
     public static final double INTAKE_MAX_VELOCITY = 800;
     public static final double INTAKE_MAX_ACCELERATION = 1000;
+
+    // Intake Feedforward (Not Pivot)
+    public static final double IntakeS = 0.1077;
+    public static final double IntakeV = 1.15; // 1.1542
+    public static final double IntakeA = 0.016109;
 }

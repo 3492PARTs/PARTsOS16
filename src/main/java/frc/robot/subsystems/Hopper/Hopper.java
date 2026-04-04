@@ -78,9 +78,8 @@ public abstract class Hopper extends PARTsSubsystem {
                     setSpeed(hopperState.getSpeed());
                     break;
                 case ROLLING:
-                    setVoltage(calculateRPMVoltage(hopperState.getRPM()));
                 case REVERSE:
-                    setSpeed(hopperState.getSpeed());
+                    setVoltage(calculateRPMVoltage(hopperState.getRPM()));
 
                     /*if (timer.get() > 1.5 && hopperState == HopperState.ROLLING) {
                         timer.restart();

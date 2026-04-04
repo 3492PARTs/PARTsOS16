@@ -1,21 +1,17 @@
-package frc.robot.subsystems.Turret;
+package frc.robot.subsystems.Intake;
 
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
 
-public class TurretSysid extends TurretPhys {
+public class PivotSysid extends IntakePhys {
 
     private MutVoltage appliedVoltage;
 
@@ -24,9 +20,9 @@ public class TurretSysid extends TurretPhys {
     private MutAngularVelocity pivotVelocity;
 
     private SysIdRoutine routine;
-    
-    public TurretSysid(Supplier<Pose2d> robotPoseSupplier, PARTsDrivetrain drivetrain) {
-        super(robotPoseSupplier, drivetrain);
+
+    public PivotSysid() {
+        super();
 
         appliedVoltage = Volts.mutable(0);
 
@@ -37,20 +33,25 @@ public class TurretSysid extends TurretPhys {
         routine = new SysIdRoutine(
                 new SysIdRoutine.Config(),
                 new SysIdRoutine.Mechanism(
-                        (voltage) -> this.setVoltage(voltage.in(Volts)),
+                        (voltage) -> this.setPivotVoltage(voltage.in(Volts)),
 
                         log -> {
                             // Record a frame for the shooter motor.
-                            log.motor("turret")
+                            log.motor("pivotarm")
                                     .voltage(
                                             appliedVoltage.mut_replace(
-                                                    super.turretMotor.getMotorVoltage().getValueAsDouble(), Volts))
+                                                    super.pivotMotor.getMotorVoltage().getValueAsDouble(), Volts))
                                     .angularPosition(pivotAngle.mut_replace(
-                                            getAngle() * (Math.PI / 180), Radians))
+                                            -getPivotRotations().getValue(), Rotations))
                                     .angularVelocity(
-                                            pivotVelocity.mut_replace(super.turretMotor.getVelocity().getValueAsDouble() * (Math.PI * 2), RadiansPerSecond));
+                                            pivotVelocity.mut_replace(getPivotRotationSpeed(), RotationsPerSecond));
                         },
                         this));
+    }
+
+    @Override
+    public void periodic() {
+        // dummy to stop super periodic from running
     }
 
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {

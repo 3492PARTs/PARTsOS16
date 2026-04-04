@@ -106,10 +106,19 @@ public class IntakePhys extends Intake {
     }
 
     @Override
+    public void setIntakeVoltage(double speed) {
+        intakeMotor.setVoltage(speed);
+    }
+
+    @Override
     public double getIntakeSpeed() {
         return intakeMotor.get();
     }
 
+    @Override
+    public double getIntakeRPM() {
+        return intakeMotor.getVelocity().getValueAsDouble() * 60;
+    }
     @Override
     public double getPivotRotationSpeed() {
         return pivotMotor.getVelocity().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO;
@@ -125,7 +134,7 @@ public class IntakePhys extends Intake {
     public Command zeroArm() {
         return PARTsCommandUtils.setCommandName("Intake.zeroArm", Commands.runOnce(() -> {
             pivotMotor.getConfigurator().setPosition(new PARTsUnit(190, PARTsUnitType.Angle).to(PARTsUnitType.Rotations) * IntakeConstants.PIVOT_GEAR_RATIO);
-            intakePIDController.reset(getPivotRotations().to(PARTsUnitType.Angle));
+            pivotPIDController.reset(getPivotRotations().to(PARTsUnitType.Angle));
         }));
     }
 }
