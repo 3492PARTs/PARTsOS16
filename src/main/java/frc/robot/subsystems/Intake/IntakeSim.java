@@ -36,7 +36,7 @@ public class IntakeSim extends Intake {
     }
 
     @Override
-    public Command zeroArm() {
+    public Command oneNinetyArm() {
         return new WaitCommand(0);
     }
 
@@ -47,5 +47,10 @@ public class IntakeSim extends Intake {
 
     @Override
     public void setIntakeVoltage(double voltage) {
+    }
+
+    @Override
+    public Command zeroArm() {
+        return new WaitCommand(0);
     }
 }

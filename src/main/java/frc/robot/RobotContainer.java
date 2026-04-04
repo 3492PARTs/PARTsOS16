@@ -253,6 +253,8 @@ public class RobotContainer {
           .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kReverse));
         /*driveController.b().onTrue(hopper.roll());
         driveController.x().onTrue(hopper.idle());*/
+
+        buttonBoxController.negative2Trigger().whileTrue(hopper.reverse()).onFalse(hopper.idle());
     }
 
     private void configureKickerBindings() {
@@ -289,7 +291,8 @@ public class RobotContainer {
         buttonBoxController.enterTrigger().onTrue(intake.home());
         buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
         buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
-        buttonBoxController.escTrigger().onTrue(intake.zeroArm());
+        buttonBoxController.positive1Trigger().onTrue(intake.zeroArm());
+        buttonBoxController.negative1Trigger().onTrue(intake.oneNinetyArm());
 
          // Intake SysID
          /*

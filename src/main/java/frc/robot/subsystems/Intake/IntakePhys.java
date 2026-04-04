@@ -41,7 +41,7 @@ public class IntakePhys extends Intake {
         pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         pivotConfig.CurrentLimits.SupplyCurrentLowerTime = 0;
 
-        pivotConfig.CurrentLimits.StatorCurrentLimit = 40;
+        pivotConfig.CurrentLimits.StatorCurrentLimit = 100;
         pivotConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, IntakeConstants.CAN_BUS_NAME);
@@ -131,9 +131,16 @@ public class IntakePhys extends Intake {
     }
 
     @Override 
-    public Command zeroArm() {
+    public Command oneNinetyArm() {
         return PARTsCommandUtils.setCommandName("Intake.zeroArm", Commands.runOnce(() -> {
             pivotMotor.getConfigurator().setPosition(new PARTsUnit(190, PARTsUnitType.Angle).to(PARTsUnitType.Rotations) * IntakeConstants.PIVOT_GEAR_RATIO);
+            pivotPIDController.reset(getPivotRotations().to(PARTsUnitType.Angle));
+        }));
+    }
+
+    public Command zeroArm() {
+        return PARTsCommandUtils.setCommandName("Intake.zeroArm", Commands.runOnce(() -> {
+            pivotMotor.getConfigurator().setPosition(new PARTsUnit(0, PARTsUnitType.Angle).to(PARTsUnitType.Rotations) * IntakeConstants.PIVOT_GEAR_RATIO);
             pivotPIDController.reset(getPivotRotations().to(PARTsUnitType.Angle));
         }));
     }

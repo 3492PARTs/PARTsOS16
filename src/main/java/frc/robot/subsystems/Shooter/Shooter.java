@@ -259,7 +259,7 @@ public abstract class Shooter extends PARTsSubsystem {
      *         range.
      */
     public boolean withinSetpointRange() {
-        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 200;
+        return Math.abs(shooterPIDController.getSetpoint() - getRPM()) < 300;
     }
 
     public Command setSpeedOffset(DoubleSupplier d) {
