@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.061306867928766,
-        "y": 1.3548893512553124
+        "x": 2.628744650499286,
+        "y": 2.6570328102710414
       },
       "isLocked": false,
       "linkedName": "Outpost"
     },
     {
       "anchor": {
-        "x": 3.689714693295292,
-        "y": 2.0618544935805994
+        "x": 6.2,
+        "y": 2.4758915834522113
       },
       "prevControl": {
-        "x": 0.9307211064034298,
-        "y": 0.8460455611477797
+        "x": 3.2888017118402284,
+        "y": 2.126547788873038
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "RightRampStart"
+      "linkedName": "RightRampOutpostFinish"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 5.0,
-    "maxAcceleration": 5.0,
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0.0,
-    "rotation": 0.0
+    "rotation": -56.309932474020215
   },
   "reversed": false,
   "folder": "Right",
@@ -50,5 +50,5 @@
     "velocity": 0,
     "rotation": 0.0
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }
