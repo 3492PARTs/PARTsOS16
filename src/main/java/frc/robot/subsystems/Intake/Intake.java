@@ -113,12 +113,12 @@ public abstract class Intake extends PARTsSubsystem {
                     setIntakeVoltage(calculateRPMVoltage(intakeState.getRPM()));
 
                     double getGoal = pivotPIDController.getGoal().position;
-                    if (getGoal == 40 && pivotPIDController.atGoal()) {
-                        getGoal = 90;
-                    } else if (getGoal == 90 && pivotPIDController.atGoal()) {
-                        getGoal = 40;
-                    } else if (getGoal != 90 && getGoal != 40) {
-                        getGoal = 40;
+                    if (getGoal == intakeState.getAngle().getValue() && pivotPIDController.atGoal()) {
+                        getGoal = intakeState.getAngle().getValue() + 30;
+                    } else if (getGoal == intakeState.getAngle().getValue() + 30 && pivotPIDController.atGoal()) {
+                        getGoal = intakeState.getAngle().getValue();
+                    } else if (getGoal != intakeState.getAngle().getValue() && getGoal != intakeState.getAngle().getValue() + 30) {
+                        getGoal = intakeState.getAngle().getValue();
                     }
                     pivotPIDController.setGoal(getGoal);
                     pidCalc = pivotPIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
@@ -126,7 +126,7 @@ public abstract class Intake extends PARTsSubsystem {
 
                     partsNT.putBoolean("At goal", pivotPIDController.atSetpoint(), !RobotConstants.COMPETITION);
                     partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), !RobotConstants.COMPETITION);
-                    partsNT.putDouble("Pivot Goal", getGoal, !RobotConstants.COMPETITION);
+                    partsNT.putDouble("Pivot Goal", intakeState.getAngle().getValue(), !RobotConstants.COMPETITION);
 
                     setPivotVoltage(pidCalc);
                     break;

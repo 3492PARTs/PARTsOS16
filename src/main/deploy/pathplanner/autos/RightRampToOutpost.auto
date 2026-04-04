@@ -9,6 +9,12 @@
           "data": {
             "pathName": "RightRampToOutpost"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "OutpostToRightRamp"
+          }
         }
       ]
     }

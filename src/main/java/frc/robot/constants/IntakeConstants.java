@@ -9,7 +9,7 @@ public class IntakeConstants {
         DISABLED(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         INTAKING(5500, new PARTsUnit(193, PARTsUnitType.Angle)),
         REVERSE(-5500, new PARTsUnit(193, PARTsUnitType.Angle)),
-        SHOOTING(0, new PARTsUnit(45, PARTsUnitType.Angle)),
+        SHOOTING(0, new PARTsUnit(80, PARTsUnitType.Angle)),
         HOME(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         MANUALPIVOT(0, new PARTsUnit(0, PARTsUnitType.Angle)),
         HOLD(0, new PARTsUnit(0, PARTsUnitType.Angle));
