@@ -152,7 +152,8 @@ public class Superstructure extends PARTsSubsystem {
                                                                                                 .onlyIf(() -> {
                                                                                                         return kicker.getState() != KickerState.IDLE;
                                                                                                 }),
-                                                                                () -> turret.atSetpoint() && shooter.withinSetpointRange()))
+                                                                                () -> turret.atSetpoint() && shooter
+                                                                                                .withinSetpointRange()))
                                                                 .until(end)),
 
                                 // Make sure to cancel and reset if we're forced to end or the turret is not at
@@ -243,13 +244,17 @@ public class Superstructure extends PARTsSubsystem {
                 Command c = new WaitCommand(0);
                 try {
                         c = Commands.sequence(
-                                        Commands.parallel(
+                                        Commands.deadline(
                                                         AutoBuilder.followPath(PathPlannerPath
                                                                         .fromPathFile("RightRampToOutpost")),
+                                                        shoot(() -> false, TurretState.TRACKING_HUB),
                                                         intake.intake()),
-                                        Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
+                                        Commands.deadline(new WaitCommand(10),
+                                                        shoot(() -> false, TurretState.TRACKING_HUB),
                                                         Commands.sequence(new WaitCommand(3),
-                                                                        intake.intakeShooting())));
+                                                                        intake.intakeShooting())),
+                                        AutoBuilder.followPath(PathPlannerPath
+                                                        .fromPathFile("OutpostToRightRamp")));
                 } catch (FileVersionException | IOException | ParseException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -279,6 +284,15 @@ public class Superstructure extends PARTsSubsystem {
                 Command c = new WaitCommand(0);
                 try {
                         c = Commands.sequence(
+                                        Commands.parallel(
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("RightTrenchToCenter")),
+                                                        Commands.sequence(new WaitCommand(.5), intake.intake())),
+
+                                        AutoBuilder.followPath(PathPlannerPath
+                                                        .fromPathFile("RightCenterCollectBalls")),
+
+                                        AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightCenterToTrench1")),
                                         Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
                                                         AutoBuilder.followPath(PathPlannerPath
                                                                         .fromPathFile("RightTrenchForwardToOutpost")),
@@ -288,7 +302,7 @@ public class Superstructure extends PARTsSubsystem {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                 }
-                return PARTsCommandUtils.setCommandName("Superstructure.rightTrenchOutpostAutoTest", c);
+                return PARTsCommandUtils.setCommandName("Superstructure.rightTrenchOutpostAuto", c);
         }
 
         @Override
