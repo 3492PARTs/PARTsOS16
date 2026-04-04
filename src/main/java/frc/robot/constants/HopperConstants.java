@@ -31,7 +31,7 @@ public class HopperConstants {
     public static final double P = 0.005;
     public static final double I = 0;
     public static final double D = 0;
-    public static final int PID_THRESHOLD = 50;
+    public static final int PID_THRESHOLD = 25;
 
     public static final double S = 0.10288;
     public static final double V = 4.5;

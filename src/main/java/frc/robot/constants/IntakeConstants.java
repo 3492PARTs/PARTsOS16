@@ -53,7 +53,7 @@ public class IntakeConstants {
     public static final double INTAKE_P = 0.0005;
     public static final double INTAKE_I = 0;
     public static final double INTAKE_D = 0;
-    public static final int INTAKE_PID_THRESHOLD = 100;
+    public static final int INTAKE_PID_THRESHOLD = 25;
 
     public static final double INTAKE_MAX_VELOCITY = 800;
     public static final double INTAKE_MAX_ACCELERATION = 1000;

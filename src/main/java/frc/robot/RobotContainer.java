@@ -135,8 +135,8 @@ public class RobotContainer {
         configureHopperBindings();
         configureKickerBindings();
         configureSuperstructureBindings();
-        operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
-        operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
+        //operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
+        //operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D, true);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
@@ -328,6 +328,7 @@ public class RobotContainer {
         autoChooser.addOption("Left Trench Auto", superstructure.trenchAuto(true));
         autoChooser.addOption("Right Trench Auto", superstructure.trenchAuto(false));
         autoChooser.addOption("Right Trench to Outpost Auto", superstructure.rightTrenchOutpostAuto());
+        autoChooser.addOption("Left Ramp To Depot Auto", superstructure.rampDepotAuto());
         partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);
     }
 
