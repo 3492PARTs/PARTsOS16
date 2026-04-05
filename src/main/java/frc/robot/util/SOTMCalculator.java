@@ -54,7 +54,7 @@ public class SOTMCalculator {
         // Cut off the shooter in the deadzone.
         // ? It's a little bit lower (0.1 feet in meters) than the actual deadzone just
         // in case the robot is slightly in the deadzone, might have to be removed.
-        table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter) - (0.03), 0.0);
+        table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter) - (0.000001), 0.0);
         table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 2525.0);
         table.put(new PARTsUnit(9.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 2550.0);
         table.put(new PARTsUnit(12.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 2825.0);

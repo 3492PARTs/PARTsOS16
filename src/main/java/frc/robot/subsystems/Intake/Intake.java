@@ -90,11 +90,11 @@ public abstract class Intake extends PARTsSubsystem {
             switch (intakeState) {
                 case IDLE:
                 case DISABLED:
+                case REVERSE:
                     setIntakeSpeed(intakeState.getRPM());
                     setPivotSpeed(0);
                     break;
                 case INTAKING:
-                case REVERSE:
                 case HOME:
                     setIntakeVoltage(calculateRPMVoltage(intakeState.getRPM()));
 

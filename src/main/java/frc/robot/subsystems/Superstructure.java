@@ -249,7 +249,7 @@ public class Superstructure extends PARTsSubsystem {
                                                                         .fromPathFile("RightRampToOutpost")),
                                                         shoot(() -> false, TurretState.TRACKING_HUB),
                                                         intake.intake()),
-                                        Commands.deadline(new WaitCommand(10),
+                                        Commands.deadline(new WaitCommand(7),
                                                         shoot(() -> false, TurretState.TRACKING_HUB),
                                                         Commands.sequence(new WaitCommand(3),
                                                                         intake.intakeShooting())),
