@@ -30,10 +30,13 @@ public abstract class Intake extends PARTsSubsystem {
         partsNT.putDouble("Pivot Speed", 0, !RobotConstants.COMPETITION);
     }).ignoringDisable(true);
 
-    ProfiledPIDController pivotPIDController;
+    private ProfiledPIDController pivotPIDController;
 
-    PIDController intakePIDController;
-    SimpleMotorFeedforward intakeFeedforward;
+    private PIDController intakePIDController;
+    private SimpleMotorFeedforward intakeFeedforward;
+
+    private int voltageSpikeDebounce = 0;
+    private boolean voltageSpikeResetTry = false, voltageSpikeResetFail = false;
 
     public Intake() {
         super("Intake");
@@ -91,7 +94,7 @@ public abstract class Intake extends PARTsSubsystem {
         }
 
         else {
-            monitorArmVoltage(1);
+            monitorArmVoltage(45, 10);
 
             switch (intakeState) {
                 case IDLE:
@@ -235,13 +238,20 @@ public abstract class Intake extends PARTsSubsystem {
         return voltage;
     }
 
-    private void monitorArmVoltage(double threshold) {
-        if (getPivotVoltage() > threshold) {
-            CommandScheduler.getInstance().schedule(
-                    home().andThen(new WaitUntilCommand(() -> getPivotVoltage() > threshold)).andThen(idle())
-                            .andThen(zeroArm())
-                            .andThen(intake()).andThen(oneNinetyArm()));
-        }
+    private void monitorArmVoltage(double threshold, int loopRuns) {
+        Command c = PARTsCommandUtils.setCommandName("Intake.monitorArmVoltage", 
+        this.runOnce(() -> voltageSpikeResetTry = true).andThen(home()).andThen(new WaitUntilCommand(() -> getPivotVoltage() > threshold)).andThen(idle())
+                                .andThen(zeroArm()).andThen(this.runOnce(() -> voltageSpikeResetTry = false)).andThen(intake())
+        );
+
+
+        if (!voltageSpikeResetTry && getPivotVoltage() > threshold && !voltageSpikeResetFail) {
+            if (voltageSpikeDebounce > loopRuns)
+                CommandScheduler.getInstance().schedule(c);
+
+            voltageSpikeDebounce++;
+        } else
+            voltageSpikeDebounce = 0;
     }
     // endregion
 }
