@@ -233,7 +233,7 @@ public class LimelightVision extends PARTsSubsystem {
                                 ? Trench.getDistance(poseEstimate.pose, Field.getTag(tagId).getLocation().toPose2d())
                                 : -1,
                         !RobotConstants.COMPETITION);
-                int requiredTagCount = (megaTagMode == MegaTagMode.MEGATAG1) ? 2 : 1;
+                int requiredTagCount = (megaTagMode == MegaTagMode.MEGATAG1) ? 1 : 1;
 
                 if (poseEstimate != null && poseEstimate.tagCount >= requiredTagCount && inRadius) {
                     data = true;

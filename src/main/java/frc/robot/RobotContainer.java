@@ -135,6 +135,7 @@ public class RobotContainer {
         configureHopperBindings();
         configureKickerBindings();
         configureSuperstructureBindings();
+        configureVisionBindings();
         //operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
         //operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
 
@@ -323,6 +324,11 @@ public class RobotContainer {
         buttonBoxController.negative3Trigger().onTrue(superstructure.spew()).onFalse(superstructure.resetCommand());
 
         //buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
+    }
+
+    private void configureVisionBindings() {
+        buttonBoxController.flashTrigger().onTrue(Commands.runOnce(() -> setMegaTagMode(MegaTagMode.MEGATAG1)));
+        buttonBoxController.audioTrigger().onTrue(Commands.runOnce(() -> setMegaTagMode(MegaTagMode.MEGATAG2)));
     }
 
     public void configureAutonomousCommands() {
