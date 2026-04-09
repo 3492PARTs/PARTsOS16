@@ -13,7 +13,8 @@ public interface CameraConstants {
     public enum CameraName {
         LEFT_FRONT_CAMERA("limelight-sue"),
         LEFT_SIDE_CAMERA("limelight-frankie"),
-        RIGHT_FRONT_ANGLE_CAMERA("limelight-ben");
+        RIGHT_FRONT_ANGLE_CAMERA("limelight-ben"),
+        LEFT_FRONT_CAMERA_2("limelight-reed");
 
         private String cameraName = "";
 
@@ -56,7 +57,11 @@ public interface CameraConstants {
                             PARTsUnit.InchesToMeters.apply(14.5),
                             new Rotation3d(0, Units.degreesToRadians(26.03),
                                     -Units.degreesToRadians(45))),
-                    true)
+                    true),
+            new Camera(CameraName.LEFT_FRONT_CAMERA_2.getCameraName(),
+                    new Pose3d(.343, .21, .368, // meters
+                            new Rotation3d(0, 0, 0)),
+                    true)      
     };
 
     public static class Camera {

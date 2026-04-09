@@ -62,6 +62,7 @@ public class LimelightVision extends PARTsSubsystem {
     private int maxTagCount;
 
     private PoseEstimate poseEstimate = null;
+    private Pose2d currentPose = new Pose2d();
 
     public LimelightVision(Supplier<Pose2d> poseSupplier,
             BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
@@ -239,7 +240,9 @@ public class LimelightVision extends PARTsSubsystem {
                     data = true;
                     accepted = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
                             poseEstimate.timestampSeconds);
-
+                    if (accepted) {
+                        currentPose = poseEstimate.pose;
+                    }
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
                 }
 
@@ -295,8 +298,7 @@ public class LimelightVision extends PARTsSubsystem {
 
     public Command resetPose() {
         return PARTsCommandUtils.setCommandName("LimelightVision.resetPose", Commands.runOnce(() -> {
-            if (poseEstimate != null)
-                resetPoseConsumer.accept(poseEstimate.pose);
+            resetPoseConsumer.accept(currentPose);
         }));
     }
 }

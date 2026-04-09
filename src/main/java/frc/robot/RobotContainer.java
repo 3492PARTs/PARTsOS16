@@ -186,6 +186,8 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
 
+        driveController.b().onTrue(vision.resetPose());
+
         // driveController.x().onTrue(
         // drivetrain.targetPoseCommand(() -> Field.blueHubCenter, () ->
         // driveController.y().getAsBoolean()));
