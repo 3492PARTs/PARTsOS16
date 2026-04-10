@@ -27,6 +27,24 @@
           "data": {
             "pathName": "RightTrenchForwardToOutpost"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SweepTwoFirst"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SweepTwoSecond"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "SweepTwoThree"
+          }
         }
       ]
     }
