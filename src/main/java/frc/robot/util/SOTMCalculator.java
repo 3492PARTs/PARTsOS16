@@ -61,8 +61,8 @@ public class SOTMCalculator {
         table.put(new PARTsUnit(15.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3125.0);
         table.put(new PARTsUnit(18.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3350.0);
         table.put(new PARTsUnit(21.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3675.0);
-        table.put(new PARTsUnit(24.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3925.0);
-        table.put(new PARTsUnit(26.8125, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 4225.0);
+        table.put(new PARTsUnit(24.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3900.0);
+        table.put(new PARTsUnit(26.8125, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 4200.0);
 
         return table;
     }
