@@ -195,7 +195,7 @@ public class Superstructure extends PARTsSubsystem {
                                                                         PathPlannerPath.fromPathFile(left
                                                                                         ? "LeftTrenchToCenter"
                                                                                         : "RightTrenchToCenter")),
-                                                        Commands.sequence(new WaitCommand(.5), intake.intake())),
+                                                        Commands.sequence(new WaitCommand(.3), intake.intake())),
                                         AutoBuilder.followPath(
                                                         PathPlannerPath.fromPathFile(left ? "LeftCenterCollectBalls"
                                                                         : "RightCenterCollectBalls")),
@@ -223,7 +223,7 @@ public class Superstructure extends PARTsSubsystem {
                                         Commands.parallel(
                                                         AutoBuilder.followPath(PathPlannerPath
                                                                         .fromPathFile("RightTrenchToCenter")),
-                                                        Commands.sequence(new WaitCommand(.5), intake.intake())),
+                                                        Commands.sequence(new WaitCommand(.3), intake.intake())),
 
                                         AutoBuilder.followPath(PathPlannerPath
                                                         .fromPathFile("RightCenterCollectBalls")),

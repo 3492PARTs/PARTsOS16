@@ -330,7 +330,7 @@ public interface Field {
     }
 
     public static Pose2d getNearestAllianceCorner(Pose2d current) {
-        PARTsUnit offset = new PARTsUnit(5, PARTsUnitType.Foot);
+        PARTsUnit offset = new PARTsUnit(7.5, PARTsUnitType.Foot);
         Pose2d[] alliancePoses = new Pose2d[] {
                 new Pose2d(0, offset.to(PARTsUnitType.Meter), new Rotation2d()),
                 new Pose2d(0, WIDTH - offset.to(PARTsUnitType.Meter), new Rotation2d()),
