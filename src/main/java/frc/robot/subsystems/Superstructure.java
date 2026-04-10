@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 
+import edu.wpi.first.util.function.BooleanConsumer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -36,6 +37,11 @@ public class Superstructure extends PARTsSubsystem {
         private final Turret turret;
         private final Candle candle;
         private final PARTsDrivetrain drivetrain;
+
+        boolean shoot = false;
+
+        BooleanSupplier shootBooleanSupplier = () -> shoot;
+        BooleanConsumer shootBooleanConsumer = (b1) -> shoot = b1;
 
         public Superstructure(Hopper hopper, Intake intake, Kicker kicker, Shooter shooter, Turret turret,
                         Candle candle,
@@ -203,30 +209,33 @@ public class Superstructure extends PARTsSubsystem {
                 return PARTsCommandUtils.setCommandName("Superstructure.trenchAuto", c);
         }
 
-        public Command rightTrenchOutpostAuto() {
-                Command c = new WaitCommand(0);
-                try {
-                        c = Commands.sequence(
-                                        Commands.parallel(
-                                                        AutoBuilder.followPath(PathPlannerPath
-                                                                        .fromPathFile("RightTrenchToCenter")),
-                                                        Commands.sequence(new WaitCommand(.5), intake.intake())),
-
-                                        AutoBuilder.followPath(PathPlannerPath
-                                                        .fromPathFile("RightCenterCollectBalls")),
-
-                                        AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightCenterToTrench1")),
-                                        Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
-                                                        AutoBuilder.followPath(PathPlannerPath
-                                                                        .fromPathFile("RightTrenchForwardToOutpost")),
-                                                        Commands.sequence(new WaitCommand(9),
-                                                                        intake.intakeShooting())));
-                } catch (FileVersionException | IOException | ParseException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                }
-                return PARTsCommandUtils.setCommandName("Superstructure.rightTrenchOutpostAuto", c);
-        }
+        /*
+         * public Command rightTrenchOutpostAuto() {
+         * Command c = new WaitCommand(0);
+         * try {
+         * c = Commands.sequence(
+         * Commands.parallel(
+         * AutoBuilder.followPath(PathPlannerPath
+         * .fromPathFile("RightTrenchToCenter")),
+         * Commands.sequence(new WaitCommand(.5), intake.intake())),
+         * 
+         * AutoBuilder.followPath(PathPlannerPath
+         * .fromPathFile("RightCenterCollectBalls")),
+         * 
+         * AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightCenterToTrench1")),
+         * Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
+         * AutoBuilder.followPath(PathPlannerPath
+         * .fromPathFile("RightTrenchForwardToOutpost")),
+         * Commands.sequence(new WaitCommand(9),
+         * intake.intakeShooting())));
+         * } catch (FileVersionException | IOException | ParseException e) {
+         * // TODO Auto-generated catch block
+         * e.printStackTrace();
+         * }
+         * return
+         * PARTsCommandUtils.setCommandName("Superstructure.rightTrenchOutpostAuto", c);
+         * }
+         */
 
         public Command outpostAuto() {
                 Command c = new WaitCommand(0);
@@ -239,6 +248,111 @@ public class Superstructure extends PARTsSubsystem {
                                         Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
                                                         Commands.sequence(new WaitCommand(3),
                                                                         intake.intakeShooting())));
+                } catch (FileVersionException | IOException | ParseException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                }
+                return PARTsCommandUtils.setCommandName("Superstructure.trenchAuto", c);
+        }
+
+        public Command rightTrenchOutpostAuto() {
+
+                Command c = new WaitCommand(0);
+                try {
+                        // find way to stop shooting command. needs to take in supplier that we change
+                        // to true when we are done
+
+                        c = Commands.sequence(
+                                        Commands.parallel(
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("CollectRightMiddle")),
+                                                        Commands.sequence(new WaitCommand(1), intake.intake())),
+
+                                        AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightRampToRightTrench")),
+
+                                        Commands.parallel(shoot(shootBooleanSupplier, TurretState.TRACKING_HUB),
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("RightTrenchToOutpost")),
+                                                        Commands.sequence(new WaitCommand(2.25),
+                                                                        intake.intakeShooting())),
+                                        // turn off intake shooting
+                                        intake.idle(),
+                                        Commands.runOnce(() -> shootBooleanConsumer.accept(true), this),
+                                        AutoBuilder.followPath(PathPlannerPath.fromPathFile("OutpostToRightTrench")),
+
+                                        Commands.parallel(
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("CollectRightMiddle")),
+                                                        Commands.sequence(new WaitCommand(1)), intake.intake()),
+
+                                        AutoBuilder.followPath(PathPlannerPath.fromPathFile("RightRampToRightTrench")),
+                                        // intake off
+                                        intake.idle());
+
+                } catch (FileVersionException | IOException | ParseException e) {
+                        e.printStackTrace();
+                }
+                return PARTsCommandUtils.setCommandName("Superstructure.trenchAuto", c);
+        }
+
+        public Command leftTrenchAuto() {
+
+                Command c = new WaitCommand(0);
+                try {
+                        c = Commands.sequence(
+                                        Commands.parallel(
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("CollectLeftMiddle"))),
+                                        Commands.sequence(new WaitCommand(.7), intake.intake()),
+
+                                        Commands.parallel(shoot(shootBooleanSupplier, TurretState.TRACKING_HUB),
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("LeftRampToLeftTrench")),
+                                                        Commands.sequence(new WaitCommand(.2),
+                                                                        intake.intakeShooting())),
+
+                                        intake.intake(),
+                                        Commands.runOnce(() -> shootBooleanConsumer.accept(true), this),
+
+                                        AutoBuilder.followPath(
+                                                        PathPlannerPath.fromPathFile("CollectLeftMiddleAfterShoot")),
+
+                                        Commands.parallel(shoot(shootBooleanSupplier, TurretState.TRACKING_HUB),
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("LeftRampToLeftTrench")),
+                                                        Commands.sequence(new WaitCommand(.2), intake.intakeShooting()))
+
+                        );
+                } catch (FileVersionException | IOException | ParseException e) {
+                        e.printStackTrace();
+                }
+                return PARTsCommandUtils.setCommandName("Superstructure.trenchAuto", c);
+        }
+
+                public Command strategicRightTrenchAuto() {
+                Command c = new WaitCommand(0);
+                try {
+                        c = Commands.sequence(
+                                        Commands.parallel(shoot(shootBooleanSupplier, TurretState.TRACKING_HUB),
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("RampShoot")),
+                                                        intake.intakeShooting()),
+
+                                        Commands.runOnce(() -> shootBooleanConsumer.accept(true), this),
+
+                                        new WaitCommand(7),
+                                        /* insert however many seconds needed to wait for alliance team to do trench auto */
+
+                                        Commands.parallel(
+                                                AutoBuilder.followPath(PathPlannerPath
+                                                        .fromPathFile("RampToCollectRightMiddle")),
+                                                Commands.sequence(new WaitCommand(1), intake.intake())),
+
+                                        Commands.parallel(Commands.parallel(shoot(shootBooleanSupplier, TurretState.TRACKING_HUB),
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("RightRampToRightTrench")),
+                                                        Commands.sequence(new WaitCommand(.2), intake.intakeShooting())))
+                                );
                 } catch (FileVersionException | IOException | ParseException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();

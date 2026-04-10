@@ -1,0 +1,91 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.336024096385542,
+        "y": 0.6474096385542167
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.316017533956923,
+        "y": 0.6241940835613438
+      },
+      "isLocked": false,
+      "linkedName": "RightTrenchStart"
+    },
+    {
+      "anchor": {
+        "x": 7.7265763195435095,
+        "y": 1.7901426533523535
+      },
+      "prevControl": {
+        "x": 7.070946323531684,
+        "y": 0.43135381801302763
+      },
+      "nextControl": {
+        "x": 8.252926190485738,
+        "y": 2.8809992835692793
+      },
+      "isLocked": false,
+      "linkedName": "RightMiddle"
+    },
+    {
+      "anchor": {
+        "x": 6.75,
+        "y": 3.875
+      },
+      "prevControl": {
+        "x": 7.519549329722313,
+        "y": 3.9943184320223253
+      },
+      "nextControl": {
+        "x": 5.9743548738290535,
+        "y": 3.7547364162556396
+      },
+      "isLocked": false,
+      "linkedName": "CollectRightMiddle"
+    },
+    {
+      "anchor": {
+        "x": 5.8892867332382295,
+        "y": 1.6866333808844511
+      },
+      "prevControl": {
+        "x": 5.678151924538104,
+        "y": 2.7887644418278037
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "CollectInFrontRightRamp"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.0,
+      "rotationDegrees": -90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 4.0,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "Right",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": false
+}
