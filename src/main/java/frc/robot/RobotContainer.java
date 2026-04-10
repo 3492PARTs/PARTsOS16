@@ -94,7 +94,8 @@ public class RobotContainer {
     private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose(), drivetrain)
             : new TurretSim(drivetrain.supplierGetPose(), drivetrain);
 
-    //private final TurretSysid turret = new TurretSysid(drivetrain.supplierGetPose(), drivetrain);
+    // private final TurretSysid turret = new
+    // TurretSysid(drivetrain.supplierGetPose(), drivetrain);
 
     private final Shooter shooter = Robot.isReal()
             ? new ShooterPhys(drivetrain.supplierGetPose(), drivetrain, turret::getState)
@@ -106,15 +107,16 @@ public class RobotContainer {
 
     private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
 
-     /*private final ShooterSysid shooter = new
-     ShooterSysid(drivetrain.supplierGetPose(), drivetrain, turret::getState);*/ // for sysid
+    /*
+     * private final ShooterSysid shooter = new
+     * ShooterSysid(drivetrain.supplierGetPose(), drivetrain, turret::getState);
+     */ // for sysid
 
-    // private final PivotSysid intake = new PivotSysid(); //for 
-    //private final IntakeSysid intake = new IntakeSysid();
-    //private final HopperSysid hopper = new HopperSysid(); 
-    
+    // private final PivotSysid intake = new PivotSysid(); //for
+    // private final IntakeSysid intake = new IntakeSysid();
+    // private final HopperSysid hopper = new HopperSysid();
 
-    //private final KickerSysid kicker = new KickerSysid();
+    // private final KickerSysid kicker = new KickerSysid();
 
     private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle,
             drivetrain);
@@ -136,8 +138,10 @@ public class RobotContainer {
         configureKickerBindings();
         configureSuperstructureBindings();
         configureVisionBindings();
-        //operatorController.povUp().onTrue(Commands.runOnce(() -> SignalLogger.start()));
-        //operatorController.povDown().onTrue(Commands.runOnce(() -> SignalLogger.stop()));
+        // operatorController.povUp().onTrue(Commands.runOnce(() ->
+        // SignalLogger.start()));
+        // operatorController.povDown().onTrue(Commands.runOnce(() ->
+        // SignalLogger.stop()));
 
         partsNT.putSmartDashboardSendable("field", Field.FIELD2D, true);
         hubFieldObject2d = Field.FIELD2D.getObject("hub");
@@ -178,7 +182,7 @@ public class RobotContainer {
         // driveController.a().whileTrue(drivetrain.commandBrake());
 
         Pose2d outpost = new Pose2d(0.690, .636, new Rotation2d());
-        //driveController.a().whileTrue(drivetrain.commandPathFindToPose(outpost));
+        // driveController.a().whileTrue(drivetrain.commandPathFindToPose(outpost));
 
         // manual module direction control
         // driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
@@ -225,65 +229,73 @@ public class RobotContainer {
     }
 
     private void configureShooterBindings() {
-        
-          /*operatorController.a().and(operatorController.rightBumper())
-          .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-          operatorController.b().and(operatorController.rightBumper())
-          .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-          operatorController.x().and(operatorController.rightBumper())
-          .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-          operatorController.y().and(operatorController.rightBumper())
-          .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
-         
-        //buttonBoxController.lightonTrigger().whileTrue(shooter.setSpeedOffset(100)).onFalse(shooter.setSpeedOffset(0));
-        //buttonBoxController.talkonTrigger().whileTrue(shooter.setSpeedOffset(200)).onFalse(shooter.setSpeedOffset(0));
-        buttonBoxController.absClickTrigger().onTrue(shooter.setSpeedOffset(()-> 0));
-        buttonBoxController.absClockwiseTrigger().onTrue(shooter.setSpeedOffset(()-> shooter.getSpeedOffset() + 100));
-        buttonBoxController.absCounterClockwiseTrigger().onTrue(shooter.setSpeedOffset(()-> shooter.getSpeedOffset() - 100));
+
+        /*
+         * operatorController.a().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         * operatorController.b().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         * operatorController.x().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * operatorController.y().and(operatorController.rightBumper())
+         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         */
+
+        // buttonBoxController.lightonTrigger().whileTrue(shooter.setSpeedOffset(100)).onFalse(shooter.setSpeedOffset(0));
+        // buttonBoxController.talkonTrigger().whileTrue(shooter.setSpeedOffset(200)).onFalse(shooter.setSpeedOffset(0));
+        buttonBoxController.absClickTrigger().onTrue(shooter.setSpeedOffset(() -> 0));
+        buttonBoxController.absClockwiseTrigger().onTrue(shooter.setSpeedOffset(() -> shooter.getSpeedOffset() + 100));
+        buttonBoxController.absCounterClockwiseTrigger()
+                .onTrue(shooter.setSpeedOffset(() -> shooter.getSpeedOffset() - 100));
     }
 
     private void configureCandleBindings() {
     }
 
     private void configureHopperBindings() {
-        /* operatorController.a().and(operatorController.rightBumper())
-          .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-          operatorController.b().and(operatorController.rightBumper())
-          .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-          operatorController.x().and(operatorController.rightBumper())
-          .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kForward));
-          operatorController.y().and(operatorController.rightBumper())
-          .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        /*driveController.b().onTrue(hopper.roll());
-        driveController.x().onTrue(hopper.idle());*/
+        /*
+         * operatorController.a().and(operatorController.rightBumper())
+         * .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         * operatorController.b().and(operatorController.rightBumper())
+         * .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         * operatorController.x().and(operatorController.rightBumper())
+         * .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * operatorController.y().and(operatorController.rightBumper())
+         * .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         * /*driveController.b().onTrue(hopper.roll());
+         * driveController.x().onTrue(hopper.idle());
+         */
 
-        buttonBoxController.negative2Trigger().whileTrue(hopper.reverse()).onFalse(hopper.idle());
+        buttonBoxController.negative2Trigger().whileTrue(Commands.parallel(hopper.reverse(), kicker.reverse()))
+                .onFalse(Commands.parallel(hopper.idle(), kicker.idle()));
     }
 
     private void configureKickerBindings() {
-        /*operatorController.a().and(operatorController.rightBumper())
-          .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-          operatorController.b().and(operatorController.rightBumper())
-          .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-          operatorController.x().and(operatorController.rightBumper())
-          .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kForward));
-          operatorController.y().and(operatorController.rightBumper())
-          .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
+        /*
+         * operatorController.a().and(operatorController.rightBumper())
+         * .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         * operatorController.b().and(operatorController.rightBumper())
+         * .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         * operatorController.x().and(operatorController.rightBumper())
+         * .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * operatorController.y().and(operatorController.rightBumper())
+         * .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         */
     }
 
     private void configureTurretBindings() {
-        
+
         /*
-        operatorController.a().and(operatorController.rightBumper())
-            .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        operatorController.b().and(operatorController.rightBumper())
-            .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        operatorController.x().and(operatorController.rightBumper())
-            .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        operatorController.y().and(operatorController.rightBumper())
-            .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-        */
-         
+         * operatorController.a().and(operatorController.rightBumper())
+         * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         * operatorController.b().and(operatorController.rightBumper())
+         * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         * operatorController.x().and(operatorController.rightBumper())
+         * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * operatorController.y().and(operatorController.rightBumper())
+         * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         */
+
     }
 
     private void configureIntakeBindings() {
@@ -297,18 +309,17 @@ public class RobotContainer {
         buttonBoxController.positive1Trigger().onTrue(intake.zeroArm());
         buttonBoxController.negative1Trigger().onTrue(intake.oneNinetyArm());
 
-         // Intake SysID
-         /*
-         operatorController.a().and(operatorController.rightBumper())
-          .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-          operatorController.b().and(operatorController.rightBumper())
-          .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-          operatorController.x().and(operatorController.rightBumper())
-          .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
-          operatorController.y().and(operatorController.rightBumper())
-          .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-          */
-         
+        // Intake SysID
+        /*
+         * operatorController.a().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+         * operatorController.b().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+         * operatorController.x().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+         * operatorController.y().and(operatorController.rightBumper())
+         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+         */
 
     }
 
@@ -325,7 +336,7 @@ public class RobotContainer {
                 .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
         buttonBoxController.negative3Trigger().onTrue(superstructure.spew()).onFalse(superstructure.resetCommand());
 
-        //buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
+        // buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
     }
 
     private void configureVisionBindings() {

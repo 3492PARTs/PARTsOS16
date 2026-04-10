@@ -75,7 +75,8 @@ public class Superstructure extends PARTsSubsystem {
                                                                                 .getState() != HopperState.REVERSE
                                                                                 && hopper.getState() != HopperState.ROLLING),
                                                                                 hopper.idle().onlyIf(() -> hopper
-                                                                                                .getState() != HopperState.IDLE),
+                                                                                                .getState() != HopperState.IDLE && hopper
+                                                                                                .getState() != HopperState.REVERSE),
                                                                                 kicker::withinSetpointRange),
 
                                                                 // Spin up the shooter if the turret is at a valid
@@ -96,13 +97,13 @@ public class Superstructure extends PARTsSubsystem {
                                                                                                 candle.commandAddState(
                                                                                                                 CandleState.ACTIVE_SHOOTING))
                                                                                                 .onlyIf(() -> {
-                                                                                                        return kicker.getState() != KickerState.ROLLING;
+                                                                                                        return kicker.getState() != KickerState.ROLLING && kicker.getState() != KickerState.REVERSE;
                                                                                                 }),
                                                                                 Commands.parallel(kicker.idle(),
                                                                                                 candle.commandRemoveState(
                                                                                                                 CandleState.ACTIVE_SHOOTING))
                                                                                                 .onlyIf(() -> {
-                                                                                                        return kicker.getState() != KickerState.IDLE;
+                                                                                                        return kicker.getState() != KickerState.IDLE && kicker.getState() != KickerState.REVERSE;
                                                                                                 }),
                                                                                 () -> shooter.withinSetpointRange() &&
                                                                                                 (shooter.getSetpoint()

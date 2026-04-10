@@ -7,7 +7,8 @@ public class KickerConstants {
     public enum KickerState {
         IDLE(0),
         DISABLED(0),
-        ROLLING(1000);
+        ROLLING(1000),
+        REVERSE(-1000);
 
         private final double RPM;
 
