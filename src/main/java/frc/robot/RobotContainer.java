@@ -352,6 +352,8 @@ public class RobotContainer {
         autoChooser.addOption("Right Trench to Outpost Auto", superstructure.rightTrenchOutpostAuto());
         autoChooser.addOption("Left Ramp To Depot Auto", superstructure.rampDepotAuto());
         autoChooser.addOption("Right Trench to Outpost Auto Test", superstructure.rightTrenchOutpostAutoTest());
+        autoChooser.addOption("Shoot Only", superstructure.shoot(() -> false, TurretState.TRACKING_HUB));
+        autoChooser.addOption("Roboteer", superstructure.roboteerAuto());
         partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);
     }
 

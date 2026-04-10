@@ -306,6 +306,19 @@ public class Superstructure extends PARTsSubsystem {
                 return PARTsCommandUtils.setCommandName("Superstructure.rightTrenchOutpostAuto", c);
         }
 
+        public Command roboteerAuto() {
+                Command c = new WaitCommand(0);
+                try {
+                        c = Commands.sequence(Commands.deadline(new WaitCommand(15), shoot(() -> false, TurretState.TRACKING_HUB)),
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("roboteer")));
+                } catch (FileVersionException | IOException | ParseException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                }
+                return PARTsCommandUtils.setCommandName("Superstructure.LeftRampToDepot", c);
+        }
+
         @Override
         public void outputTelemetry() {
         }
