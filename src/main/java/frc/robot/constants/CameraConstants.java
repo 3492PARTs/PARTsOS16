@@ -11,7 +11,7 @@ import edu.wpi.first.math.util.Units;
 /** This interface stores information about each camera. */
 public interface CameraConstants {
     public enum CameraName {
-        LEFT_FRONT_CAMERA("limelight-sue"),
+        LEFT_FRONT_CAMERA("limelight-johnny"),
         LEFT_SIDE_CAMERA("limelight-frankie"),
         RIGHT_FRONT_ANGLE_CAMERA("limelight-ben"),
         LEFT_FRONT_CAMERA_2("limelight-reed");
@@ -46,19 +46,19 @@ public interface CameraConstants {
             new Camera(CameraName.LEFT_FRONT_CAMERA.getCameraName(),
                     new Pose3d(.343, .1905, .22225, // meters
                             new Rotation3d(0, Units.degreesToRadians(15), 0)),
-                    true),
+                    false),
             new Camera(CameraName.LEFT_SIDE_CAMERA.getCameraName(),
                     new Pose3d(.22225, .3302, .22225, // meters
                             new Rotation3d(0, Units.degreesToRadians(15),
                                     Units.degreesToRadians(90))),
-                    true),
+                    false),
             new Camera(CameraName.RIGHT_FRONT_ANGLE_CAMERA.getCameraName(),
-                    new Pose3d(PARTsUnit.InchesToMeters.apply(11.75), -PARTsUnit.InchesToMeters.apply(10.5),
-                            PARTsUnit.InchesToMeters.apply(14.5),
-                            new Rotation3d(0, Units.degreesToRadians(26.03),
-                                    -Units.degreesToRadians(45))),
+                    new Pose3d(PARTsUnit.InchesToMeters.apply(8.75), -PARTsUnit.InchesToMeters.apply(8.2),
+                            PARTsUnit.InchesToMeters.apply(14.75),
+                            new Rotation3d(0, 0,
+                                    0)),
                     true),
-            new Camera(CameraName.LEFT_FRONT_CAMERA_2.getCameraName(),
+            new Camera(CameraName.LEFT_FRONT_CAMERA.getCameraName(),
                     new Pose3d(.343, .21, .368, // meters
                             new Rotation3d(0, 0, 0)),
                     true)      
