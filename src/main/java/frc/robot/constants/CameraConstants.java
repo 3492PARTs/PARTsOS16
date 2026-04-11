@@ -61,7 +61,7 @@ public interface CameraConstants {
             new Camera(CameraName.LEFT_FRONT_CAMERA_2.getCameraName(),
                     new Pose3d(.343, .21, .368, // meters
                             new Rotation3d(0, 0, 0)),
-                    false)      
+                    true)      
     };
 
     public static class Camera {
