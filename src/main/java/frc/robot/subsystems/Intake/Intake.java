@@ -31,7 +31,7 @@ public abstract class Intake extends PARTsSubsystem {
     ProfiledPIDController pivotPIDController;
 
     PIDController intakePIDController;
-    SimpleMotorFeedforward intakeFeedforward;    
+    SimpleMotorFeedforward intakeFeedforward;
 
     public Intake() {
         super("Intake");
@@ -43,14 +43,16 @@ public abstract class Intake extends PARTsSubsystem {
             partsNT.putDouble("Pivot Speed", 0, !RobotConstants.COMPETITION);
         }
 
-        pivotPIDController = new ProfiledPIDController(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I, IntakeConstants.PIVOT_D,
+        pivotPIDController = new ProfiledPIDController(IntakeConstants.PIVOT_P, IntakeConstants.PIVOT_I,
+                IntakeConstants.PIVOT_D,
                 new TrapezoidProfile.Constraints(IntakeConstants.INTAKE_MAX_VELOCITY,
                         IntakeConstants.INTAKE_MAX_ACCELERATION));
         pivotPIDController.setTolerance(IntakeConstants.PIVOT_PID_THRESHOLD);
 
-
-        intakePIDController = new PIDController(IntakeConstants.INTAKE_P, IntakeConstants.INTAKE_I, IntakeConstants.INTAKE_D);
-        intakeFeedforward = new SimpleMotorFeedforward(IntakeConstants.IntakeS, IntakeConstants.IntakeV, IntakeConstants.IntakeA);
+        intakePIDController = new PIDController(IntakeConstants.INTAKE_P, IntakeConstants.INTAKE_I,
+                IntakeConstants.INTAKE_D);
+        intakeFeedforward = new SimpleMotorFeedforward(IntakeConstants.IntakeS, IntakeConstants.IntakeV,
+                IntakeConstants.IntakeA);
 
         partsNT.putSmartDashboardSendable("Toggle Intake Debug", toggleDebug, !RobotConstants.COMPETITION);
     }
@@ -84,19 +86,21 @@ public abstract class Intake extends PARTsSubsystem {
         if (RobotContainer.debug || debug) {
             setIntakeVoltage(calculateRPMVoltage(partsNT.getDouble("Intake Speed", true)));
             setPivotSpeed(partsNT.getDouble("Pivot Speed", true));
-        } 
-        
+        }
+
         else {
             switch (intakeState) {
                 case IDLE:
                 case DISABLED:
-                case REVERSE:
                     setIntakeSpeed(intakeState.getRPM());
                     setPivotSpeed(0);
                     break;
+                case REVERSE:
+                    setIntakeSpeed(-1);
+                    break;
                 case INTAKING:
-                case HOME:
-                    setIntakeVoltage(calculateRPMVoltage(intakeState.getRPM()));
+                    setIntakeSpeed(1);
+                    // setIntakeVoltage(calculateRPMVoltage(intakeState.getRPM()));
 
                     pivotPIDController.setGoal(intakeState.getAngle().getValue());
                     double pidCalc = pivotPIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
@@ -105,19 +109,28 @@ public abstract class Intake extends PARTsSubsystem {
                     partsNT.putBoolean("At goal", pivotPIDController.atSetpoint(), !RobotConstants.COMPETITION);
                     partsNT.putDouble("State Angle", intakeState.getAngle().getValue(), !RobotConstants.COMPETITION);
 
-                    setPivotVoltage(pivotPIDController.atGoal() ? 0: pidCalc);
+                    setPivotVoltage(pivotPIDController.atGoal() ? 0 : pidCalc);
+                    break;
+                case HOME:
+                    setIntakeSpeed(0);
+                    pivotPIDController.setGoal(intakeState.getAngle().getValue());
+                    pidCalc = pivotPIDController.calculate(getPivotRotations().to(PARTsUnitType.Angle),
+                            intakeState.getAngle().getValue());
+                    setPivotVoltage(pivotPIDController.atGoal() ? 0 : pidCalc);
                     break;
                 case MANUALPIVOT:
                     break;
                 case SHOOTING:
-                    setIntakeVoltage(calculateRPMVoltage(intakeState.getRPM()));
+                    setIntakeSpeed(.3);
+                    // setIntakeVoltage(calculateRPMVoltage(intakeState.getRPM()));
 
                     double getGoal = pivotPIDController.getGoal().position;
                     if (getGoal == intakeState.getAngle().getValue() && pivotPIDController.atGoal()) {
                         getGoal = intakeState.getAngle().getValue() + 30;
                     } else if (getGoal == intakeState.getAngle().getValue() + 30 && pivotPIDController.atGoal()) {
                         getGoal = intakeState.getAngle().getValue();
-                    } else if (getGoal != intakeState.getAngle().getValue() && getGoal != intakeState.getAngle().getValue() + 30) {
+                    } else if (getGoal != intakeState.getAngle().getValue()
+                            && getGoal != intakeState.getAngle().getValue() + 30) {
                         getGoal = intakeState.getAngle().getValue();
                     }
                     pivotPIDController.setGoal(getGoal);

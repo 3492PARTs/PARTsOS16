@@ -78,6 +78,7 @@ public abstract class Kicker extends PARTsSubsystem {
                     setSpeed(0);
                     break;
                 case ROLLING:
+                case REVERSE:
                     setVoltage(calculateRPMVoltage(kickerState.getRPM()));
                     break;
                 default:
@@ -107,14 +108,20 @@ public abstract class Kicker extends PARTsSubsystem {
     }
 
     public Command roll() {
-        return PARTsCommandUtils.setCommandName("Kicker.roll", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Kicker.roll", Commands.runOnce(() -> {
             kickerState = KickerState.ROLLING;
         }));
     }
 
     public Command idle() {
-        return PARTsCommandUtils.setCommandName("Kicker.idle", this.runOnce(() -> {
+        return PARTsCommandUtils.setCommandName("Kicker.idle", Commands.runOnce(() -> {
             kickerState = KickerState.IDLE;
+        }));
+    }
+
+    public Command reverse() {
+        return PARTsCommandUtils.setCommandName("Kicker.reverse", Commands.runOnce(() -> {
+            kickerState = KickerState.REVERSE;
         }));
     }
     

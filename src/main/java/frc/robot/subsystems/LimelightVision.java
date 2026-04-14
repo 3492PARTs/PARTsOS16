@@ -62,6 +62,8 @@ public class LimelightVision extends PARTsSubsystem {
     private int maxTagCount;
 
     private PoseEstimate poseEstimate = null;
+    private Pose2d currentPose = new Pose2d();
+    private int minMT1Count = 2;
 
     public LimelightVision(Supplier<Pose2d> poseSupplier,
             BiFunction<Pose2d, Double, Boolean> addVisionMeasurementBiFunction,
@@ -94,6 +96,8 @@ public class LimelightVision extends PARTsSubsystem {
                 !RobotConstants.COMPETITION);
         super.partsNT.putSmartDashboardSendable("Set MT-2", commandMegaTagMode(MegaTagMode.MEGATAG2),
                 !RobotConstants.COMPETITION);
+        super.partsNT.putSmartDashboardSendable("Set Minimum Tag Count 1", setMinMT1Count(1), true);
+        super.partsNT.putSmartDashboardSendable("Set Minimum Tag Count 2", setMinMT1Count(2), true);
     }
 
     public void setMegaTagMode(MegaTagMode mode) {
@@ -233,13 +237,15 @@ public class LimelightVision extends PARTsSubsystem {
                                 ? Trench.getDistance(poseEstimate.pose, Field.getTag(tagId).getLocation().toPose2d())
                                 : -1,
                         !RobotConstants.COMPETITION);
-                int requiredTagCount = (megaTagMode == MegaTagMode.MEGATAG1) ? 2 : 1;
+                int requiredTagCount = (megaTagMode == MegaTagMode.MEGATAG1) ? minMT1Count : 1;
 
                 if (poseEstimate != null && poseEstimate.tagCount >= requiredTagCount && inRadius) {
                     data = true;
                     accepted = addVisionMeasurementBiFunction.apply(poseEstimate.pose,
                             poseEstimate.timestampSeconds);
-
+                    if (accepted) {
+                        currentPose = poseEstimate.pose;
+                    }
                     maxTagCount = Math.max(maxTagCount, poseEstimate.tagCount);
                 }
 
@@ -295,8 +301,12 @@ public class LimelightVision extends PARTsSubsystem {
 
     public Command resetPose() {
         return PARTsCommandUtils.setCommandName("LimelightVision.resetPose", Commands.runOnce(() -> {
-            if (poseEstimate != null)
-                resetPoseConsumer.accept(poseEstimate.pose);
+            resetPoseConsumer.accept(currentPose);
         }));
+    }
+
+    public Command setMinMT1Count(int min) {
+        return PARTsCommandUtils.setCommandName("LimelightVision.setMinMT1Count",
+                Commands.runOnce(() -> minMT1Count = min).ignoringDisable(true));
     }
 }

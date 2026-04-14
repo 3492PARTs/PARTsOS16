@@ -75,7 +75,8 @@ public class Superstructure extends PARTsSubsystem {
                                                                                 .getState() != HopperState.REVERSE
                                                                                 && hopper.getState() != HopperState.ROLLING),
                                                                                 hopper.idle().onlyIf(() -> hopper
-                                                                                                .getState() != HopperState.IDLE),
+                                                                                                .getState() != HopperState.IDLE && hopper
+                                                                                                .getState() != HopperState.REVERSE),
                                                                                 kicker::withinSetpointRange),
 
                                                                 // Spin up the shooter if the turret is at a valid
@@ -96,13 +97,13 @@ public class Superstructure extends PARTsSubsystem {
                                                                                                 candle.commandAddState(
                                                                                                                 CandleState.ACTIVE_SHOOTING))
                                                                                                 .onlyIf(() -> {
-                                                                                                        return kicker.getState() != KickerState.ROLLING;
+                                                                                                        return kicker.getState() != KickerState.ROLLING && kicker.getState() != KickerState.REVERSE;
                                                                                                 }),
                                                                                 Commands.parallel(kicker.idle(),
                                                                                                 candle.commandRemoveState(
                                                                                                                 CandleState.ACTIVE_SHOOTING))
                                                                                                 .onlyIf(() -> {
-                                                                                                        return kicker.getState() != KickerState.IDLE;
+                                                                                                        return kicker.getState() != KickerState.IDLE && kicker.getState() != KickerState.REVERSE;
                                                                                                 }),
                                                                                 () -> shooter.withinSetpointRange() &&
                                                                                                 (shooter.getSetpoint()
@@ -194,7 +195,7 @@ public class Superstructure extends PARTsSubsystem {
                                                                         PathPlannerPath.fromPathFile(left
                                                                                         ? "LeftTrenchToCenter"
                                                                                         : "RightTrenchToCenter")),
-                                                        Commands.sequence(new WaitCommand(.5), intake.intake())),
+                                                        Commands.sequence(new WaitCommand(.3), intake.intake())),
                                         AutoBuilder.followPath(
                                                         PathPlannerPath.fromPathFile(left ? "LeftCenterCollectBalls"
                                                                         : "RightCenterCollectBalls")),
@@ -222,7 +223,7 @@ public class Superstructure extends PARTsSubsystem {
                                         Commands.parallel(
                                                         AutoBuilder.followPath(PathPlannerPath
                                                                         .fromPathFile("RightTrenchToCenter")),
-                                                        Commands.sequence(new WaitCommand(.5), intake.intake())),
+                                                        Commands.sequence(new WaitCommand(.3), intake.intake())),
 
                                         AutoBuilder.followPath(PathPlannerPath
                                                         .fromPathFile("RightCenterCollectBalls")),
@@ -231,7 +232,7 @@ public class Superstructure extends PARTsSubsystem {
                                         Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
                                                         AutoBuilder.followPath(PathPlannerPath
                                                                         .fromPathFile("RightTrenchForwardToOutpost")),
-                                                        Commands.sequence(new WaitCommand(9),
+                                                        Commands.sequence(new WaitCommand(7),
                                                                         intake.intakeShooting())));
                 } catch (FileVersionException | IOException | ParseException e) {
                         // TODO Auto-generated catch block
@@ -303,6 +304,19 @@ public class Superstructure extends PARTsSubsystem {
                         e.printStackTrace();
                 }
                 return PARTsCommandUtils.setCommandName("Superstructure.rightTrenchOutpostAuto", c);
+        }
+
+        public Command roboteerAuto() {
+                Command c = new WaitCommand(0);
+                try {
+                        c = Commands.sequence(Commands.deadline(new WaitCommand(15), shoot(() -> false, TurretState.TRACKING_HUB)),
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("roboteer")));
+                } catch (FileVersionException | IOException | ParseException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                }
+                return PARTsCommandUtils.setCommandName("Superstructure.LeftRampToDepot", c);
         }
 
         @Override

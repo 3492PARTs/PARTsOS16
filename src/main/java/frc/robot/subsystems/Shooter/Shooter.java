@@ -85,6 +85,7 @@ public abstract class Shooter extends PARTsSubsystem {
         partsNT.putBoolean("At Setpoint", shooterPIDController.atSetpoint(), true);
         partsNT.putDouble("Current Error", shooterPIDController.getError(), RobotContainer.debug || debug);
         partsNT.putBoolean("Shooter Debug Active", debug, !RobotConstants.COMPETITION);
+        partsNT.putDouble("Offset", offset, true);
     }
 
     @Override
@@ -131,7 +132,7 @@ public abstract class Shooter extends PARTsSubsystem {
             }
 
             if (turretStateSupplier.get() == TurretState.TRACKING_CORNER) {
-                shooterRPM += 400;
+                shooterRPM += 300;
             }
 
             shooterRPM += offset;

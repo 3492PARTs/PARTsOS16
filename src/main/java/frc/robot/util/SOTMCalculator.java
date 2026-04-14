@@ -57,12 +57,12 @@ public class SOTMCalculator {
         table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter) - (0.000001), 0.0);
         table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 2525.0);
         table.put(new PARTsUnit(9.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 2550.0);
-        table.put(new PARTsUnit(12.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 2825.0);
+        table.put(new PARTsUnit(12.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 2925.0);
         table.put(new PARTsUnit(15.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3125.0);
-        table.put(new PARTsUnit(18.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3400.0);
-        table.put(new PARTsUnit(21.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3700.0);
-        table.put(new PARTsUnit(24.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3950.0);
-        table.put(new PARTsUnit(26.8125, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 4250.0);
+        table.put(new PARTsUnit(18.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3350.0);
+        table.put(new PARTsUnit(21.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3675.0);
+        table.put(new PARTsUnit(24.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 3875.0);
+        table.put(new PARTsUnit(26.8125, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 4175.0);
 
         return table;
     }
@@ -79,7 +79,7 @@ public class SOTMCalculator {
         InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
 
         // 0 Little less than deadzone to make sure it's set to zero like it's supposed to be.
-        table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter) - (0.03), 0.0);
+        table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter) - (0.000001), 0.0);
         table.put(new PARTsUnit(7.6, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 0.90);
         table.put(new PARTsUnit(9.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 0.91);
         table.put(new PARTsUnit(12.4375, PARTsUnitType.Foot).to(PARTsUnitType.Meter) - TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 1.03);
