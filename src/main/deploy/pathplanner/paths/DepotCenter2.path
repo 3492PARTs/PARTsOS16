@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.401590361445783,
-        "y": 0.669265060240964
+        "x": 0.45,
+        "y": 5.943452211126962
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.106313253012048,
-        "y": 0.669265060240964
+        "x": 1.45,
+        "y": 5.943452211126962
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "DepotLeftRampEnd"
     },
     {
       "anchor": {
-        "x": 6.89310843373494,
-        "y": 0.669265060240964
+        "x": 2.0,
+        "y": 5.943452211126962
       },
       "prevControl": {
-        "x": 5.527144578313254,
-        "y": 0.6474096385542166
+        "x": 1.0,
+        "y": 5.943452211126962
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Right",
+  "folder": "Left",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
