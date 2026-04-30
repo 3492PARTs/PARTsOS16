@@ -133,7 +133,7 @@ public class IntakePhys extends Intake {
     @Override 
     public Command oneNinetyArm() {
         return PARTsCommandUtils.setCommandName("Intake.zeroArm", Commands.runOnce(() -> {
-            pivotMotor.getConfigurator().setPosition(new PARTsUnit(192, PARTsUnitType.Angle).to(PARTsUnitType.Rotations) * IntakeConstants.PIVOT_GEAR_RATIO);
+            pivotMotor.getConfigurator().setPosition(new PARTsUnit(198, PARTsUnitType.Angle).to(PARTsUnitType.Rotations) * IntakeConstants.PIVOT_GEAR_RATIO);
             pivotPIDController.reset(getPivotRotations().to(PARTsUnitType.Angle));
         }));
     }
