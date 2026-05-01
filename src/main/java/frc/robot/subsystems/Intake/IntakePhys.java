@@ -22,6 +22,7 @@ import frc.robot.constants.IntakeConstants;
 public class IntakePhys extends Intake {
     protected final TalonFX intakeMotor;
     protected final TalonFX pivotMotor;
+    TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
 
     public IntakePhys() {
         super();
@@ -34,8 +35,6 @@ public class IntakePhys extends Intake {
 
         intakeConfig.CurrentLimits.StatorCurrentLimit = 60;
         intakeConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-
-        TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
 
         pivotConfig.CurrentLimits.SupplyCurrentLimit = 30;
         pivotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -91,6 +90,20 @@ public class IntakePhys extends Intake {
     }
 
     @Override
+    public void periodic() {
+        super.periodic();
+        /*if (getPivotRotations().to(PARTsUnitType.Angle) > 205) {
+            pivotConfig.CurrentLimits.StatorCurrentLimit = 40;
+            pivotMotor.getConfigurator().apply(pivotConfig);
+        }
+
+        else {
+            pivotConfig.CurrentLimits.StatorCurrentLimit = 100;
+            pivotMotor.getConfigurator().apply(pivotConfig);
+        }*/
+    }
+
+    @Override
     public void setPivotSpeed(double speed) {
         pivotMotor.set(speed);
     }
@@ -119,6 +132,7 @@ public class IntakePhys extends Intake {
     public double getIntakeRPM() {
         return intakeMotor.getVelocity().getValueAsDouble() * 60;
     }
+
     @Override
     public double getPivotRotationSpeed() {
         return pivotMotor.getVelocity().getValueAsDouble() / IntakeConstants.PIVOT_GEAR_RATIO;
@@ -130,17 +144,19 @@ public class IntakePhys extends Intake {
                 PARTsUnitType.Rotations);
     }
 
-    @Override 
+    @Override
     public Command oneNinetyArm() {
         return PARTsCommandUtils.setCommandName("Intake.zeroArm", Commands.runOnce(() -> {
-            pivotMotor.getConfigurator().setPosition(new PARTsUnit(198, PARTsUnitType.Angle).to(PARTsUnitType.Rotations) * IntakeConstants.PIVOT_GEAR_RATIO);
+            pivotMotor.getConfigurator().setPosition(new PARTsUnit(198, PARTsUnitType.Angle).to(PARTsUnitType.Rotations)
+                    * IntakeConstants.PIVOT_GEAR_RATIO);
             pivotPIDController.reset(getPivotRotations().to(PARTsUnitType.Angle));
         }));
     }
 
     public Command zeroArm() {
         return PARTsCommandUtils.setCommandName("Intake.zeroArm", Commands.runOnce(() -> {
-            pivotMotor.getConfigurator().setPosition(new PARTsUnit(0, PARTsUnitType.Angle).to(PARTsUnitType.Rotations) * IntakeConstants.PIVOT_GEAR_RATIO);
+            pivotMotor.getConfigurator().setPosition(new PARTsUnit(0, PARTsUnitType.Angle).to(PARTsUnitType.Rotations)
+                    * IntakeConstants.PIVOT_GEAR_RATIO);
             pivotPIDController.reset(getPivotRotations().to(PARTsUnitType.Angle));
         }));
     }
