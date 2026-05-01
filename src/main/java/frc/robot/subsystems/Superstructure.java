@@ -206,7 +206,7 @@ public class Superstructure extends PARTsSubsystem {
                                                         PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench2"
                                                                         : "RightCenterToTrench2")),
                                         intake.idle(),
-                                        Commands.deadline(new WaitCommand(8), shoot(() -> false, TurretState.TRACKING_HUB),
+                                        Commands.deadline(new WaitCommand(7), shoot(() -> false, TurretState.TRACKING_HUB),
                                                         Commands.sequence(new WaitCommand(2),
                                                                         intake.intakeShooting())),
                                         intake.intake(),
