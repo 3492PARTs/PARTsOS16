@@ -27,6 +27,12 @@
           "data": {
             "pathName": "LeftCenterToTrench2"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "LeftToMiddle"
+          }
         }
       ]
     }

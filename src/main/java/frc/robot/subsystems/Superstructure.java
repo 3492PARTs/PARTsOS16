@@ -206,9 +206,14 @@ public class Superstructure extends PARTsSubsystem {
                                                         PathPlannerPath.fromPathFile(left ? "LeftCenterToTrench2"
                                                                         : "RightCenterToTrench2")),
                                         intake.idle(),
-                                        Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
+                                        Commands.deadline(new WaitCommand(7), shoot(() -> false, TurretState.TRACKING_HUB),
                                                         Commands.sequence(new WaitCommand(2),
-                                                                        intake.intakeShooting())));
+                                                                        intake.intakeShooting())),
+                                        intake.intake(),
+                                        AutoBuilder.followPath(
+                                                        PathPlannerPath.fromPathFile(left ? "LeftToMiddle"
+                                                                        : "RightToMiddle")));
+                                        
                 } catch (FileVersionException | IOException | ParseException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -271,6 +276,9 @@ public class Superstructure extends PARTsSubsystem {
                                                         AutoBuilder.followPath(PathPlannerPath
                                                                         .fromPathFile("LeftRampToDepot")),
                                                         intake.intake()),
+                                         AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("DepotCenter2")),
+                                        new WaitCommand(2),
                                         Commands.parallel(shoot(() -> false, TurretState.TRACKING_HUB),
                                                         Commands.sequence(new WaitCommand(3),
                                                                         intake.intakeShooting())));
@@ -306,18 +314,34 @@ public class Superstructure extends PARTsSubsystem {
                 return PARTsCommandUtils.setCommandName("Superstructure.rightTrenchOutpostAuto", c);
         }
 
-        public Command roboteerAuto() {
+        public Command rightMiddleDelayAuto() {
                 Command c = new WaitCommand(0);
                 try {
                         c = Commands.sequence(Commands.deadline(new WaitCommand(15), shoot(() -> false, TurretState.TRACKING_HUB)),
                                                         AutoBuilder.followPath(PathPlannerPath
-                                                                        .fromPathFile("roboteer")));
+                                                                        .fromPathFile("RightMiddleDelay")), intake.intake());
                 } catch (FileVersionException | IOException | ParseException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                 }
-                return PARTsCommandUtils.setCommandName("Superstructure.LeftRampToDepot", c);
+                return PARTsCommandUtils.setCommandName("Superstructure.rightMiddleDelayAuto", c);
         }
+
+        public Command leftMiddleDelayAuto() {
+                Command c = new WaitCommand(0);
+                try {
+                        c = Commands.sequence(Commands.deadline(new WaitCommand(15), shoot(() -> false, TurretState.TRACKING_HUB)),
+                                                        AutoBuilder.followPath(PathPlannerPath
+                                                                        .fromPathFile("LeftMiddleDelay")), intake.intake());
+                } catch (FileVersionException | IOException | ParseException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                }
+                return PARTsCommandUtils.setCommandName("Superstructure.leftMiddleDelayAuto", c);
+        }
+
+
+        //optimal auto for middle is 15 to 11 seconds left
 
         @Override
         public void outputTelemetry() {

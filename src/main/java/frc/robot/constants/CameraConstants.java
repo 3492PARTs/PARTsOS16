@@ -12,9 +12,9 @@ import edu.wpi.first.math.util.Units;
 public interface CameraConstants {
     public enum CameraName {
         LEFT_FRONT_CAMERA("limelight-johnny"),
-        LEFT_SIDE_CAMERA("limelight-frankie"),
-        RIGHT_FRONT_ANGLE_CAMERA("limelight-ben"),
-        LEFT_FRONT_CAMERA_2("limelight-reed");
+        LEFT_SIDE_CAMERA("limelight-sue"),
+        RIGHT_FRONT_CAMERA("limelight-silver"),
+        RIGHT_SIDE_CAMERA("limelight-surfer");
 
         private String cameraName = "";
 
@@ -44,24 +44,29 @@ public interface CameraConstants {
 
     public Camera[] LimelightCameras = new Camera[] {
             new Camera(CameraName.LEFT_FRONT_CAMERA.getCameraName(),
-                    new Pose3d(.343, .1905, .22225, // meters
-                            new Rotation3d(0, Units.degreesToRadians(15), 0)),
-                    false),
-            new Camera(CameraName.LEFT_SIDE_CAMERA.getCameraName(),
-                    new Pose3d(.22225, .3302, .22225, // meters
-                            new Rotation3d(0, Units.degreesToRadians(15),
-                                    Units.degreesToRadians(90))),
-                    false),
-            new Camera(CameraName.RIGHT_FRONT_ANGLE_CAMERA.getCameraName(),
-                    new Pose3d(PARTsUnit.InchesToMeters.apply(8.75), -PARTsUnit.InchesToMeters.apply(8.2),
-                            PARTsUnit.InchesToMeters.apply(14.75),
+                    new Pose3d(PARTsUnit.InchesToMeters.apply(13.5), PARTsUnit.InchesToMeters.apply(9.75),
+                            PARTsUnit.InchesToMeters.apply(13.0),
                             new Rotation3d(0, 0,
                                     0)),
                     true),
-            new Camera(CameraName.LEFT_FRONT_CAMERA.getCameraName(),
-                    new Pose3d(.343, .21, .368, // meters
-                            new Rotation3d(0, 0, 0)),
-                    true)      
+            new Camera(CameraName.LEFT_SIDE_CAMERA.getCameraName(),
+                    new Pose3d(PARTsUnit.InchesToMeters.apply(9.75), PARTsUnit.InchesToMeters.apply(12.25),
+                            PARTsUnit.InchesToMeters.apply(13.0),
+                            new Rotation3d(0, 0,
+                                    Units.degreesToRadians(90))),
+                    true),
+            new Camera(CameraName.RIGHT_FRONT_CAMERA.getCameraName(),
+                    new Pose3d(PARTsUnit.InchesToMeters.apply(13.5), -PARTsUnit.InchesToMeters.apply(9.75),
+                            PARTsUnit.InchesToMeters.apply(13.0),
+                            new Rotation3d(0, 0,
+                                    0)),
+                    true),
+            new Camera(CameraName.RIGHT_SIDE_CAMERA.getCameraName(),
+                    new Pose3d(PARTsUnit.InchesToMeters.apply(9.0), -PARTsUnit.InchesToMeters.apply(11.75),
+                            PARTsUnit.InchesToMeters.apply(13.0),
+                            new Rotation3d(0, 0,
+                                    Units.degreesToRadians(-90))),
+                    true)
     };
 
     public static class Camera {
