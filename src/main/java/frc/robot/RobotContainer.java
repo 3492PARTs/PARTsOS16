@@ -1,436 +1,250 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// Copyright (c) 2021-2026 Littleton Robotics
+// http://github.com/Mechanical-Advantage
+//
+// Use of this source code is governed by a BSD
+// license that can be found in the LICENSE file
+// at the root directory of this project.
 
 package frc.robot;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import com.ctre.phoenix6.SignalLogger;
-
+import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.RuntimeType;
-import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.constants.RobotConstants;
-import frc.robot.constants.CameraConstants.Pipelines;
-import frc.robot.constants.CandleConstants.CandleState;
-import frc.robot.constants.TurretConstants.TurretState;
-import frc.robot.constants.generated.TunerConstants;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
-import frc.robot.subsystems.Candle;
-import frc.robot.subsystems.LimelightVision;
-import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.LimelightVision.MegaTagMode;
-import frc.robot.subsystems.Drivetrain.PARTsDrivetrain;
-import frc.robot.subsystems.Hopper.Hopper;
-import frc.robot.subsystems.Hopper.HopperPhys;
-import frc.robot.subsystems.Hopper.HopperSim;
-import frc.robot.subsystems.Hopper.HopperSysid;
-import frc.robot.subsystems.Intake.Intake;
-import frc.robot.subsystems.Intake.IntakePhys;
-import frc.robot.subsystems.Intake.IntakeSim;
-import frc.robot.subsystems.Intake.IntakeSysid;
-import frc.robot.subsystems.Intake.PivotSysid;
-import frc.robot.subsystems.Kicker.Kicker;
-import frc.robot.subsystems.Kicker.KickerPhys;
-import frc.robot.subsystems.Kicker.KickerSim;
-import frc.robot.subsystems.Kicker.KickerSysid;
+import frc.robot.commands.DriveCommands;
+import frc.robot.constants.CameraConstants;
+import frc.robot.constants.ShooterConstants;
+import frc.robot.constants.TurretConstants;
+import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Shooter.Shooter;
-import frc.robot.subsystems.Shooter.ShooterPhys;
-import frc.robot.subsystems.Shooter.ShooterSim;
-import frc.robot.subsystems.Shooter.ShooterSysid;
+import frc.robot.subsystems.Shooter.ShooterIO;
+import frc.robot.subsystems.Shooter.ShooterIOTalonFX;
 import frc.robot.subsystems.Turret.Turret;
-import frc.robot.subsystems.Turret.TurretPhys;
-import frc.robot.subsystems.Turret.TurretSim;
-import frc.robot.subsystems.Turret.TurretSysid;
-import frc.robot.util.Field;
-
+import frc.robot.subsystems.Turret.TurretIO;
+import frc.robot.subsystems.Turret.TurretIOTalonFX;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.drive.PARTsDrivetrain;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.parts3492.partslib.input.PARTsButtonBoxController;
 import org.parts3492.partslib.input.PARTsCommandController;
 import org.parts3492.partslib.input.PARTsController.ControllerType;
-import org.parts3492.partslib.network.PARTsDashboard;
-import org.parts3492.partslib.network.PARTsNT;
-import org.parts3492.partslib.command.IPARTsSubsystem;
 
+/**
+ * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * subsystems, commands, and button mappings) should be declared here.
+ */
 public class RobotContainer {
-    private FieldObject2d hubFieldObject2d;
+  // Subsystems
+  private final PARTsDrivetrain drive;
+  private final Vision vision;
+  private final Shooter shooter;
+  private final Turret turret;
 
-    private final PARTsCommandController driveController = new PARTsCommandController(0, ControllerType.DS5);
-    private final PARTsCommandController operatorController = new PARTsCommandController(1, ControllerType.DS5);
-    private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(2);
+  // Controller
+  private final PARTsCommandController controller =
+      new PARTsCommandController(0, ControllerType.XBOX);
+  private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(1);
 
-    private PARTsNT partsNT = new PARTsNT("RobotContainer");
+  // Dashboard inputs
+  private final LoggedDashboardChooser<Command> autoChooser;
 
-    private SendableChooser<Command> autoChooser;
+  public static boolean debug = false;
 
-    private static Alliance alliance;
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  public RobotContainer() {
+    switch (Constants.currentMode) {
+      case REAL:
+        // Real robot, instantiate hardware IO implementations
+        // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
+        // a CANcoder
+        drive =
+            new PARTsDrivetrain(
+                new GyroIOPigeon2(),
+                new ModuleIOTalonFX(TunerConstants.FrontLeft),
+                new ModuleIOTalonFX(TunerConstants.FrontRight),
+                new ModuleIOTalonFX(TunerConstants.BackLeft),
+                new ModuleIOTalonFX(TunerConstants.BackRight));
+        vision =
+            new Vision(
+                drive::addVisionMeasurement,
+                new VisionIOLimelight(
+                    CameraConstants.LimelightCameras[0].getName(),
+                    CameraConstants.LimelightCameras[0].getLocation(),
+                    drive::getRotation),
+                new VisionIOLimelight(
+                    CameraConstants.LimelightCameras[1].getName(),
+                    CameraConstants.LimelightCameras[1].getLocation(),
+                    drive::getRotation),
+                new VisionIOLimelight(
+                    CameraConstants.LimelightCameras[2].getName(),
+                    CameraConstants.LimelightCameras[2].getLocation(),
+                    drive::getRotation),
+                new VisionIOLimelight(
+                    CameraConstants.LimelightCameras[3].getName(),
+                    CameraConstants.LimelightCameras[3].getLocation(),
+                    drive::getRotation));
+        turret =
+            new Turret(
+                new TurretIOTalonFX(TurretConstants.TURRET_MOTOR_ID),
+                drive::getPose,
+                drive::getRobotVelocity);
+        shooter =
+            new Shooter(
+                new ShooterIOTalonFX(
+                    ShooterConstants.LEFT_MOTOR_ID, ShooterConstants.RIGHT_MOTOR_ID),
+                drive::getPose,
+                drive::getRobotVelocity,
+                turret::getState);
 
-    public static boolean debug = false;
+        // The ModuleIOTalonFXS implementation provides an example implementation for
+        // TalonFXS controller connected to a CANdi with a PWM encoder. The
+        // implementations
+        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
+        // swerve
+        // template) can be freely intermixed to support alternative hardware
+        // arrangements.
+        // Please see the AdvantageKit template documentation for more information:
+        // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
+        //
+        // drive =
+        // new Drive(
+        // new GyroIOPigeon2(),
+        // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
+        // new ModuleIOTalonFXS(TunerConstants.FrontRight),
+        // new ModuleIOTalonFXS(TunerConstants.BackLeft),
+        // new ModuleIOTalonFXS(TunerConstants.BackRight));
+        break;
 
-    private Command toggleDebug = Commands.runOnce(() -> debug = !debug).ignoringDisable(true);
+      case SIM:
+        // Sim robot, instantiate physics sim IO implementations
+        drive =
+            new PARTsDrivetrain(
+                new GyroIO() {},
+                new ModuleIOSim(TunerConstants.FrontLeft),
+                new ModuleIOSim(TunerConstants.FrontRight),
+                new ModuleIOSim(TunerConstants.BackLeft),
+                new ModuleIOSim(TunerConstants.BackRight));
 
-    // region Subsystems
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        turret = new Turret(new TurretIO() {}, drive::getPose, drive::getRobotVelocity);
+        shooter =
+            new Shooter(
+                new ShooterIO() {}, drive::getPose, drive::getRobotVelocity, turret::getState);
+        break;
 
-    public final PARTsDrivetrain drivetrain = new PARTsDrivetrain(
-            TunerConstants.DrivetrainConstants,
-            TunerConstants.FrontLeft, TunerConstants.FrontRight, TunerConstants.BackLeft,
-            TunerConstants.BackRight);
-
-    private final LimelightVision vision = new LimelightVision(drivetrain.supplierGetPose(),
-            drivetrain.bifunctionAddVisionMeasurement(), drivetrain.consumerSetVisionMeasurementStdDevs(),
-            drivetrain.consumerResetPose());
-
-    public final Candle candle = new Candle();
-    private final Turret turret = Robot.isReal() ? new TurretPhys(drivetrain.supplierGetPose(), drivetrain)
-            : new TurretSim(drivetrain.supplierGetPose(), drivetrain);
-
-    // private final TurretSysid turret = new
-    // TurretSysid(drivetrain.supplierGetPose(), drivetrain);
-
-    private final Shooter shooter = Robot.isReal()
-            ? new ShooterPhys(drivetrain.supplierGetPose(), drivetrain, turret::getState)
-            : new ShooterSim(drivetrain.supplierGetPose(), drivetrain, turret::getState);
-
-    private final Kicker kicker = Robot.isReal() ? new KickerPhys() : new KickerSim();
-
-    private final Hopper hopper = Robot.isReal() ? new HopperPhys() : new HopperSim();
-
-    private final Intake intake = Robot.isReal() ? new IntakePhys() : new IntakeSim();
-
-    /*
-     * private final ShooterSysid shooter = new
-     * ShooterSysid(drivetrain.supplierGetPose(), drivetrain, turret::getState);
-     */ // for sysid
-
-    // private final PivotSysid intake = new PivotSysid(); //for
-    // private final IntakeSysid intake = new IntakeSysid();
-    // private final HopperSysid hopper = new HopperSysid();
-
-    // private final KickerSysid kicker = new KickerSysid();
-
-    private final Superstructure superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle,
-            drivetrain);
-    private final ArrayList<IPARTsSubsystem> subsystems = new ArrayList<IPARTsSubsystem>(
-            Arrays.asList(candle, drivetrain, vision, shooter, turret, kicker, hopper, intake, superstructure));
-
-    // endregion End Subsystems
-
-    public RobotContainer() {
-        if (RobotConstants.COMPETITION)
-            debug = false;
-        configureDrivetrainBindings();
-        configureCandleBindings();
-        configureShooterBindings();
-        configureTurretBindings();
-        configureAutonomousCommands();
-        configureIntakeBindings();
-        configureHopperBindings();
-        configureKickerBindings();
-        configureSuperstructureBindings();
-        configureVisionBindings();
-        // operatorController.povUp().onTrue(Commands.runOnce(() ->
-        // SignalLogger.start()));
-        // operatorController.povDown().onTrue(Commands.runOnce(() ->
-        // SignalLogger.stop()));
-
-        partsNT.putSmartDashboardSendable("field", Field.FIELD2D, true);
-        hubFieldObject2d = Field.FIELD2D.getObject("hub");
-        partsNT.logPathPlanner((pose) -> {
-            // Do whatever you want with the pose here
-            Field.FIELD2D
-                    .getObject("target pose")
-                    .setPose(pose);
-        }, (poses) -> {
-            // Do whatever you want with the poses here
-            Field.FIELD2D
-                    .getObject("path")
-                    .setPoses(poses);
-        }, true);
-
-        partsNT.putSmartDashboardSendable("Toggle Complete Debug", toggleDebug, !RobotConstants.COMPETITION);
-
-        partsNT.putBoolean("Comp Mode", RobotConstants.COMPETITION, true);
+      default:
+        // Replayed robot, disable IO implementations
+        drive =
+            new PARTsDrivetrain(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        turret = new Turret(new TurretIO() {}, drive::getPose, drive::getRobotVelocity);
+        shooter =
+            new Shooter(
+                new ShooterIO() {}, drive::getPose, drive::getRobotVelocity, turret::getState);
+        break;
     }
 
-    // region Configs
+    // Set up auto routines
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    private void configureDrivetrainBindings() {
+    // Set up SysId routines
+    autoChooser.addOption(
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption(
+        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Forward)",
+        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Reverse)",
+        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-        // Drivetrain will execute this command periodically
-        drivetrain.setDefaultCommand(drivetrain.commandJoystickDrive(driveController));
+    // Configure the button bindings
+    configureButtonBindings();
+  }
 
-        // fine grain controls
-        driveController.rightBumper().onTrue(Commands.runOnce(() -> drivetrain.toggleFineGrainDrive()));
+  /**
+   * Use this method to define your button->command mappings. Buttons can be created by
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
+   */
+  private void configureButtonBindings() {
+    // Default command, normal field-relative drive
+    drive.setDefaultCommand(
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX()));
 
-        // new Trigger(() -> fineGrainDrive)
-        // .onTrue(Commands.runOnce(() ->
-        // candle.addState(CandleState.FINE_GRAIN_DRIVE)))
-        // .onFalse(Commands.runOnce(() ->
-        // candle.removeState(CandleState.FINE_GRAIN_DRIVE)));
+    // Lock to 0° when A button is held
+    controller
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                () -> Rotation2d.kZero));
 
-        // brakes swerve, puts modules into x configuration
-        // driveController.a().whileTrue(drivetrain.commandBrake());
+    // Switch to X pattern when X button is pressed
+    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
-        Pose2d outpost = new Pose2d(0.690, .636, new Rotation2d());
-        // driveController.a().whileTrue(drivetrain.commandPathFindToPose(outpost));
+    // Reset gyro to 0° when B button is pressed
+    controller
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
+                    drive)
+                .ignoringDisable(true));
+    controller
+        .leftBumper()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  shooter.setSpeed(0.25);
+                  shooter.setState();
+                },
+                shooter));
+    controller.rightBumper().onTrue(Commands.runOnce(() -> shooter.setSpeed(0), shooter));
+  }
 
-        // manual module direction control
-        // driveController.b().whileTrue(drivetrain.commandPointWheels(driveController));
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    return autoChooser.get();
+  }
 
-        // reset the field-centric heading on left bumper press
-        driveController.leftBumper().onTrue(drivetrain.commandSeedFieldCentric());
-
-        driveController.b().onTrue(vision.resetPose());
-
-        // driveController.x().onTrue(
-        // drivetrain.targetPoseCommand(() -> Field.blueHubCenter, () ->
-        // driveController.y().getAsBoolean()));
-        // driveController.a().onTrue(drivetrain.commandSnapToAngle(90));
-        // driveController.b().onTrue(drivetrain.commandAlign(Field.getTag(28).getLocation().toPose2d()));
-
-        /*
-         * if (RobotConstants.DEBUGGING) { //If uncommented remember to switch to new
-         * debugging variable
-         * 
-         * //driveController.rightTrigger()
-         * // .whileTrue(drivetrain.commandPathOnTheFly(
-         * // Field.getTag(12).getLocation().toPose2d()));
-         * driveController.rightTrigger()
-         * .whileTrue(Reef.commandIntakeScoreIntake(drivetrain, coral, elevator));
-         * driveController.leftTrigger()
-         * .whileTrue(vision.commandMegaTagMode(MegaTagMode.MEGATAG2));
-         * }
-         */
-
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
-        /*
-         * 
-         * driveController.back().and(driveController.y()).whileTrue(drivetrain.
-         * sysIdDynamic(Direction.kForward));
-         * driveController.back().and(driveController.x()).whileTrue(drivetrain.
-         * sysIdDynamic(Direction.kReverse));
-         * driveController.start().and(driveController.y()).whileTrue(drivetrain.
-         * sysIdQuasistatic(Direction.kForward));
-         * driveController.start().and(driveController.x()).whileTrue(drivetrain.
-         * sysIdQuasistatic(Direction.kReverse));
-         */
-
-    }
-
-    private void configureShooterBindings() {
-
-        /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-         */
-
-        // buttonBoxController.lightonTrigger().whileTrue(shooter.setSpeedOffset(100)).onFalse(shooter.setSpeedOffset(0));
-        // buttonBoxController.talkonTrigger().whileTrue(shooter.setSpeedOffset(200)).onFalse(shooter.setSpeedOffset(0));
-        buttonBoxController.absClickTrigger().onTrue(shooter.setSpeedOffset(() -> 0));
-        buttonBoxController.absClockwiseTrigger().onTrue(shooter.setSpeedOffset(() -> shooter.getSpeedOffset() + 100));
-        buttonBoxController.absCounterClockwiseTrigger()
-                .onTrue(shooter.setSpeedOffset(() -> shooter.getSpeedOffset() - 100));
-    }
-
-    private void configureCandleBindings() {
-    }
-
-    private void configureHopperBindings() {
-        /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-         * /*driveController.b().onTrue(hopper.roll());
-         * driveController.x().onTrue(hopper.idle());
-         */
-
-        buttonBoxController.negative2Trigger().whileTrue(Commands.parallel(hopper.reverse(), kicker.reverse()))
-                .onFalse(Commands.parallel(hopper.idle(), kicker.idle()));
-    }
-
-    private void configureKickerBindings() {
-        /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-         */
-    }
-
-    private void configureTurretBindings() {
-
-        /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-         */
-
-    }
-
-    private void configureIntakeBindings() {
-        buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
-        buttonBoxController.negative4Trigger().onTrue(intake.intake());
-        buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate())
-                .onTrue(intake.idle());
-        buttonBoxController.enterTrigger().onTrue(intake.home());
-        buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
-        buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
-        buttonBoxController.positive1Trigger().onTrue(intake.zeroArm());
-        buttonBoxController.negative1Trigger().onTrue(intake.oneNinetyArm());
-
-        // Intake SysID
-        /*
-         * operatorController.a().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-         * operatorController.b().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-         * operatorController.x().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
-         * operatorController.y().and(operatorController.rightBumper())
-         * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-         */
-
-    }
-
-    private void configureSuperstructureBindings() {
-        buttonBoxController.handleTrigger()
-                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
-                        TurretState.TRACKING_HUB));
-        buttonBoxController.enginestartTrigger()
-                .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
-                        TurretState.TRACKING_CORNER));
-        buttonBoxController.wipeTrigger()
-                .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
-        buttonBoxController.mapTrigger()
-                .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
-        buttonBoxController.negative3Trigger().onTrue(superstructure.spew()).onFalse(superstructure.resetCommand());
-
-        // buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
-    }
-
-    private void configureVisionBindings() {
-        buttonBoxController.flashTrigger().onTrue(Commands.runOnce(() -> setMegaTagMode(MegaTagMode.MEGATAG1)));
-        buttonBoxController.audioTrigger().onTrue(Commands.runOnce(() -> setMegaTagMode(MegaTagMode.MEGATAG2)));
-    }
-
-    public void configureAutonomousCommands() {
-        autoChooser = new SendableChooser<>();
-        autoChooser.addOption("Outpost Auto", superstructure.outpostAuto());
-        autoChooser.addOption("Left Trench Auto", superstructure.trenchAuto(true));
-        autoChooser.addOption("Right Trench Auto", superstructure.trenchAuto(false));
-        autoChooser.addOption("Right Trench to Outpost Auto", superstructure.rightTrenchOutpostAuto());
-        autoChooser.addOption("Left Ramp To Depot Auto", superstructure.rampDepotAuto());
-        autoChooser.addOption("Right Trench to Outpost Auto Test", superstructure.rightTrenchOutpostAutoTest());
-        autoChooser.addOption("Shoot Only", superstructure.shoot(() -> false, TurretState.TRACKING_HUB));
-        autoChooser.addOption("Right Middle Delay Auto", superstructure.rightMiddleDelayAuto());
-        autoChooser.addOption("Left Middle Delay Auto", superstructure.leftMiddleDelayAuto());
-        partsNT.putSmartDashboardSendable("Auto Chooser", autoChooser, true);
-    }
-
-    // endregion End Configs
-
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-    }
-
-    // region Custom Public Functions
-    public void outputTelemetry() {
-        subsystems.forEach(s -> s.outputTelemetry());
-        partsNT.putDouble("Battery Voltage", RobotController.getBatteryVoltage(), true);
-        partsNT.putBoolean("IsBlue", isBlue(), RobotContainer.debug);
-        partsNT.putBoolean("Debugging", RobotContainer.debug, RobotConstants.COMPETITION);
-    }
-
-    public void stop() {
-        subsystems.forEach(s -> s.stop());
-        setMegaTagMode(MegaTagMode.MEGATAG1);
-    }
-
-    public void log() {
-        subsystems.forEach(s -> s.log());
-    }
-
-    public void setCandleDisabledState() {
-        candle.removeAllStates();
-        candle.addState(CandleState.DISABLED);
-    }
-
-    public void setIdleCandleState() {
-        candle.addState(CandleState.IDLE);
-        candle.removeState(CandleState.DISABLED);
-    }
-
-    public void constructDashboard() {
-        PARTsDashboard.setSubsystems(subsystems, RobotContainer.debug);
-        PARTsDashboard.setCommandScheduler(RobotContainer.debug);
-    }
-
-    public void resetStartPose() {
-        drivetrain.seedFieldCentric();
-    }
-
-    public void setMegaTagMode(MegaTagMode mode) {
-        vision.setMegaTagMode(mode);
-    }
-
-    public static boolean isBlue() {
-        return alliance == Alliance.Blue;
-    }
-
-    public static boolean isReal() {
-        RuntimeType runtimeType = Robot.getRuntimeType();
-        return runtimeType == RuntimeType.kRoboRIO || runtimeType == RuntimeType.kRoboRIO2;
-    }
-
-    public void getAlliance() {
-        if (DriverStation.getAlliance().isPresent()) {
-            alliance = DriverStation.getAlliance().get();
-        }
-    }
-
-    public void setLimelightMainMode() {
-        vision.setPipelineIndex(Pipelines.MAIN);
-    }
-
-    public void runOnEnabled() {
-        getAlliance(); // ensure we have the alliance
-        setLimelightMainMode();
-        setIdleCandleState();
-        hubFieldObject2d.setPose(Field.getAllianceHubPose());
-        subsystems.forEach(s -> s.reset());
-        CommandScheduler.getInstance().schedule(new WaitCommand(0).andThen(Commands.runOnce(() -> {
-            setMegaTagMode(MegaTagMode.MEGATAG2);
-        })));
-    }
+  public static boolean isBlue() {
+    return false;
+  }
 }
