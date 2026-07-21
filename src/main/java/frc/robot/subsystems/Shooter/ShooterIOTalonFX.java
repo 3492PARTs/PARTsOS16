@@ -41,7 +41,7 @@ public class ShooterIOTalonFX implements ShooterIO {
     inputs.leftConnected = leftMotor.isConnected();
     inputs.rightConnected = rightMotor.isConnected();
     inputs.RPM = leftMotor.getVelocity().getValueAsDouble() * 60;
-    inputs.positionRadPerSec = leftMotor.getPosition().getValueAsDouble();
+    inputs.velocityRadPerSec = leftMotor.getPosition().getValueAsDouble();
     inputs.appliedVolts = leftMotor.getMotorVoltage().getValueAsDouble();
     inputs.currentAmps = new double[] {leftMotor.getStatorCurrent().getValueAsDouble()};
   }
