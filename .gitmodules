@@ -1,0 +1,3 @@
+[submodule "PARTsLib"]
+	path = PARTsLib
+	url = https://github.com/3492PARTs/PARTsLib.git
