@@ -50,7 +50,7 @@ public class Candle extends PARTsCandle<CandleState> {
 
     Logger.recordOutput(String.format("%s/%s", getName(), "state"), getState());
 
-    String[] states = new String[getAllStates().size()];
+    CandleState[] states = new CandleState[getAllStates().size()];
     getAllStates().toArray(states);
 
     Logger.recordOutput(String.format("%s/%s", getName(), "states"), states);
