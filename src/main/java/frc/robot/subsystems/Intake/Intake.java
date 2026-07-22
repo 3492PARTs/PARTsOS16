@@ -172,14 +172,7 @@ public class Intake extends PARTsSubsystem {
     }
   }
 
-  public void log() {
-    partsLogger.logDouble(
-        "Pivot Position",
-        getPivotRotations().to(PARTsUnitType.Angle),
-        RobotContainer.debug || debug);
-    partsLogger.logDouble("Intake Speed", getIntakeSpeed(), RobotContainer.debug || debug);
-    partsLogger.logString("Intake State", intakeState.toString(), RobotContainer.debug || debug);
-  }
+  public void log() {}
 
   // endregion
 

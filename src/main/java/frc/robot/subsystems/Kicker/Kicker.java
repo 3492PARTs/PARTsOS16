@@ -71,9 +71,7 @@ public class Kicker extends PARTsSubsystem {
   }
 
   @Override
-  public void log() {
-    partsLogger.logString("Kicker State", kickerState.toString(), RobotContainer.debug || debug);
-  }
+  public void log() {}
 
   @Override
   public void periodic() {

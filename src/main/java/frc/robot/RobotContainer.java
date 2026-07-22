@@ -21,6 +21,7 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.constants.CameraConstants;
 import frc.robot.constants.CandleConstants.CandleState;
 import frc.robot.constants.KickerConstants;
+import frc.robot.constants.RobotConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.TurretConstants;
 import frc.robot.constants.TurretConstants.TurretState;
@@ -54,10 +55,14 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.util.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.parts3492.partslib.command.IPARTsSubsystem;
 import org.parts3492.partslib.input.PARTsButtonBoxController;
 import org.parts3492.partslib.input.PARTsCommandController;
 import org.parts3492.partslib.input.PARTsController.ControllerType;
+import org.parts3492.partslib.network.PARTsNT;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -76,6 +81,7 @@ public class RobotContainer {
   private final Intake intake;
   private final Candle candle;
   private final Superstructure superstructure;
+  private final ArrayList<IPARTsSubsystem> subsystems;
 
   // Controller
   private final PARTsCommandController controller =
@@ -86,6 +92,7 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
 
   // variables
+  private final PARTsNT partsNT = new PARTsNT("RobotContainer");
   private static Alliance alliance = Alliance.Red;
   public static boolean debug = false;
 
@@ -180,6 +187,11 @@ public class RobotContainer {
 
     superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle, drive);
 
+    subsystems =
+        new ArrayList<IPARTsSubsystem>(
+            Arrays.asList(
+                candle, drive, vision, shooter, turret, kicker, hopper, intake, superstructure));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -208,6 +220,16 @@ public class RobotContainer {
     configureTurretBindings();
     configureIntakeBindings();
     configureSuperstructureBindings();
+
+    // Dashobaord options
+    partsNT.putSmartDashboardSendable("field", Field.FIELD2D, true);
+
+    partsNT.putSmartDashboardSendable(
+        "Toggle Complete Debug",
+        Commands.runOnce(() -> debug = !debug).ignoringDisable(true),
+        !RobotConstants.COMPETITION);
+
+    partsNT.putBoolean("Comp Mode", RobotConstants.COMPETITION, true);
   }
 
   /**
@@ -414,8 +436,9 @@ public class RobotContainer {
     vision.enableCameras();
     setIdleCandleState();
     Field.putHubOnDashboard();
+
+    subsystems.forEach(s -> s.reset());
     /*
-     * subsystems.forEach(s -> s.reset());
      * CommandScheduler.getInstance()
      * .schedule(
      * new WaitCommand(0)
@@ -428,7 +451,9 @@ public class RobotContainer {
   }
 
   public void runOnDisable() {
-    vision.disableCameras();
+    if (!RobotConstants.COMPETITION) vision.disableCameras();
+    else vision.enableCameras();
+
     setCandleDisabledState();
   }
 

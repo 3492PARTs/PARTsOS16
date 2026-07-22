@@ -96,9 +96,7 @@ public class Turret extends PARTsSubsystem {
   }
 
   @Override
-  public void log() {
-    partsLogger.logString("Turret State", turretState.toString(), RobotContainer.debug || debug);
-  }
+  public void log() {}
 
   @Override
   public void periodic() {

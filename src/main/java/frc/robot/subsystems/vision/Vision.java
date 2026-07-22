@@ -18,13 +18,13 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
+import org.parts3492.partslib.command.PARTsSubsystem;
 
-public class Vision extends SubsystemBase {
+public class Vision extends PARTsSubsystem {
   private final VisionConsumer consumer;
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
@@ -187,4 +187,16 @@ public class Vision extends SubsystemBase {
         double timestampSeconds,
         Matrix<N3, N1> visionMeasurementStdDevs);
   }
+
+  @Override
+  public void outputTelemetry() {}
+
+  @Override
+  public void stop() {}
+
+  @Override
+  public void reset() {}
+
+  @Override
+  public void log() {}
 }

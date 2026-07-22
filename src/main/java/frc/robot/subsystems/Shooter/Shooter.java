@@ -110,9 +110,7 @@ public class Shooter extends PARTsSubsystem {
   }
 
   @Override
-  public void log() {
-    partsLogger.logString("Shooter State", shooterState.toString(), !RobotConstants.COMPETITION);
-  }
+  public void log() {}
 
   @Override
   public void periodic() {

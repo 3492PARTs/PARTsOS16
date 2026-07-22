@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -34,12 +33,10 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.json.simple.parser.ParseException;
-import org.parts3492.partslib.PARTsLogger;
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.IPARTsSubsystem;
 import org.parts3492.partslib.command.PARTsCommandUtils;
-import org.parts3492.partslib.network.PARTsNT;
 
 public class PARTsDrivetrain extends Drive implements IPARTsSubsystem {
   /*-------------------------------- Private instance variables ---------------------------------*/
@@ -53,17 +50,6 @@ public class PARTsDrivetrain extends Drive implements IPARTsSubsystem {
 
   // show robot pose on field dashboard
   private FieldObject2d robotFieldObject2d;
-
-  // parts util classes
-  private PARTsNT partsNT;
-  private PARTsLogger partsLogger;
-
-  // for align command
-  private Timer alignTimer;
-  private PARTsUnit drivetrainVelocityX;
-  private PARTsUnit drivetrainVelocityY;
-  private boolean timerElapsed = false;
-  private FieldObject2d targetFieldObject2d;
 
   // pid controllers
   private ProfiledPIDController thetaController;
@@ -86,31 +72,13 @@ public class PARTsDrivetrain extends Drive implements IPARTsSubsystem {
       ModuleIO brModuleIO) {
     super(gyroIO, flModuleIO, frModuleIO, blModuleIO, brModuleIO);
     this.gyroIO = gyroIO;
-    initializeClasses();
     initializeControllers();
     robotFieldObject2d = Field.FIELD2D.getRobotObject();
-    targetFieldObject2d = Field.FIELD2D.getObject("target");
   }
 
   // region Generic Subsystem Functions
   @Override
-  public void outputTelemetry() {
-    partsNT.putBoolean("Fine Grain Drive", fineGrainDrive, RobotContainer.debug);
-    partsNT.putDouble(
-        "X coordinate",
-        new PARTsUnit(getPose().getX(), PARTsUnitType.Meter).to(PARTsUnitType.Inch),
-        RobotContainer.debug);
-    partsNT.putDouble(
-        "Y coordinate",
-        new PARTsUnit(getPose().getY(), PARTsUnitType.Meter).to(PARTsUnitType.Inch),
-        RobotContainer.debug);
-    partsNT.putDouble(
-        "Rotation",
-        new PARTsUnit(getPose().getRotation().getDegrees(), PARTsUnitType.Angle).getValue(),
-        RobotContainer.debug);
-    partsNT.putBoolean(
-        "Controlled Rotation Enabled", isControlledRotationEnabled, RobotContainer.debug);
-  }
+  public void outputTelemetry() {}
 
   @Override
   public void reset() {}
@@ -361,11 +329,6 @@ public class PARTsDrivetrain extends Drive implements IPARTsSubsystem {
                 DrivetrainConstants.MAX_RANGE_ACCELERATION));
   }
 
-  private void initializeClasses() {
-    partsNT = new PARTsNT(this);
-    partsLogger = new PARTsLogger(this, RobotConstants.LOGGING);
-  }
-
   private void updateAirborneState() {
     double mag = this.gyroIO.getAccelMagnitudeMps2();
     boolean airborneNow = Math.abs(mag) > DrivetrainConstants.AIRBORNE_G_DIFF;
@@ -397,11 +360,6 @@ public class PARTsDrivetrain extends Drive implements IPARTsSubsystem {
         stableDebounceCycles = 0;
       }
     }
-
-    partsNT.putBoolean("Drivetrain/Airborne", isAirborne, !RobotConstants.COMPETITION);
-    partsNT.putBoolean("Drivetrain/stableNow", stableNow, !RobotConstants.COMPETITION);
-    partsNT.putBoolean("Drivetrain/AirborneNow", airborneNow, !RobotConstants.COMPETITION);
-    partsNT.putDouble("Drivetrain/AccelMag", mag, !RobotConstants.COMPETITION);
   }
 
   // endregion

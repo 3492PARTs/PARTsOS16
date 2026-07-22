@@ -69,9 +69,7 @@ public class Hopper extends PARTsSubsystem {
   }
 
   @Override
-  public void log() {
-    partsLogger.logString("Hopper State", hopperState.toString(), RobotContainer.debug || debug);
-  }
+  public void log() {}
 
   @Override
   public void periodic() {
