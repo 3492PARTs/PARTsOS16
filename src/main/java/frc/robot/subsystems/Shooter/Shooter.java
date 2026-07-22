@@ -35,7 +35,7 @@ public class Shooter extends PARTsSubsystem {
   private RobotVelocitySupplier velocitySupplier;
   private FieldObject2d calculatedRobotPose;
   private ShooterIO io;
-  private ShooterInputsAutoLogged inputs = new ShooterInputsAutoLogged();
+  private ShooterInputsAutoLogged shooterInputs = new ShooterInputsAutoLogged();
 
   protected boolean debug = false;
   private Command toggleDebug =
@@ -116,8 +116,8 @@ public class Shooter extends PARTsSubsystem {
 
   @Override
   public void periodic() {
-    io.updateInputs(inputs);
-    org.littletonrobotics.junction.Logger.processInputs("Shooter", inputs);
+    io.updateInputs(shooterInputs);
+    org.littletonrobotics.junction.Logger.processInputs("Shooter", shooterInputs);
     if (RobotContainer.debug || debug) {
       double rpm = partsNT.getDouble("Shooter Speed", true);
       setVoltage(calculateRPMVoltage(rpm));

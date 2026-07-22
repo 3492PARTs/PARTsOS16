@@ -8,7 +8,7 @@ public interface ShooterIO {
     public boolean leftConnected = false;
     public boolean rightConnected = false;
     public double RPM = 0.0;
-    public double positionRadPerSec = 0.0;
+    public double velocityRadPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double[] currentAmps = new double[0];
   }

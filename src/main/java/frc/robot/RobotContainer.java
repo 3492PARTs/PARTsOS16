@@ -17,9 +17,17 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.CameraConstants;
+import frc.robot.constants.KickerConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.TurretConstants;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Candle.Candle;
+import frc.robot.subsystems.Hopper.Hopper;
+import frc.robot.subsystems.Hopper.HopperIO;
+import frc.robot.subsystems.Hopper.HopperIOTalonFX;
+import frc.robot.subsystems.Kicker.Kicker;
+import frc.robot.subsystems.Kicker.KickerIO;
+import frc.robot.subsystems.Kicker.KickerIOTalonFX;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterIO;
 import frc.robot.subsystems.Shooter.ShooterIOTalonFX;
@@ -52,6 +60,9 @@ public class RobotContainer {
   private final Vision vision;
   private final Shooter shooter;
   private final Turret turret;
+  private final Kicker kicker;
+  private final Hopper hopper;
+  private final Candle candle;
 
   // Controller
   private final PARTsCommandController controller =
@@ -65,11 +76,10 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    candle = new Candle();
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
-        // a CANcoder
         drive =
             new PARTsDrivetrain(
                 new GyroIOPigeon2(),
@@ -108,24 +118,8 @@ public class RobotContainer {
                 drive::getPose,
                 drive::getRobotVelocity,
                 turret::getState);
-
-        // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The
-        // implementations
-        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
-        // swerve
-        // template) can be freely intermixed to support alternative hardware
-        // arrangements.
-        // Please see the AdvantageKit template documentation for more information:
-        // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
-        //
-        // drive =
-        // new Drive(
-        // new GyroIOPigeon2(),
-        // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
-        // new ModuleIOTalonFXS(TunerConstants.FrontRight),
-        // new ModuleIOTalonFXS(TunerConstants.BackLeft),
-        // new ModuleIOTalonFXS(TunerConstants.BackRight));
+        kicker = new Kicker(new KickerIOTalonFX(KickerConstants.KICKER_MOTOR_ID));
+        hopper = new Hopper(new HopperIOTalonFX());
         break;
 
       case SIM:
@@ -143,6 +137,8 @@ public class RobotContainer {
         shooter =
             new Shooter(
                 new ShooterIO() {}, drive::getPose, drive::getRobotVelocity, turret::getState);
+        kicker = new Kicker(new KickerIO() {});
+        hopper = new Hopper(new HopperIO() {});
         break;
 
       default:
@@ -159,6 +155,8 @@ public class RobotContainer {
         shooter =
             new Shooter(
                 new ShooterIO() {}, drive::getPose, drive::getRobotVelocity, turret::getState);
+        kicker = new Kicker(new KickerIO() {});
+        hopper = new Hopper(new HopperIO() {});
         break;
     }
 
@@ -183,6 +181,13 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+    configureShooterBindings();
+    configureCandleBindings();
+    configureHopperBindings();
+    configureKickerBindings();
+    configureTurretBindings();
+    configureIntakeBindings();
+    configureSuperstructureBindings();
   }
 
   /**
@@ -233,6 +238,121 @@ public class RobotContainer {
                 },
                 shooter));
     controller.rightBumper().onTrue(Commands.runOnce(() -> shooter.setSpeed(0), shooter));
+  }
+
+  private void configureShooterBindings() {
+
+    /*
+     * operatorController.a().and(operatorController.rightBumper())
+     * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+     * operatorController.b().and(operatorController.rightBumper())
+     * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+     * operatorController.x().and(operatorController.rightBumper())
+     * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+     * operatorController.y().and(operatorController.rightBumper())
+     * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     */
+
+    // buttonBoxController.lightonTrigger().whileTrue(shooter.setSpeedOffset(100)).onFalse(shooter.setSpeedOffset(0));
+    // buttonBoxController.talkonTrigger().whileTrue(shooter.setSpeedOffset(200)).onFalse(shooter.setSpeedOffset(0));
+    buttonBoxController.absClickTrigger().onTrue(shooter.setSpeedOffset(() -> 0));
+    buttonBoxController
+        .absClockwiseTrigger()
+        .onTrue(shooter.setSpeedOffset(() -> shooter.getSpeedOffset() + 100));
+    buttonBoxController
+        .absCounterClockwiseTrigger()
+        .onTrue(shooter.setSpeedOffset(() -> shooter.getSpeedOffset() - 100));
+  }
+
+  private void configureCandleBindings() {}
+
+  private void configureHopperBindings() {
+    /*
+     * operatorController.a().and(operatorController.rightBumper())
+     * .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+     * operatorController.b().and(operatorController.rightBumper())
+     * .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+     * operatorController.x().and(operatorController.rightBumper())
+     * .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kForward));
+     * operatorController.y().and(operatorController.rightBumper())
+     * .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     * /*driveController.b().onTrue(hopper.roll());
+     * driveController.x().onTrue(hopper.idle());
+     */
+
+    buttonBoxController
+        .negative2Trigger()
+        .whileTrue(Commands.parallel(hopper.reverse(), kicker.reverse()))
+        .onFalse(Commands.parallel(hopper.idle(), kicker.idle()));
+  }
+
+  private void configureKickerBindings() {
+    /*
+     * operatorController.a().and(operatorController.rightBumper())
+     * .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+     * operatorController.b().and(operatorController.rightBumper())
+     * .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+     * operatorController.x().and(operatorController.rightBumper())
+     * .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kForward));
+     * operatorController.y().and(operatorController.rightBumper())
+     * .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     */
+  }
+
+  private void configureTurretBindings() {
+
+    /*
+     * operatorController.a().and(operatorController.rightBumper())
+     * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+     * operatorController.b().and(operatorController.rightBumper())
+     * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+     * operatorController.x().and(operatorController.rightBumper())
+     * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kForward));
+     * operatorController.y().and(operatorController.rightBumper())
+     * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     */
+
+  }
+
+  private void configureIntakeBindings() {
+    /*buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
+    buttonBoxController.negative4Trigger().onTrue(intake.intake());
+    buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate())
+            .onTrue(intake.idle());
+    buttonBoxController.enterTrigger().onTrue(intake.home());
+    buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
+    buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
+    buttonBoxController.positive1Trigger().onTrue(intake.zeroArm());
+    buttonBoxController.negative1Trigger().onTrue(intake.oneNinetyArm());
+
+    // Intake SysID
+
+     * operatorController.a().and(operatorController.rightBumper())
+     * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+     * operatorController.b().and(operatorController.rightBumper())
+     * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+     * operatorController.x().and(operatorController.rightBumper())
+     * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+     * operatorController.y().and(operatorController.rightBumper())
+     * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     */
+
+  }
+
+  private void configureSuperstructureBindings() {
+    /*buttonBoxController.handleTrigger()
+                    .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
+                            TurretState.TRACKING_HUB));
+            buttonBoxController.enginestartTrigger()
+                    .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
+                            TurretState.TRACKING_CORNER));
+            buttonBoxController.wipeTrigger()
+                    .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
+            buttonBoxController.mapTrigger()
+                    .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
+            buttonBoxController.negative3Trigger().onTrue(superstructure.spew()).onFalse(superstructure.resetCommand());
+    */
+    // buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
   }
 
   /**
