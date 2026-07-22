@@ -168,6 +168,18 @@ public class Vision extends SubsystemBase {
         "Vision/Summary/RobotPosesRejected", allRobotPosesRejected.toArray(new Pose3d[0]));
   }
 
+  public void enableCameras() {
+    for (int i = 0; i < io.length; i++) {
+      io[i].enableCamera();
+    }
+  }
+
+  public void disableCameras() {
+    for (int i = 0; i < io.length; i++) {
+      io[i].disableCamera();
+    }
+  }
+
   @FunctionalInterface
   public static interface VisionConsumer {
     public void accept(

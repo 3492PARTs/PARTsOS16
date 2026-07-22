@@ -16,6 +16,7 @@ import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
+import frc.robot.constants.CameraConstants.Pipelines;
 import frc.robot.util.LimelightHelpers;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -34,6 +35,8 @@ public class VisionIOLimelight implements VisionIO {
   private final DoubleArraySubscriber megatag1Subscriber;
   private final DoubleArraySubscriber megatag2Subscriber;
 
+  private final String name;
+
   /**
    * Creates a new VisionIOLimelight.
    *
@@ -41,6 +44,7 @@ public class VisionIOLimelight implements VisionIO {
    * @param rotationSupplier Supplier for the current estimated rotation, used for MegaTag 2.
    */
   public VisionIOLimelight(String name, Pose3d orientation, Supplier<Rotation2d> rotationSupplier) {
+    this.name = name;
     var table = NetworkTableInstance.getDefault().getTable(name);
     this.rotationSupplier = rotationSupplier;
     LimelightHelpers.setCameraPose_RobotSpace(
@@ -51,7 +55,6 @@ public class VisionIOLimelight implements VisionIO {
         Units.radiansToDegrees(orientation.getRotation().getX()),
         Units.radiansToDegrees(orientation.getRotation().getY()),
         Units.radiansToDegrees(orientation.getRotation().getZ()));
-    LimelightHelpers.setPipelineIndex(name, 1);
     orientationPublisher = table.getDoubleArrayTopic("robot_orientation_set").publish();
     latencySubscriber = table.getDoubleTopic("tl").subscribe(0.0);
     txSubscriber = table.getDoubleTopic("tx").subscribe(0.0);
@@ -159,5 +162,20 @@ public class VisionIOLimelight implements VisionIO {
             Units.degreesToRadians(rawLLArray[3]),
             Units.degreesToRadians(rawLLArray[4]),
             Units.degreesToRadians(rawLLArray[5])));
+  }
+
+  @Override
+  public void disableCamera() {
+    changeCameraPipeline(Pipelines.VIEWING);
+  }
+
+  @Override
+  public void enableCamera() {
+    changeCameraPipeline(Pipelines.MAIN);
+  }
+
+  private void changeCameraPipeline(Pipelines pipeline) {
+    LimelightHelpers.setLEDMode_PipelineControl(name);
+    LimelightHelpers.setPipelineIndex(name, pipeline.getIndex());
   }
 }

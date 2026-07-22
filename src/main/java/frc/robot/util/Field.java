@@ -542,4 +542,9 @@ public interface Field {
         (Math.pow(centerPoseX - pointPoseX, 2) + Math.pow(centerPoseY - pointPoseY, 2));
     return distanceSquared <= Math.pow(radius, 2);
   }
+
+  public static void putHubOnDashboard() {
+    FieldObject2d hubFieldObject2d = FIELD2D.getObject("hub");
+    hubFieldObject2d.setPose(getAllianceHubPose());
+  }
 }

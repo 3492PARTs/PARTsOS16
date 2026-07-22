@@ -10,6 +10,8 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,20 +19,28 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.CameraConstants;
+import frc.robot.constants.CandleConstants.CandleState;
 import frc.robot.constants.KickerConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.TurretConstants;
+import frc.robot.constants.TurretConstants.TurretState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Candle.Candle;
 import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Hopper.HopperIO;
 import frc.robot.subsystems.Hopper.HopperIOTalonFX;
+import frc.robot.subsystems.Intake.Intake;
+import frc.robot.subsystems.Intake.IntakeIO;
+import frc.robot.subsystems.Intake.IntakeIOTalonFX;
+import frc.robot.subsystems.Intake.PivotIO;
+import frc.robot.subsystems.Intake.PivotIOTalonFX;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Kicker.KickerIO;
 import frc.robot.subsystems.Kicker.KickerIOTalonFX;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterIO;
 import frc.robot.subsystems.Shooter.ShooterIOTalonFX;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.Turret.TurretIO;
 import frc.robot.subsystems.Turret.TurretIOTalonFX;
@@ -43,6 +53,7 @@ import frc.robot.subsystems.drive.PARTsDrivetrain;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.util.Field;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.parts3492.partslib.input.PARTsButtonBoxController;
 import org.parts3492.partslib.input.PARTsCommandController;
@@ -62,7 +73,9 @@ public class RobotContainer {
   private final Turret turret;
   private final Kicker kicker;
   private final Hopper hopper;
+  private final Intake intake;
   private final Candle candle;
+  private final Superstructure superstructure;
 
   // Controller
   private final PARTsCommandController controller =
@@ -72,6 +85,8 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
+  // variables
+  private static Alliance alliance = Alliance.Red;
   public static boolean debug = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -120,6 +135,7 @@ public class RobotContainer {
                 turret::getState);
         kicker = new Kicker(new KickerIOTalonFX(KickerConstants.KICKER_MOTOR_ID));
         hopper = new Hopper(new HopperIOTalonFX());
+        intake = new Intake(new IntakeIOTalonFX(), new PivotIOTalonFX());
         break;
 
       case SIM:
@@ -139,6 +155,7 @@ public class RobotContainer {
                 new ShooterIO() {}, drive::getPose, drive::getRobotVelocity, turret::getState);
         kicker = new Kicker(new KickerIO() {});
         hopper = new Hopper(new HopperIO() {});
+        intake = new Intake(new IntakeIO() {}, new PivotIO() {});
         break;
 
       default:
@@ -157,8 +174,11 @@ public class RobotContainer {
                 new ShooterIO() {}, drive::getPose, drive::getRobotVelocity, turret::getState);
         kicker = new Kicker(new KickerIO() {});
         hopper = new Hopper(new HopperIO() {});
+        intake = new Intake(new IntakeIO() {}, new PivotIO() {});
         break;
     }
+
+    superstructure = new Superstructure(hopper, intake, kicker, shooter, turret, candle, drive);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -315,18 +335,22 @@ public class RobotContainer {
   }
 
   private void configureIntakeBindings() {
-    /*buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
-    buttonBoxController.negative4Trigger().onTrue(intake.intake());
-    buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate())
-            .onTrue(intake.idle());
-    buttonBoxController.enterTrigger().onTrue(intake.home());
-    buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
-    buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
-    buttonBoxController.positive1Trigger().onTrue(intake.zeroArm());
-    buttonBoxController.negative1Trigger().onTrue(intake.oneNinetyArm());
-
-    // Intake SysID
-
+    /*
+     * buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
+     * buttonBoxController.negative4Trigger().onTrue(intake.intake());
+     * buttonBoxController.positive4Trigger().negate().and(buttonBoxController.
+     * negative4Trigger().negate())
+     * .onTrue(intake.idle());
+     * buttonBoxController.enterTrigger().onTrue(intake.home());
+     * buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse
+     * (intake.idle());
+     * buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).
+     * onFalse(intake.idle());
+     * buttonBoxController.positive1Trigger().onTrue(intake.zeroArm());
+     * buttonBoxController.negative1Trigger().onTrue(intake.oneNinetyArm());
+     *
+     * // Intake SysID
+     *
      * operatorController.a().and(operatorController.rightBumper())
      * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
      * operatorController.b().and(operatorController.rightBumper())
@@ -340,18 +364,29 @@ public class RobotContainer {
   }
 
   private void configureSuperstructureBindings() {
-    /*buttonBoxController.handleTrigger()
-                    .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
-                            TurretState.TRACKING_HUB));
-            buttonBoxController.enginestartTrigger()
-                    .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
-                            TurretState.TRACKING_CORNER));
-            buttonBoxController.wipeTrigger()
-                    .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
-            buttonBoxController.mapTrigger()
-                    .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
-            buttonBoxController.negative3Trigger().onTrue(superstructure.spew()).onFalse(superstructure.resetCommand());
-    */
+    buttonBoxController
+        .handleTrigger()
+        .onTrue(
+            superstructure.shoot(
+                buttonBoxController.cruiseTrigger()::getAsBoolean, TurretState.TRACKING_HUB));
+    buttonBoxController
+        .enginestartTrigger()
+        .onTrue(
+            superstructure.shoot(
+                buttonBoxController.cruiseTrigger()::getAsBoolean, TurretState.TRACKING_CORNER));
+    buttonBoxController
+        .wipeTrigger()
+        .onTrue(
+            superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
+    buttonBoxController
+        .mapTrigger()
+        .onTrue(
+            superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
+    buttonBoxController
+        .negative3Trigger()
+        .onTrue(superstructure.spew())
+        .onFalse(superstructure.resetCommand());
+
     // buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
   }
 
@@ -365,6 +400,45 @@ public class RobotContainer {
   }
 
   public static boolean isBlue() {
-    return false;
+    return alliance == Alliance.Blue;
+  }
+
+  private void getAlliance() {
+    if (DriverStation.getAlliance().isPresent()) {
+      alliance = DriverStation.getAlliance().get();
+    }
+  }
+
+  public void runOnEnable() {
+    getAlliance(); // ensure we have the alliance
+    vision.enableCameras();
+    setIdleCandleState();
+    Field.putHubOnDashboard();
+    /*
+     * subsystems.forEach(s -> s.reset());
+     * CommandScheduler.getInstance()
+     * .schedule(
+     * new WaitCommand(0)
+     * .andThen(
+     * Commands.runOnce(
+     * () -> {
+     * setMegaTagMode(MegaTagMode.MEGATAG2);
+     * })));
+     */
+  }
+
+  public void runOnDisable() {
+    vision.disableCameras();
+    setCandleDisabledState();
+  }
+
+  private void setCandleDisabledState() {
+    candle.removeAllStates();
+    candle.addState(CandleState.DISABLED);
+  }
+
+  private void setIdleCandleState() {
+    candle.addState(CandleState.IDLE);
+    candle.removeState(CandleState.DISABLED);
   }
 }

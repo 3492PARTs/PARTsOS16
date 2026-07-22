@@ -41,4 +41,8 @@ public interface VisionIO {
   }
 
   public default void updateInputs(VisionIOInputs inputs) {}
+
+  public default void disableCamera() {}
+
+  public default void enableCamera() {}
 }
