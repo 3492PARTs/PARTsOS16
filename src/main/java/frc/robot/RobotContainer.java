@@ -178,6 +178,13 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+    configureShooterBindings();
+    configureCandleBindings();
+    configureHopperBindings();
+    configureKickerBindings();
+    configureTurretBindings();
+    configureIntakeBindings();
+    configureSuperstructureBindings();
   }
 
   /**
@@ -228,6 +235,121 @@ public class RobotContainer {
                 },
                 shooter));
     controller.rightBumper().onTrue(Commands.runOnce(() -> shooter.setSpeed(0), shooter));
+  }
+
+  private void configureShooterBindings() {
+
+    /*
+     * operatorController.a().and(operatorController.rightBumper())
+     * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+     * operatorController.b().and(operatorController.rightBumper())
+     * .whileTrue(shooter.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+     * operatorController.x().and(operatorController.rightBumper())
+     * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kForward));
+     * operatorController.y().and(operatorController.rightBumper())
+     * .whileTrue(shooter.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     */
+
+    // buttonBoxController.lightonTrigger().whileTrue(shooter.setSpeedOffset(100)).onFalse(shooter.setSpeedOffset(0));
+    // buttonBoxController.talkonTrigger().whileTrue(shooter.setSpeedOffset(200)).onFalse(shooter.setSpeedOffset(0));
+    buttonBoxController.absClickTrigger().onTrue(shooter.setSpeedOffset(() -> 0));
+    buttonBoxController
+        .absClockwiseTrigger()
+        .onTrue(shooter.setSpeedOffset(() -> shooter.getSpeedOffset() + 100));
+    buttonBoxController
+        .absCounterClockwiseTrigger()
+        .onTrue(shooter.setSpeedOffset(() -> shooter.getSpeedOffset() - 100));
+  }
+
+  private void configureCandleBindings() {}
+
+  private void configureHopperBindings() {
+    /*
+     * operatorController.a().and(operatorController.rightBumper())
+     * .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+     * operatorController.b().and(operatorController.rightBumper())
+     * .whileTrue(hopper.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+     * operatorController.x().and(operatorController.rightBumper())
+     * .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kForward));
+     * operatorController.y().and(operatorController.rightBumper())
+     * .whileTrue(hopper.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     * /*driveController.b().onTrue(hopper.roll());
+     * driveController.x().onTrue(hopper.idle());
+     */
+
+    buttonBoxController
+        .negative2Trigger()
+        .whileTrue(Commands.parallel(hopper.reverse(), kicker.reverse()))
+        .onFalse(Commands.parallel(hopper.idle(), kicker.idle()));
+  }
+
+  private void configureKickerBindings() {
+    /*
+     * operatorController.a().and(operatorController.rightBumper())
+     * .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+     * operatorController.b().and(operatorController.rightBumper())
+     * .whileTrue(kicker.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+     * operatorController.x().and(operatorController.rightBumper())
+     * .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kForward));
+     * operatorController.y().and(operatorController.rightBumper())
+     * .whileTrue(kicker.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     */
+  }
+
+  private void configureTurretBindings() {
+
+    /*
+     * operatorController.a().and(operatorController.rightBumper())
+     * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+     * operatorController.b().and(operatorController.rightBumper())
+     * .whileTrue(turret.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+     * operatorController.x().and(operatorController.rightBumper())
+     * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kForward));
+     * operatorController.y().and(operatorController.rightBumper())
+     * .whileTrue(turret.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     */
+
+  }
+
+  private void configureIntakeBindings() {
+    /*buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
+    buttonBoxController.negative4Trigger().onTrue(intake.intake());
+    buttonBoxController.positive4Trigger().negate().and(buttonBoxController.negative4Trigger().negate())
+            .onTrue(intake.idle());
+    buttonBoxController.enterTrigger().onTrue(intake.home());
+    buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
+    buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
+    buttonBoxController.positive1Trigger().onTrue(intake.zeroArm());
+    buttonBoxController.negative1Trigger().onTrue(intake.oneNinetyArm());
+
+    // Intake SysID
+
+     * operatorController.a().and(operatorController.rightBumper())
+     * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+     * operatorController.b().and(operatorController.rightBumper())
+     * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+     * operatorController.x().and(operatorController.rightBumper())
+     * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+     * operatorController.y().and(operatorController.rightBumper())
+     * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+     */
+
+  }
+
+  private void configureSuperstructureBindings() {
+    /*buttonBoxController.handleTrigger()
+                    .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
+                            TurretState.TRACKING_HUB));
+            buttonBoxController.enginestartTrigger()
+                    .onTrue(superstructure.shoot(buttonBoxController.cruiseTrigger()::getAsBoolean,
+                            TurretState.TRACKING_CORNER));
+            buttonBoxController.wipeTrigger()
+                    .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, false));
+            buttonBoxController.mapTrigger()
+                    .onTrue(superstructure.cornerShoot(buttonBoxController.cruiseTrigger()::getAsBoolean, true));
+            buttonBoxController.negative3Trigger().onTrue(superstructure.spew()).onFalse(superstructure.resetCommand());
+    */
+    // buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
   }
 
   /**
