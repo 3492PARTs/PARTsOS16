@@ -17,9 +17,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.CameraConstants;
+import frc.robot.constants.KickerConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.TurretConstants;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Hopper.Hopper;
+import frc.robot.subsystems.Hopper.HopperIO;
+import frc.robot.subsystems.Hopper.HopperIOTalonFX;
+import frc.robot.subsystems.Kicker.Kicker;
+import frc.robot.subsystems.Kicker.KickerIO;
+import frc.robot.subsystems.Kicker.KickerIOTalonFX;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterIO;
 import frc.robot.subsystems.Shooter.ShooterIOTalonFX;
@@ -52,6 +59,8 @@ public class RobotContainer {
   private final Vision vision;
   private final Shooter shooter;
   private final Turret turret;
+  private final Kicker kicker;
+  private final Hopper hopper;
 
   // Controller
   private final PARTsCommandController controller =
@@ -68,8 +77,6 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
-        // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
-        // a CANcoder
         drive =
             new PARTsDrivetrain(
                 new GyroIOPigeon2(),
@@ -108,24 +115,8 @@ public class RobotContainer {
                 drive::getPose,
                 drive::getRobotVelocity,
                 turret::getState);
-
-        // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The
-        // implementations
-        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
-        // swerve
-        // template) can be freely intermixed to support alternative hardware
-        // arrangements.
-        // Please see the AdvantageKit template documentation for more information:
-        // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
-        //
-        // drive =
-        // new Drive(
-        // new GyroIOPigeon2(),
-        // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
-        // new ModuleIOTalonFXS(TunerConstants.FrontRight),
-        // new ModuleIOTalonFXS(TunerConstants.BackLeft),
-        // new ModuleIOTalonFXS(TunerConstants.BackRight));
+        kicker = new Kicker(new KickerIOTalonFX(KickerConstants.KICKER_MOTOR_ID));
+        hopper = new Hopper(new HopperIOTalonFX());
         break;
 
       case SIM:
@@ -143,6 +134,8 @@ public class RobotContainer {
         shooter =
             new Shooter(
                 new ShooterIO() {}, drive::getPose, drive::getRobotVelocity, turret::getState);
+        kicker = new Kicker(new KickerIO() {});
+        hopper = new Hopper(new HopperIO() {});
         break;
 
       default:
@@ -159,6 +152,8 @@ public class RobotContainer {
         shooter =
             new Shooter(
                 new ShooterIO() {}, drive::getPose, drive::getRobotVelocity, turret::getState);
+        kicker = new Kicker(new KickerIO() {});
+        hopper = new Hopper(new HopperIO() {});
         break;
     }
 
