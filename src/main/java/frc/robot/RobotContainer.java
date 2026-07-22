@@ -21,6 +21,7 @@ import frc.robot.constants.KickerConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.TurretConstants;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Candle.Candle;
 import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Hopper.HopperIO;
 import frc.robot.subsystems.Hopper.HopperIOTalonFX;
@@ -61,6 +62,7 @@ public class RobotContainer {
   private final Turret turret;
   private final Kicker kicker;
   private final Hopper hopper;
+  private final Candle candle;
 
   // Controller
   private final PARTsCommandController controller =
@@ -74,6 +76,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    candle = new Candle();
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
