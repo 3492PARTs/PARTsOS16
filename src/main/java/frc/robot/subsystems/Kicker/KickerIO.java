@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Kicker;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.parts3492.partslib.PARTsUnit;
 
 public interface KickerIO {
   @AutoLog
@@ -24,5 +25,9 @@ public interface KickerIO {
 
   public default double getVoltage() {
     return 0;
+  }
+
+  public default PARTsUnit getLinearPosition() {
+    return null;
   }
 }

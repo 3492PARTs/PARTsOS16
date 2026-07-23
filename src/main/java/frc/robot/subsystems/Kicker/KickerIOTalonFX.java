@@ -1,5 +1,8 @@
 package frc.robot.subsystems.Kicker;
 
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -52,5 +55,10 @@ public class KickerIOTalonFX implements KickerIO {
   @Override
   public double getVoltage() {
     return kickerMotor.getSupplyVoltage().getValueAsDouble();
+  }
+
+  @Override
+  public PARTsUnit getLinearPosition() {
+      return new PARTsUnit(kickerMotor.getPosition().getValueAsDouble() * Math.PI * KickerConstants.KICKER_WHEEL_RADIUS.to(PARTsUnitType.Inch) * 2, PARTsUnitType.Inch);
   }
 }

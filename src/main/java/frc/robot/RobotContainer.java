@@ -39,6 +39,7 @@ import frc.robot.subsystems.Intake.PivotSysId;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Kicker.KickerIO;
 import frc.robot.subsystems.Kicker.KickerIOTalonFX;
+import frc.robot.subsystems.Kicker.KickerSysId;
 import frc.robot.subsystems.Shooter.Shooter;
 import frc.robot.subsystems.Shooter.ShooterIO;
 import frc.robot.subsystems.Shooter.ShooterIOTalonFX;
@@ -180,7 +181,7 @@ public class RobotContainer {
         shooter =
             new Shooter(
                 new ShooterIO() {}, drive::getPose, drive::getRobotVelocity, turret::getState);
-        kicker = new Kicker(new KickerIO() {});
+        kicker = new KickerSysId(new KickerIOTalonFX(KickerConstants.KICKER_MOTOR_ID));
         hopper = new HopperSysId(new HopperIOTalonFX());
         intake = new IntakeSysId(new IntakeIOTalonFX(), new PivotIOTalonFX());
         //intake = new PivotSysId(new IntakeIOTalonFX(), new PivotIOTalonFX());
