@@ -10,8 +10,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,11 +28,14 @@ import frc.robot.subsystems.Candle.Candle;
 import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Hopper.HopperIO;
 import frc.robot.subsystems.Hopper.HopperIOTalonFX;
+import frc.robot.subsystems.Hopper.HopperSysId;
 import frc.robot.subsystems.Intake.Intake;
 import frc.robot.subsystems.Intake.IntakeIO;
 import frc.robot.subsystems.Intake.IntakeIOTalonFX;
+import frc.robot.subsystems.Intake.IntakeSysId;
 import frc.robot.subsystems.Intake.PivotIO;
 import frc.robot.subsystems.Intake.PivotIOTalonFX;
+import frc.robot.subsystems.Intake.PivotSysId;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Kicker.KickerIO;
 import frc.robot.subsystems.Kicker.KickerIOTalonFX;
@@ -58,6 +59,7 @@ import frc.robot.util.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.parts3492.partslib.RobotUtils;
 import org.parts3492.partslib.command.IPARTsSubsystem;
 import org.parts3492.partslib.input.PARTsButtonBoxController;
 import org.parts3492.partslib.input.PARTsCommandController;
@@ -93,7 +95,6 @@ public class RobotContainer {
 
   // variables
   private final PARTsNT partsNT = new PARTsNT("RobotContainer");
-  private static Alliance alliance = Alliance.Red;
   public static boolean debug = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -165,8 +166,26 @@ public class RobotContainer {
         intake = new Intake(new IntakeIO() {}, new PivotIO() {});
         break;
 
+      case SYSID:
+        // System identification mode, instantiate SysId IO implementations
+        drive =
+            new PARTsDrivetrain(
+                new GyroIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
+        vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
+        turret = new Turret(new TurretIO() {}, drive::getPose, drive::getRobotVelocity);
+        shooter =
+            new Shooter(
+                new ShooterIO() {}, drive::getPose, drive::getRobotVelocity, turret::getState);
+        kicker = new Kicker(new KickerIO() {});
+        hopper = new HopperSysId(new HopperIOTalonFX());
+        intake = new IntakeSysId(new IntakeIOTalonFX(), new PivotIOTalonFX());
+        //intake = new PivotSysId(new IntakeIOTalonFX(), new PivotIOTalonFX());
+        break;
       default:
-        // Replayed robot, disable IO implementations
         drive =
             new PARTsDrivetrain(
                 new GyroIO() {},
@@ -421,18 +440,8 @@ public class RobotContainer {
     return autoChooser.get();
   }
 
-  public static boolean isBlue() {
-    return alliance == Alliance.Blue;
-  }
-
-  private void getAlliance() {
-    if (DriverStation.getAlliance().isPresent()) {
-      alliance = DriverStation.getAlliance().get();
-    }
-  }
-
   public void runOnEnable() {
-    getAlliance(); // ensure we have the alliance
+    RobotUtils.getAlliance(); // ensure we have the alliance
     vision.enableCameras();
     setIdleCandleState();
     Field.putHubOnDashboard();

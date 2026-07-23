@@ -38,12 +38,12 @@ public class PivotIOTalonFX implements PivotIO {
   }
 
   @Override
-  public void setPivotSpeed(double speed) {
+  public void setSpeed(double speed) {
     pivotMotor.set(speed);
   }
 
   @Override
-  public void setPivotVoltage(double voltage) {
+  public void setVoltage(double voltage) {
     pivotMotor.setVoltage(voltage);
   }
 
@@ -86,5 +86,10 @@ public class PivotIOTalonFX implements PivotIO {
                           * IntakeConstants.PIVOT_GEAR_RATIO);
               pivotPIDController.reset(getPivotRotations().to(PARTsUnitType.Angle));
             }));
+  }
+
+  @Override
+  public double getVoltage() {
+      return pivotMotor.getMotorVoltage().getValueAsDouble();
   }
 }

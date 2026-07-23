@@ -9,11 +9,11 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
-import frc.robot.RobotContainer;
 import java.util.ArrayList;
 import java.util.List;
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+import org.parts3492.partslib.RobotUtils;
 import org.parts3492.partslib.game.AprilTag;
 
 /** This interface stores information about the field elements. */
@@ -67,7 +67,7 @@ public interface Field {
     }
 
     public Pose3d getLocation() {
-      return RobotContainer.isBlue()
+      return RobotUtils.isBlue()
           ? tag.getLocation()
           : transformToOppositeAlliance(tag.getLocation());
     }
@@ -432,11 +432,11 @@ public interface Field {
       new Pose2d(LENGTH / 2.0 - Units.inchesToMeters(143.5), WIDTH / 2.0, new Rotation2d(Math.PI));
 
   public static Pose2d getAllianceHubPose() {
-    return RobotContainer.isBlue() ? blueHubCenter : transformToOppositeAlliance(blueHubCenter);
+    return RobotUtils.isBlue() ? blueHubCenter : transformToOppositeAlliance(blueHubCenter);
   }
 
   public static Pose2d[] getAllianceTrenchPoses() {
-    return RobotContainer.isBlue()
+    return RobotUtils.isBlue()
         ? new Pose2d[] {getTag(23).getLocation().toPose2d(), getTag(28).getLocation().toPose2d()}
         : new Pose2d[] {getTag(12).getLocation().toPose2d(), getTag(7).getLocation().toPose2d()};
   }
@@ -452,7 +452,7 @@ public interface Field {
   }
 
   public static boolean isInAllianceZone(Pose2d pose) {
-    return RobotContainer.isBlue()
+    return RobotUtils.isBlue()
         ? pose.getX() < getTag(22).getLocation().getX()
         : pose.getX() > getTag(1).getLocation().getX();
   }
@@ -503,19 +503,19 @@ public interface Field {
   }
 
   public static Pose3d conditionallyTransformToOppositeAlliance(Pose3d pose) {
-    return RobotContainer.isBlue() ? pose : transformToOppositeAlliance(pose);
+    return RobotUtils.isBlue() ? pose : transformToOppositeAlliance(pose);
   }
 
   public static Pose2d conditionallyTransformToOppositeAlliance(Pose2d pose) {
-    return RobotContainer.isBlue() ? pose : transformToOppositeAlliance(pose);
+    return RobotUtils.isBlue() ? pose : transformToOppositeAlliance(pose);
   }
 
   public static Translation2d conditionallyTransformToOppositeAlliance(Translation2d translation) {
-    return RobotContainer.isBlue() ? translation : transformToOppositeAlliance(translation);
+    return RobotUtils.isBlue() ? translation : transformToOppositeAlliance(translation);
   }
 
   public static List<Pose2d> conditionallyTransformToOppositeAlliance(List<Pose2d> poses) {
-    return RobotContainer.isBlue() ? poses : transformToOppositeAlliance(poses);
+    return RobotUtils.isBlue() ? poses : transformToOppositeAlliance(poses);
   }
 
   public static Pose2d getNearestAllianceCorner(Pose2d current) {
@@ -526,7 +526,7 @@ public interface Field {
           new Pose2d(0, WIDTH - offset.to(PARTsUnitType.Meter), new Rotation2d()),
         };
     alliancePoses =
-        RobotContainer.isBlue() ? alliancePoses : transformToOppositeAlliance(alliancePoses);
+        RobotUtils.isBlue() ? alliancePoses : transformToOppositeAlliance(alliancePoses);
     Pose2d corner = Trench.getNearestPose(current, alliancePoses);
     return corner;
   }

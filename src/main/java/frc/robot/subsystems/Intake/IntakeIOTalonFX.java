@@ -1,9 +1,14 @@
 package frc.robot.subsystems.Intake;
 
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import frc.robot.constants.HopperConstants;
 import frc.robot.constants.IntakeConstants;
 
 public class IntakeIOTalonFX implements IntakeIO {
@@ -32,22 +37,32 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void setIntakeSpeed(double speed) {
+  public void setSpeed(double speed) {
     intakeMotor.set(speed);
   }
 
   @Override
-  public double getIntakeSpeed() {
+  public double getSpeed() {
     return intakeMotor.get();
   }
 
   @Override
-  public double getIntakeRPM() {
+  public double getRPM() {
     return intakeMotor.getVelocity().getValueAsDouble() * 60;
   }
 
   @Override
-  public void setIntakeVoltage(double speed) {
+  public void setVoltage(double speed) {
     intakeMotor.setVoltage(speed);
+  }
+
+  @Override
+  public double getVoltage() {
+      return intakeMotor.getMotorVoltage().getValueAsDouble();
+  }
+
+  @Override
+  public PARTsUnit getLinearPosition() {
+      return new PARTsUnit(intakeMotor.getPosition().getValueAsDouble() * Math.PI * HopperConstants.HOPPER_ROLLER_RADIUS.to(PARTsUnitType.Inch) * 2, PARTsUnitType.Inch);
   }
 }

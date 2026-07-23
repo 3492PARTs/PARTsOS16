@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.RobotContainer;
 import frc.robot.constants.DrivetrainConstants;
 import frc.robot.constants.RobotConstants;
 import frc.robot.generated.TunerConstants;
@@ -35,6 +34,7 @@ import java.util.function.Supplier;
 import org.json.simple.parser.ParseException;
 import org.parts3492.partslib.PARTsUnit;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+import org.parts3492.partslib.RobotUtils;
 import org.parts3492.partslib.command.IPARTsSubsystem;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 
@@ -257,8 +257,7 @@ public class PARTsDrivetrain extends Drive implements IPARTsSubsystem {
                     thetaController.reset(getPose().getRotation().getRadians());
                   }
                   isControlledRotationEnabled = true;
-                  if (!RobotContainer.isBlue())
-                    thetaController.setGoal(angle.getAsDouble() + Math.PI);
+                  if (!RobotUtils.isBlue()) thetaController.setGoal(angle.getAsDouble() + Math.PI);
                   else thetaController.setGoal(angle.getAsDouble());
                 })
             .until(condition)

@@ -17,7 +17,7 @@ public class Hub {
 
     /*public void setFieldObject2d() {
         FieldObject2d targetFieldObject2d = Field.FIELD2D.getObject(this.name());
-        Pose2d pose = new Pose2d(hubPose2d.get().getX() - this.radius * (RobotContainer.isBlue() ? 1 : -1),
+        Pose2d pose = new Pose2d(hubPose2d.get().getX() - this.radius * (RobotUtils.isBlue() ? 1 : -1),
                 hubPose2d.get().getY(), hubPose2d.get().getRotation());
         targetFieldObject2d.setPose(pose);
 

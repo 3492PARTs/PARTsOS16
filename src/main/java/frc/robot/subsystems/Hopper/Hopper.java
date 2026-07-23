@@ -30,7 +30,7 @@ public class Hopper extends PARTsSubsystem {
           .ignoringDisable(true);
 
   private Timer timer = new Timer();
-  HopperIO hopperIO;
+  protected final HopperIO hopperIO;
 
   public Hopper(HopperIO hopperIO) {
     super("Hopper");

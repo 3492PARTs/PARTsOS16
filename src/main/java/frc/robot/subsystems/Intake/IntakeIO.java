@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Intake;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.parts3492.partslib.PARTsUnit;
 
 public interface IntakeIO {
   @AutoLog
@@ -12,15 +13,23 @@ public interface IntakeIO {
 
   public default void updateInputs(IntakeInputs inputs) {}
 
-  public default void setIntakeSpeed(double speed) {}
+  public default void setSpeed(double speed) {}
 
-  public default double getIntakeSpeed() {
+  public default double getSpeed() {
     return 0;
   }
 
-  public default double getIntakeRPM() {
+  public default double getRPM() {
     return 0;
   }
 
-  public default void setIntakeVoltage(double speed) {}
+  public default void setVoltage(double speed) {}
+
+  public default double getVoltage() {
+    return 0;
+  }
+
+  public default PARTsUnit getLinearPosition() {
+    return null;
+  }
 }

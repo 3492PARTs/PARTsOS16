@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Hopper;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.parts3492.partslib.PARTsUnit;
 
 public interface HopperIO {
   @AutoLog
@@ -22,5 +23,9 @@ public interface HopperIO {
 
   public default double getVoltage() {
     return 0;
+  }
+
+  public default PARTsUnit getLinearPosition() {
+    return null;
   }
 }

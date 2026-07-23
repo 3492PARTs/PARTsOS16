@@ -5,6 +5,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.constants.HopperConstants;
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 
 public class HopperIOTalonFX implements HopperIO {
   protected final TalonFX hopperMotor;
@@ -50,5 +52,15 @@ public class HopperIOTalonFX implements HopperIO {
     inputs.connected = hopperMotor.isConnected();
     inputs.appliedVolts = hopperMotor.getMotorVoltage().getValueAsDouble();
     inputs.currentAmps = new double[] {hopperMotor.getStatorCurrent().getValueAsDouble()};
+  }
+
+  @Override
+  public PARTsUnit getLinearPosition() {
+    return new PARTsUnit(
+        hopperMotor.getPosition().getValueAsDouble()
+            * Math.PI
+            * HopperConstants.HOPPER_ROLLER_RADIUS.to(PARTsUnitType.Inch)
+            * 2,
+        PARTsUnitType.Inch);
   }
 }

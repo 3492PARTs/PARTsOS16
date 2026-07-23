@@ -16,9 +16,9 @@ public interface PivotIO {
 
   public default void updateInputs(PivotInputs inputs) {}
 
-  public default void setPivotSpeed(double speed) {}
+  public default void setSpeed(double speed) {}
 
-  public default void setPivotVoltage(double voltage) {}
+  public default void setVoltage(double voltage) {}
 
   public default double getPivotRotationSpeed() {
     return 0;
@@ -34,5 +34,9 @@ public interface PivotIO {
 
   public default Command zeroArm() {
     return null;
+  }
+
+   public default double getVoltage() {
+    return 0;
   }
 }

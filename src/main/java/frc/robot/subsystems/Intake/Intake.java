@@ -20,8 +20,8 @@ import org.parts3492.partslib.command.PARTsSubsystem;
 public class Intake extends PARTsSubsystem {
 
   IntakeState intakeState = IntakeState.IDLE;
-  IntakeIO intakeIO;
-  PivotIO pivotIO;
+  private IntakeIO intakeIO;
+  private PivotIO pivotIO;
   private IntakeInputsAutoLogged inputs = new IntakeInputsAutoLogged();
 
   protected boolean debug = false;
@@ -178,19 +178,19 @@ public class Intake extends PARTsSubsystem {
 
   // region Custom Public Functions
   public void setIntakeSpeed(double speed) {
-    intakeIO.setIntakeSpeed(speed);
+    intakeIO.setSpeed(speed);
   }
 
   public void setPivotSpeed(double speed) {
-    pivotIO.setPivotSpeed(speed);
+    pivotIO.setSpeed(speed);
   }
 
   public double getIntakeSpeed() {
-    return intakeIO.getIntakeSpeed();
+    return intakeIO.getSpeed();
   }
 
   public double getIntakeRPM() {
-    return intakeIO.getIntakeRPM();
+    return intakeIO.getRPM();
   }
 
   public PARTsUnit getPivotRotations() {
@@ -198,11 +198,11 @@ public class Intake extends PARTsSubsystem {
   }
 
   public void setPivotVoltage(double voltage) {
-    pivotIO.setPivotVoltage(voltage);
+    pivotIO.setVoltage(voltage);
   }
 
   public void setIntakeVoltage(double voltage) {
-    intakeIO.setIntakeVoltage(voltage);
+    intakeIO.setVoltage(voltage);
   }
 
   public double getPivotRotationSpeed() {
