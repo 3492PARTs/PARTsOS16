@@ -90,6 +90,6 @@ public class PivotIOTalonFX implements PivotIO {
 
   @Override
   public double getVoltage() {
-      return pivotMotor.getMotorVoltage().getValueAsDouble();
+    return pivotMotor.getMotorVoltage().getValueAsDouble();
   }
 }

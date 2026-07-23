@@ -4,8 +4,6 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.MutAngle;
@@ -14,50 +12,50 @@ import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.subsystems.drive.PARTsDrivetrain.RobotVelocitySupplier;
+import java.util.function.Supplier;
 
 public class TurretSysId extends Turret {
 
-    private MutVoltage appliedVoltage;
+  private MutVoltage appliedVoltage;
 
-    private MutAngle pivotAngle;
+  private MutAngle pivotAngle;
 
-    private MutAngularVelocity pivotVelocity;
+  private MutAngularVelocity pivotVelocity;
 
-    private SysIdRoutine routine;
-    
-    public TurretSysId(TurretIO io, Supplier<Pose2d> robotPoseSupplier, RobotVelocitySupplier velocitySupplier) {
-        super(io, robotPoseSupplier, velocitySupplier);
+  private SysIdRoutine routine;
 
-        appliedVoltage = Volts.mutable(0);
+  public TurretSysId(
+      TurretIO io, Supplier<Pose2d> robotPoseSupplier, RobotVelocitySupplier velocitySupplier) {
+    super(io, robotPoseSupplier, velocitySupplier);
 
-        pivotAngle = Units.Radian.mutable(0);
+    appliedVoltage = Volts.mutable(0);
 
-        pivotVelocity = Units.RadiansPerSecond.mutable(0);
+    pivotAngle = Units.Radian.mutable(0);
 
-        routine = new SysIdRoutine(
-                new SysIdRoutine.Config(),
-                new SysIdRoutine.Mechanism(
-                        (voltage) -> this.setVoltage(voltage.in(Volts)),
+    pivotVelocity = Units.RadiansPerSecond.mutable(0);
 
-                        log -> {
-                            // Record a frame for the shooter motor.
-                            log.motor("turret")
-                                    .voltage(
-                                            appliedVoltage.mut_replace(
-                                                    io.getVoltage(), Volts))
-                                    .angularPosition(pivotAngle.mut_replace(
-                                            getAngle() * (Math.PI / 180), Radians))
-                                    .angularVelocity(
-                                            pivotVelocity.mut_replace(io.getRadPerSec(), RadiansPerSecond));
-                        },
-                        this));
-    }
+    routine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(),
+            new SysIdRoutine.Mechanism(
+                (voltage) -> this.setVoltage(voltage.in(Volts)),
+                log -> {
+                  // Record a frame for the shooter motor.
+                  log.motor("turret")
+                      .voltage(appliedVoltage.mut_replace(io.getVoltage(), Volts))
+                      .angularPosition(
+                          pivotAngle.mut_replace(getAngle() * (Math.PI / 180), Radians))
+                      .angularVelocity(
+                          pivotVelocity.mut_replace(io.getRadPerSec(), RadiansPerSecond));
+                },
+                this));
+  }
 
-    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        return routine.quasistatic(direction);
-    }
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return routine.quasistatic(direction);
+  }
 
-    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        return routine.dynamic(direction);
-    }
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return routine.dynamic(direction);
+  }
 }

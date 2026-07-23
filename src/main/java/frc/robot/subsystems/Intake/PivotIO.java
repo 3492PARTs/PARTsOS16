@@ -36,7 +36,7 @@ public interface PivotIO {
     return null;
   }
 
-   public default double getVoltage() {
+  public default double getVoltage() {
     return 0;
   }
 }

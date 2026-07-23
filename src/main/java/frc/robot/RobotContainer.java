@@ -35,7 +35,6 @@ import frc.robot.subsystems.Intake.IntakeIOTalonFX;
 import frc.robot.subsystems.Intake.IntakeSysId;
 import frc.robot.subsystems.Intake.PivotIO;
 import frc.robot.subsystems.Intake.PivotIOTalonFX;
-import frc.robot.subsystems.Intake.PivotSysId;
 import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.Kicker.KickerIO;
 import frc.robot.subsystems.Kicker.KickerIOTalonFX;
@@ -179,7 +178,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         vision = new Vision(drive::addVisionMeasurement, new VisionIO() {}, new VisionIO() {});
-        turret = new TurretSysId(
+        turret =
+            new TurretSysId(
                 new TurretIOTalonFX(TurretConstants.TURRET_MOTOR_ID),
                 drive::getPose,
                 drive::getRobotVelocity);
@@ -193,7 +193,7 @@ public class RobotContainer {
         kicker = new KickerSysId(new KickerIOTalonFX(KickerConstants.KICKER_MOTOR_ID));
         hopper = new HopperSysId(new HopperIOTalonFX());
         intake = new IntakeSysId(new IntakeIOTalonFX(), new PivotIOTalonFX());
-        //intake = new PivotSysId(new IntakeIOTalonFX(), new PivotIOTalonFX());
+        // intake = new PivotSysId(new IntakeIOTalonFX(), new PivotIOTalonFX());
         break;
       default:
         drive =
@@ -223,22 +223,7 @@ public class RobotContainer {
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
-    // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    configureAutonomousCommands();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -441,6 +426,46 @@ public class RobotContainer {
     // buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
   }
 
+  private void setCandleDisabledState() {
+    candle.removeAllStates();
+    candle.addState(CandleState.DISABLED);
+  }
+
+  private void setIdleCandleState() {
+    candle.addState(CandleState.IDLE);
+    candle.removeState(CandleState.DISABLED);
+  }
+
+  private void configureAutonomousCommands() {
+    // Set up SysId routines
+    autoChooser.addOption(
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    autoChooser.addOption(
+        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Forward)",
+        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Quasistatic Reverse)",
+        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    autoChooser.addOption(
+        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    autoChooser.addOption("Outpost Auto", superstructure.outpostAuto());
+    autoChooser.addOption("Left Trench Auto", superstructure.trenchAuto(true));
+    autoChooser.addOption("Right Trench Auto", superstructure.trenchAuto(false));
+    autoChooser.addOption("Right Trench to Outpost Auto", superstructure.rightTrenchOutpostAuto());
+    autoChooser.addOption("Left Ramp To Depot Auto", superstructure.rampDepotAuto());
+    autoChooser.addOption(
+        "Right Trench to Outpost Auto Test", superstructure.rightTrenchOutpostAutoTest());
+    autoChooser.addOption(
+        "Shoot Only", superstructure.shoot(() -> false, TurretState.TRACKING_HUB));
+    autoChooser.addOption("Right Middle Delay Auto", superstructure.rightMiddleDelayAuto());
+    autoChooser.addOption("Left Middle Delay Auto", superstructure.leftMiddleDelayAuto());
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -474,15 +499,5 @@ public class RobotContainer {
     else vision.enableCameras();
 
     setCandleDisabledState();
-  }
-
-  private void setCandleDisabledState() {
-    candle.removeAllStates();
-    candle.addState(CandleState.DISABLED);
-  }
-
-  private void setIdleCandleState() {
-    candle.addState(CandleState.IDLE);
-    candle.removeState(CandleState.DISABLED);
   }
 }

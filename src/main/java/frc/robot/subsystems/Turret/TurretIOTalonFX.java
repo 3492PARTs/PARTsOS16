@@ -44,6 +44,6 @@ public class TurretIOTalonFX implements TurretIO {
 
   @Override
   public double getRadPerSec() {
-      return turretMotor.getVelocity().getValueAsDouble() * (Math.PI * 2);
+    return turretMotor.getVelocity().getValueAsDouble() * (Math.PI * 2);
   }
 }
