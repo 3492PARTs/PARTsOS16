@@ -42,5 +42,8 @@ public class TurretIOTalonFX implements TurretIO {
     // return absEncoder.getAccumulatedAngle().getValue() / TurretConstants.TURRET_GEAR_RATIO;
   }
 
-  // I think this still needs the override methods
+  @Override
+  public double getRadPerSec() {
+      return turretMotor.getVelocity().getValueAsDouble() * (Math.PI * 2);
+  }
 }

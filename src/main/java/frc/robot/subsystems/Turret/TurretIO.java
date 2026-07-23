@@ -25,4 +25,8 @@ public interface TurretIO {
   public default double getAngle() {
     return 0;
   }
+
+  public default double getRadPerSec() {
+    return 0;
+  }
 }

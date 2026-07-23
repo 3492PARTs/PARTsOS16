@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Shooter;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.parts3492.partslib.PARTsUnit;
 
 public interface ShooterIO {
   @AutoLog
@@ -29,5 +30,9 @@ public interface ShooterIO {
 
   public default double getRPM() {
     return 0;
+  }
+
+  public default PARTsUnit getLinearPosition() {
+    return null;
   }
 }

@@ -1,5 +1,8 @@
 package frc.robot.subsystems.Shooter;
 
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -67,5 +70,10 @@ public class ShooterIOTalonFX implements ShooterIO {
   @Override
   public double getVoltage() {
     return leftMotor.getSupplyVoltage().getValueAsDouble();
+  }
+
+  @Override
+  public PARTsUnit getLinearPosition() {
+      return new PARTsUnit(leftMotor.getPosition().getValueAsDouble() * Math.PI * ShooterConstants.SHOOTER_WHEEL_RADIUS.to(PARTsUnitType.Inch) * 2, PARTsUnitType.Inch);
   }
 }
