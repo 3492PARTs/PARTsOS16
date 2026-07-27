@@ -13,7 +13,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.CameraConstants;
@@ -494,16 +496,16 @@ public class RobotContainer {
     Field.putHubOnDashboard();
     vision.setPoseObservationType(PoseObservationType.MEGATAG_2);
     subsystems.forEach(s -> s.reset());
-    /*
-     * CommandScheduler.getInstance()
-     * .schedule(
-     * new WaitCommand(0)
-     * .andThen(
-     * Commands.runOnce(
-     * () -> {
-     * setMegaTagMode(MegaTagMode.MEGATAG2);
-     * })));
-     */
+
+    if (!RobotConstants.COMPETITION)
+      CommandScheduler.getInstance()
+          .schedule(
+              new WaitCommand(2)
+                  .andThen(
+                      Commands.runOnce(
+                          () -> {
+                            vision.setPoseObservationType(PoseObservationType.MEGATAG_2);
+                          })));
   }
 
   public void runOnDisable() {
