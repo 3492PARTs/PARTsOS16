@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.subsystems.vision.VisionIO.PoseObservation;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,8 +56,8 @@ public class Vision extends PARTsSubsystem {
               "Vision camera " + Integer.toString(i) + " is disconnected.", AlertType.kWarning);
     }
 
-            super.partsNT.putSmartDashboardSendable("Set Minimum Tag Count 1", setMinMT1Count(1), true);
-        super.partsNT.putSmartDashboardSendable("Set Minimum Tag Count 2", setMinMT1Count(2), true);
+    super.partsNT.putSmartDashboardSendable("Set Minimum Tag Count 1", setMinMT1Count(1), true);
+    super.partsNT.putSmartDashboardSendable("Set Minimum Tag Count 2", setMinMT1Count(2), true);
   }
 
   /**
@@ -104,7 +103,8 @@ public class Vision extends PARTsSubsystem {
 
       // Loop over pose observations
       for (var observation : inputs[cameraIndex].poseObservations) {
-        int requiredTagCount = (poseObservationType == PoseObservationType.MEGATAG_1) ? minMT1Count : 1;
+        int requiredTagCount =
+            (poseObservationType == PoseObservationType.MEGATAG_1) ? minMT1Count : 1;
 
         // Check whether to reject pose
         boolean rejectPose =
@@ -114,7 +114,8 @@ public class Vision extends PARTsSubsystem {
                 || Math.abs(observation.pose().getZ())
                     > maxZError // Must have realistic Z coordinate
                 // Distance must be within reasonable bounds
-                || observation.averageTagDistance() < new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter)
+                || observation.averageTagDistance()
+                    < new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter)
                 // Must be within the field boundaries
                 || observation.pose().getX() < 0.0
                 || observation.pose().getX() > aprilTagLayout.getFieldLength()
@@ -222,8 +223,9 @@ public class Vision extends PARTsSubsystem {
     }
   }
 
-      public Command setMinMT1Count(int min) {
-        return PARTsCommandUtils.setCommandName("LimelightVision.setMinMT1Count",
-                Commands.runOnce(() -> minMT1Count = min).ignoringDisable(true));
-    }
+  public Command setMinMT1Count(int min) {
+    return PARTsCommandUtils.setCommandName(
+        "LimelightVision.setMinMT1Count",
+        Commands.runOnce(() -> minMT1Count = min).ignoringDisable(true));
+  }
 }

@@ -133,17 +133,13 @@ public class Drive extends SubsystemBase {
         (activePath) -> {
           Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[0]));
           // Added
-          Field.FIELD2D
-                    .getObject("pathplanner trajectory")
-                    .setPoses(activePath);
+          Field.FIELD2D.getObject("pathplanner trajectory").setPoses(activePath);
         });
     PathPlannerLogging.setLogTargetPoseCallback(
         (targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
           // Added
-          Field.FIELD2D
-                    .getObject("pathplanner trajectory setpoint")
-                    .setPose(targetPose);
+          Field.FIELD2D.getObject("pathplanner trajectory setpoint").setPose(targetPose);
         });
 
     // Configure SysId

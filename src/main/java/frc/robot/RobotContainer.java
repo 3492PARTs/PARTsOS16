@@ -427,10 +427,16 @@ public class RobotContainer {
     // buttonBoxController.escTrigger().whileTrue(superstructure.outpostAuto());
   }
 
-      private void configureVisionBindings() {
-        buttonBoxController.flashTrigger().onTrue(Commands.runOnce(() -> vision.setPoseObservationType(PoseObservationType.MEGATAG_1)));
-        buttonBoxController.audioTrigger().onTrue(Commands.runOnce(() -> vision.setPoseObservationType(PoseObservationType.MEGATAG_2)));
-    }
+  private void configureVisionBindings() {
+    buttonBoxController
+        .flashTrigger()
+        .onTrue(
+            Commands.runOnce(() -> vision.setPoseObservationType(PoseObservationType.MEGATAG_1)));
+    buttonBoxController
+        .audioTrigger()
+        .onTrue(
+            Commands.runOnce(() -> vision.setPoseObservationType(PoseObservationType.MEGATAG_2)));
+  }
 
   private void setCandleDisabledState() {
     candle.removeAllStates();

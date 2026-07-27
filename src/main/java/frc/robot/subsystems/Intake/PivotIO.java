@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import org.littletonrobotics.junction.AutoLog;
 import org.parts3492.partslib.PARTsUnit;
 
@@ -29,11 +30,11 @@ public interface PivotIO {
   }
 
   public default Command oneNinetyArm() {
-    return null;
+    return new WaitCommand(0);
   }
 
   public default Command zeroArm() {
-    return null;
+    return new WaitCommand(0);
   }
 
   public default double getVoltage() {
