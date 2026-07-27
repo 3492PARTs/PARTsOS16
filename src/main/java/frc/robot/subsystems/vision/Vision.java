@@ -18,10 +18,16 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.vision.VisionIO.PoseObservation;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
+import org.parts3492.partslib.PARTsUnit;
+import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
+import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
 
 public class Vision extends PARTsSubsystem {
@@ -29,6 +35,9 @@ public class Vision extends PARTsSubsystem {
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
+
+  private PoseObservationType poseObservationType = PoseObservationType.MEGATAG_1;
+  private int minMT1Count = 2;
 
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
@@ -47,6 +56,9 @@ public class Vision extends PARTsSubsystem {
           new Alert(
               "Vision camera " + Integer.toString(i) + " is disconnected.", AlertType.kWarning);
     }
+
+            super.partsNT.putSmartDashboardSendable("Set Minimum Tag Count 1", setMinMT1Count(1), true);
+        super.partsNT.putSmartDashboardSendable("Set Minimum Tag Count 2", setMinMT1Count(2), true);
   }
 
   /**
@@ -92,14 +104,17 @@ public class Vision extends PARTsSubsystem {
 
       // Loop over pose observations
       for (var observation : inputs[cameraIndex].poseObservations) {
+        int requiredTagCount = (poseObservationType == PoseObservationType.MEGATAG_1) ? minMT1Count : 1;
+
         // Check whether to reject pose
         boolean rejectPose =
-            observation.tagCount() == 0 // Must have at least one tag
+            observation.tagCount() >= requiredTagCount // Must have at least one tag
                 || (observation.tagCount() == 1
                     && observation.ambiguity() > maxAmbiguity) // Cannot be high ambiguity
                 || Math.abs(observation.pose().getZ())
                     > maxZError // Must have realistic Z coordinate
-
+                // Distance must be within reasonable bounds
+                || observation.averageTagDistance() < new PARTsUnit(15, PARTsUnitType.Foot).to(PARTsUnitType.Meter)
                 // Must be within the field boundaries
                 || observation.pose().getX() < 0.0
                 || observation.pose().getX() > aprilTagLayout.getFieldLength()
@@ -201,8 +216,14 @@ public class Vision extends PARTsSubsystem {
   public void log() {}
 
   public void setPoseObservationType(PoseObservationType type) {
+    poseObservationType = type;
     for (int i = 0; i < io.length; i++) {
       io[i].setPoseObservationType(type);
     }
   }
+
+      public Command setMinMT1Count(int min) {
+        return PARTsCommandUtils.setCommandName("LimelightVision.setMinMT1Count",
+                Commands.runOnce(() -> minMT1Count = min).ignoringDisable(true));
+    }
 }
