@@ -38,6 +38,8 @@ public class Vision extends PARTsSubsystem {
   private PoseObservationType poseObservationType = PoseObservationType.MEGATAG_1;
   private int minMT1Count = 2;
 
+  private Thread visionThread;
+
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
     this.io = io;
@@ -58,6 +60,8 @@ public class Vision extends PARTsSubsystem {
 
     super.partsNT.putSmartDashboardSendable("Set Minimum Tag Count 1", setMinMT1Count(1), true);
     super.partsNT.putSmartDashboardSendable("Set Minimum Tag Count 2", setMinMT1Count(2), true);
+
+    startVisionThread();
   }
 
   /**
@@ -70,7 +74,29 @@ public class Vision extends PARTsSubsystem {
   }
 
   @Override
-  public void periodic() {
+  public void periodic() {}
+
+  private void startVisionThread() {
+    visionThread =
+        new Thread(
+            () -> {
+              while (!Thread.interrupted()) {
+                processCameras();
+
+                // Sleep to limit CPU usage and match camera FPS (e.g., 20ms = 50Hz)
+                try {
+                  Thread.sleep(20);
+                } catch (InterruptedException e) {
+                  Thread.currentThread().interrupt();
+                  break;
+                }
+              }
+            });
+    visionThread.setDaemon(true); // Allows JVM to exit even if thread is running
+    visionThread.start();
+  }
+
+  private void processCameras() {
     for (int i = 0; i < io.length; i++) {
       io[i].updateInputs(inputs[i]);
       Logger.processInputs("Vision/Camera" + Integer.toString(i), inputs[i]);
