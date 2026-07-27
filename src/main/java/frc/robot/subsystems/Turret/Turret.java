@@ -17,6 +17,7 @@ import frc.robot.subsystems.drive.PARTsDrivetrain.RobotVelocitySupplier;
 import frc.robot.util.Field;
 import frc.robot.util.SOTMCalculator;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 import org.parts3492.partslib.PARTsUnit.PARTsUnitType;
 import org.parts3492.partslib.command.PARTsCommandUtils;
 import org.parts3492.partslib.command.PARTsSubsystem;
@@ -31,6 +32,8 @@ public class Turret extends PARTsSubsystem {
   private FieldObject2d fieldTarget;
   private FieldObject2d projectedRobotPose;
   private TurretIO io;
+  private TurretInputsAutoLogged turretInputs = new TurretInputsAutoLogged();
+  private FieldObject2d fieldObject2d;
 
   protected boolean debug = false;
   private Command toggleDebug =
@@ -51,7 +54,7 @@ public class Turret extends PARTsSubsystem {
       partsNT.putDouble("Turret Speed", 0, !RobotConstants.COMPETITION);
       partsNT.putDouble("Turret Angle", 0, !RobotConstants.COMPETITION);
     }
-
+    fieldObject2d = Field.FIELD2D.getObject("Turret Target");
     this.robotPoseSupplier = robotPoseSupplier;
     this.velocitySupplier = velocitySupplier;
     this.io = io;
@@ -72,7 +75,7 @@ public class Turret extends PARTsSubsystem {
   @Override
   public void outputTelemetry() {
     partsNT.putBoolean("Valid Angle", isValidAngle(), true);
-    partsNT.putString("Turret State", turretState.toString(), !RobotConstants.COMPETITION);
+    partsNT.putString("Turret State", turretState.toString(), true);
     partsNT.putDouble("Angle", getAngle(), true);
     partsNT.putDouble("Voltage", getVoltage(), RobotContainer.debug || debug);
     partsNT.putDouble(
@@ -100,6 +103,9 @@ public class Turret extends PARTsSubsystem {
 
   @Override
   public void periodic() {
+    io.updateInputs(turretInputs);
+    Logger.processInputs("Turret", turretInputs);
+    outputTelemetry();
     if (RobotContainer.debug || debug) {
       setVoltage(calculateVoltage(partsNT.getDouble("Turret Angle", true)));
     } else {
@@ -113,6 +119,7 @@ public class Turret extends PARTsSubsystem {
         case TRACKING_HUB:
         case TRACKING_CORNER:
           Pose2d target = getTargetPose();
+          fieldObject2d.setPose(target);
           if (isValidAngle()) {
             partsNT.putDouble("Turret voltage", voltage, RobotContainer.debug || debug);
             partsNT.putBoolean(

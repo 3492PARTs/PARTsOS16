@@ -45,4 +45,6 @@ public interface VisionIO {
   public default void disableCamera() {}
 
   public default void enableCamera() {}
+
+  public default void setPoseObservationType(PoseObservationType type) {}
 }

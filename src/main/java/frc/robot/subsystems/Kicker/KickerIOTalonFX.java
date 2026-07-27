@@ -43,7 +43,7 @@ public class KickerIOTalonFX implements KickerIO {
 
   @Override
   public double getRPM() {
-    return kickerMotor.get();
+    return kickerMotor.getVelocity().getValueAsDouble() * 60 / KickerConstants.KICKER_GEAR_RATIO;
   }
 
   @Override

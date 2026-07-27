@@ -199,4 +199,10 @@ public class Vision extends PARTsSubsystem {
 
   @Override
   public void log() {}
+
+  public void setPoseObservationType(PoseObservationType type) {
+    for (int i = 0; i < io.length; i++) {
+      io[i].setPoseObservationType(type);
+    }
+  }
 }

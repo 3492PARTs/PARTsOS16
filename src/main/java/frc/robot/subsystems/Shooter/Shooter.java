@@ -116,6 +116,7 @@ public class Shooter extends PARTsSubsystem {
   public void periodic() {
     io.updateInputs(shooterInputs);
     org.littletonrobotics.junction.Logger.processInputs("Shooter", shooterInputs);
+    outputTelemetry();
     if (RobotContainer.debug || debug) {
       double rpm = partsNT.getDouble("Shooter Speed", true);
       setVoltage(calculateRPMVoltage(rpm));

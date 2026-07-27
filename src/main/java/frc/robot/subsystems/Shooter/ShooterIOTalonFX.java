@@ -80,4 +80,9 @@ public class ShooterIOTalonFX implements ShooterIO {
             * 2,
         PARTsUnitType.Inch);
   }
+
+  @Override
+  public double getRPM() {
+    return leftMotor.getVelocity().getValueAsDouble() * 60;
+  }
 }

@@ -28,7 +28,7 @@ public class TurretIOTalonFX implements TurretIO {
   }
 
   @Override
-  public void updateInputs(Inputs inputs) {
+  public void updateInputs(TurretInputs inputs) {
     inputs.connected = turretMotor.isConnected();
     inputs.angle = getAngle();
     inputs.velocityRadPerSec = turretMotor.getVelocity().getValueAsDouble();
@@ -45,5 +45,15 @@ public class TurretIOTalonFX implements TurretIO {
   @Override
   public double getRadPerSec() {
     return turretMotor.getVelocity().getValueAsDouble() * (Math.PI * 2);
+  }
+
+  @Override
+  public void setVoltage(double voltage) {
+    turretMotor.setVoltage(voltage);
+  }
+
+  @Override
+  public void setSpeed(double speed) {
+    turretMotor.set(speed);
   }
 }

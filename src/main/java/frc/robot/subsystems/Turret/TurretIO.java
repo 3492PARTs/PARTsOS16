@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.AutoLog;
 
 public interface TurretIO {
   @AutoLog
-  public static class Inputs {
+  public static class TurretInputs {
     public boolean connected = false;
     public double angle = 0;
     public double velocityRadPerSec = 0.0;
@@ -12,7 +12,7 @@ public interface TurretIO {
     public double[] currentAmps = new double[0];
   }
 
-  public default void updateInputs(Inputs inputs) {}
+  public default void updateInputs(TurretInputs inputs) {}
 
   public default void setSpeed(double speed) {}
 

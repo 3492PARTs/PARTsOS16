@@ -88,7 +88,7 @@ public class PARTsDrivetrain extends Drive implements IPARTsSubsystem {
 
   @Override
   public void periodic() {
-    updateAirborneState();
+    // updateAirborneState();
 
     super.periodic();
 

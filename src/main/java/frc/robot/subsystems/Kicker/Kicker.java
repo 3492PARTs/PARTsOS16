@@ -55,7 +55,7 @@ public class Kicker extends PARTsSubsystem {
   // region Generic Subsystem Functions
   @Override
   public void outputTelemetry() {
-    partsNT.putString("Kicker State", kickerState.toString(), !RobotConstants.COMPETITION);
+    partsNT.putString("Kicker State", kickerState.toString(), true);
     partsNT.putBoolean("Kicker Debug Active", debug, !RobotConstants.COMPETITION);
     partsNT.putDouble("Kicker RPM", getRPM(), !RobotConstants.COMPETITION);
   }
@@ -77,6 +77,7 @@ public class Kicker extends PARTsSubsystem {
   public void periodic() {
     io.updateInputs(kickerInputs);
     Logger.processInputs("Kicker", kickerInputs);
+    outputTelemetry();
     if (RobotContainer.debug || debug) {
       double rpm = partsNT.getDouble("Kicker Speed", true);
       setVoltage(calculateRPMVoltage(rpm));

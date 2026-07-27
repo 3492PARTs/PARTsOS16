@@ -50,8 +50,8 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void setVoltage(double speed) {
-    intakeMotor.setVoltage(speed);
+  public void setVoltage(double voltage) {
+    intakeMotor.setVoltage(voltage);
   }
 
   @Override

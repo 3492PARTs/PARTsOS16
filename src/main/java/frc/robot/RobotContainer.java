@@ -56,6 +56,7 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.drive.PARTsDrivetrain;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.util.Field;
 import java.util.ArrayList;
@@ -89,7 +90,7 @@ public class RobotContainer {
 
   // Controller
   private final PARTsCommandController controller =
-      new PARTsCommandController(0, ControllerType.XBOX);
+      new PARTsCommandController(0, ControllerType.DS5);
   private final PARTsButtonBoxController buttonBoxController = new PARTsButtonBoxController(1);
 
   // Dashboard inputs
@@ -371,31 +372,30 @@ public class RobotContainer {
   }
 
   private void configureIntakeBindings() {
-    /*
-     * buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
-     * buttonBoxController.negative4Trigger().onTrue(intake.intake());
-     * buttonBoxController.positive4Trigger().negate().and(buttonBoxController.
-     * negative4Trigger().negate())
-     * .onTrue(intake.idle());
-     * buttonBoxController.enterTrigger().onTrue(intake.home());
-     * buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse
-     * (intake.idle());
-     * buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).
-     * onFalse(intake.idle());
-     * buttonBoxController.positive1Trigger().onTrue(intake.zeroArm());
-     * buttonBoxController.negative1Trigger().onTrue(intake.oneNinetyArm());
-     *
-     * // Intake SysID
-     *
-     * operatorController.a().and(operatorController.rightBumper())
-     * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-     * operatorController.b().and(operatorController.rightBumper())
-     * .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-     * operatorController.x().and(operatorController.rightBumper())
-     * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
-     * operatorController.y().and(operatorController.rightBumper())
-     * .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-     */
+
+    buttonBoxController.positive4Trigger().onTrue(intake.intakeShooting());
+    buttonBoxController.negative4Trigger().onTrue(intake.intake());
+    buttonBoxController
+        .positive4Trigger()
+        .negate()
+        .and(buttonBoxController.negative4Trigger().negate())
+        .onTrue(intake.idle());
+    buttonBoxController.enterTrigger().onTrue(intake.home());
+    buttonBoxController.povTrigger0().whileTrue(intake.manualPivot(-0.1)).onFalse(intake.idle());
+    buttonBoxController.povTrigger180().whileTrue(intake.manualPivot(0.1)).onFalse(intake.idle());
+    buttonBoxController.positive1Trigger().onTrue(intake.zeroArm());
+    buttonBoxController.negative1Trigger().onTrue(intake.oneNinetyArm());
+
+    // Intake SysID
+
+    /*operatorController.a().and(operatorController.rightBumper())
+    .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    operatorController.b().and(operatorController.rightBumper())
+    .whileTrue(intake.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    operatorController.x().and(operatorController.rightBumper())
+    .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    operatorController.y().and(operatorController.rightBumper())
+    .whileTrue(intake.sysIdDynamic(SysIdRoutine.Direction.kReverse));*/
 
   }
 
@@ -480,7 +480,7 @@ public class RobotContainer {
     vision.enableCameras();
     setIdleCandleState();
     Field.putHubOnDashboard();
-
+    vision.setPoseObservationType(PoseObservationType.MEGATAG_2);
     subsystems.forEach(s -> s.reset());
     /*
      * CommandScheduler.getInstance()
@@ -497,7 +497,7 @@ public class RobotContainer {
   public void runOnDisable() {
     if (!RobotConstants.COMPETITION) vision.disableCameras();
     else vision.enableCameras();
-
+    vision.setPoseObservationType(PoseObservationType.MEGATAG_1);
     setCandleDisabledState();
   }
 }
