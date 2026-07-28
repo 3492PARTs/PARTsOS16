@@ -87,6 +87,7 @@ public class Vision extends PARTsSubsystem {
                 try {
                   Thread.sleep(20);
                 } catch (InterruptedException e) {
+                  e.printStackTrace();
                   Thread.currentThread().interrupt();
                   break;
                 }
