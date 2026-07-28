@@ -7,13 +7,14 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
 import frc.robot.constants.CameraConstants;
@@ -223,7 +224,7 @@ public class RobotContainer {
                 candle, drive, vision, shooter, turret, kicker, hopper, intake, superstructure));
 
     // Set up auto routines
-    autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser = new LoggedDashboardChooser<>("Auto Choices");
     configureAutonomousCommands();
 
     // Configure the button bindings
@@ -449,21 +450,23 @@ public class RobotContainer {
   }
 
   private void configureAutonomousCommands() {
-    // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    if (!RobotConstants.COMPETITION) {
+      // Set up SysId routines
+      autoChooser.addOption(
+          "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+      autoChooser.addOption(
+          "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+      autoChooser.addOption(
+          "Drive SysId (Quasistatic Forward)",
+          drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+      autoChooser.addOption(
+          "Drive SysId (Quasistatic Reverse)",
+          drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+      autoChooser.addOption(
+          "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      autoChooser.addOption(
+          "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    }
 
     autoChooser.addOption("Outpost Auto", superstructure.outpostAuto());
     autoChooser.addOption("Left Trench Auto", superstructure.trenchAuto(true));
@@ -494,16 +497,16 @@ public class RobotContainer {
     Field.putHubOnDashboard();
     vision.setPoseObservationType(PoseObservationType.MEGATAG_2);
     subsystems.forEach(s -> s.reset());
-    /*
-     * CommandScheduler.getInstance()
-     * .schedule(
-     * new WaitCommand(0)
-     * .andThen(
-     * Commands.runOnce(
-     * () -> {
-     * setMegaTagMode(MegaTagMode.MEGATAG2);
-     * })));
-     */
+
+    if (!RobotConstants.COMPETITION)
+      CommandScheduler.getInstance()
+          .schedule(
+              new WaitCommand(2)
+                  .andThen(
+                      Commands.runOnce(
+                          () -> {
+                            vision.setPoseObservationType(PoseObservationType.MEGATAG_2);
+                          })));
   }
 
   public void runOnDisable() {
