@@ -130,7 +130,8 @@ public abstract class Turret extends PARTsSubsystem {
 
                     setVoltage(calculateVoltage(turretState.getAngle()));
                     break;
-
+                
+                
                 default:
                     setSpeed(0);
                     break;
@@ -196,16 +197,18 @@ public abstract class Turret extends PARTsSubsystem {
     }
 
     public Command turretTurn() {
-        if (timer.get() > 1.5 && turretState == TurretState.LEFT_CORNER) {
-                        timer.restart();
-                        turretState = TurretState.RIGHT_CORNER;
-                    }
-    }
+        return PARTsCommandUtils.setCommandName("Turret.idle", this.runOnce(() -> {
+            if (timer.get() > 1.5 && turretState == TurretState.LEFT_CORNER) {
+                timer.restart();
+                turretState = TurretState.RIGHT_CORNER;
+            }
 
-        if (timer.get() > 1.5 && turretState == TurretState.RIGHT_CORNER) {
-                        timer.restart();
-                        turretState = TurretState.LEFT_CORNER;
-        }
+            if (timer.get() > 1.5 && turretState == TurretState.RIGHT_CORNER) {
+                timer.restart();
+                turretState = TurretState.LEFT_CORNER;
+            }
+        }));
+    }
 
     public boolean withinSetpointRange() {
         return Math.abs(turretPIDController.getSetpoint() - getAngle()) < 10;
