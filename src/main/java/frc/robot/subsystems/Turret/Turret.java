@@ -6,11 +6,13 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.constants.HopperConstants;
+import frc.robot.constants.HopperConstants.HopperState;
 import frc.robot.constants.RobotConstants;
 import frc.robot.constants.TurretConstants;
 import frc.robot.constants.TurretConstants.TurretState;
@@ -40,6 +42,8 @@ public abstract class Turret extends PARTsSubsystem {
         partsNT.putDouble("Turret Speed", 0, !RobotConstants.COMPETITION);
         partsNT.putDouble("Turret Angle", 0, !RobotConstants.COMPETITION);
     }).ignoringDisable(true);
+
+    private Timer timer = new Timer();
 
     public Turret(Supplier<Pose2d> robotPoseSupplier, PARTsDrivetrain drivetrain) {
         super("Turret", RobotConstants.LOGGING);
@@ -191,6 +195,18 @@ public abstract class Turret extends PARTsSubsystem {
         }));
     }
 
+    public Command turretTurn() {
+        if (timer.get() > 1.5 && turretState == TurretState.LEFT_CORNER) {
+                        timer.restart();
+                        turretState = TurretState.RIGHT_CORNER;
+                    }
+    }
+
+        if (timer.get() > 1.5 && turretState == TurretState.RIGHT_CORNER) {
+                        timer.restart();
+                        turretState = TurretState.LEFT_CORNER;
+        }
+
     public boolean withinSetpointRange() {
         return Math.abs(turretPIDController.getSetpoint() - getAngle()) < 10;
     }
@@ -205,7 +221,9 @@ public abstract class Turret extends PARTsSubsystem {
     private double calculateVoltage(double angle) {
         turretPIDController.setSetpoint(angle);
         double pidCalc = turretPIDController.calculate(getAngle(), angle);
-        //double ffCalc = (turretPIDController.atSetpoint()) ? 0 : turretFeedforward.calculate(turretPIDController.getSetpoint() * Math.PI / 180);
+        // double ffCalc = (turretPIDController.atSetpoint()) ? 0 :
+        // turretFeedforward.calculate(turretPIDController.getSetpoint() * Math.PI /
+        // 180);
         double voltage = pidCalc;
         return MathUtil.clamp(voltage, -8, 8);
     }
@@ -213,10 +231,14 @@ public abstract class Turret extends PARTsSubsystem {
     // endregion
 
     // region private functions
-    protected double getAngleToTarget(Pose2d target) {     
-        Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(), drivetrain.getYVelocity().getValue(), new Rotation2d());
-        Pose2d calcTurretPose = SOTMCalculator.collapsePose(robotPoseSupplier.get().plus(new Transform2d(TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 0, new Rotation2d())), robotVelocity);
-        
+    protected double getAngleToTarget(Pose2d target) {
+        Transform2d robotVelocity = new Transform2d(drivetrain.getXVelocity().getValue(),
+                drivetrain.getYVelocity().getValue(), new Rotation2d());
+        Pose2d calcTurretPose = SOTMCalculator.collapsePose(
+                robotPoseSupplier.get().plus(new Transform2d(
+                        TurretConstants.TURRET_OFFSET_CENTER.to(PARTsUnitType.Meter), 0, new Rotation2d())),
+                robotVelocity);
+
         if (!RobotConstants.COMPETITION) {
             projectedRobotPose.setPose(calcTurretPose);
         }
@@ -230,7 +252,6 @@ public abstract class Turret extends PARTsSubsystem {
         }
         return angleToTarget;
     }
-
 
     // endregion private functions
 }
